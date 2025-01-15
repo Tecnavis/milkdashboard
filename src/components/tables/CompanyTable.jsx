@@ -2,12 +2,19 @@ import React, { useEffect, useState } from "react";
 import { companyData } from "../../data/Data";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import PaginationSection from "./PaginationSection";
-import { fetchAllWarehouse, deleteWarehouse } from "../../Helper/handle-api";
+
+import { Modal, Button, Form, Alert } from "react-bootstrap";
+import {
+  fetchAllWarehouse,
+  deleteWarehouse,
+  updateWarehouse,
+} from "../../Helper/handle-api";
 const CompanyTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
   const [dataList, setDataList] = useState(companyData);
-
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   // Pagination logic
   const indexOfLastData = currentPage * dataPerPage;
   const indexOfFirstData = indexOfLastData - dataPerPage;
@@ -30,6 +37,33 @@ const CompanyTable = () => {
       setAllwarehouse(res);
     });
   });
+
+  const handleEditClick = (customer) => {
+    setSelectedCustomer(customer);
+    setShowModal(true);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedCustomer((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const updatedCustomer = await updateWarehouse(
+        selectedCustomer._id,
+        selectedCustomer
+      );
+      setAllwarehouse((prev) =>
+        prev.map((customer) =>
+          customer._id === updatedCustomer._id ? updatedCustomer : customer
+        )
+      );
+      setShowModal(false);
+    } catch (error) {
+      console.error("Failed to update customer:", error);
+    }
+  };
   return (
     <>
       <OverlayScrollbarsComponent>
@@ -55,7 +89,7 @@ const CompanyTable = () => {
                 <td>{data.phone}</td>
                 <td>
                   <div className="btn-box">
-                    <button>
+                    <button onClick={() => handleEditClick(data)}>
                       <i className="fa-light fa-pen"></i>
                     </button>
                     <button>
@@ -77,6 +111,62 @@ const CompanyTable = () => {
         paginate={paginate}
         pageNumbers={pageNumbers}
       />
+      {/* Edit Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Customer</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedCustomer && (
+            <Form>
+              <Form.Group>
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="name"
+                  value={selectedCustomer.name || ""}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Phone</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="phone"
+                  value={selectedCustomer.phone || ""}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  name="email"
+                  value={selectedCustomer.email || ""}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Address</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="address"
+                  value={selectedCustomer.address || ""}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+            </Form>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleUpdate}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

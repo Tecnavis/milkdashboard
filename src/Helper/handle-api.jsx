@@ -74,3 +74,10 @@ export const updateCustomer = async (id, updatedData) => {
     const response = await axios.delete(`${URL}/warehouse/${id}`);
     return response.data;
   };
+
+
+  export const updateWarehouse = async (id, details) => {
+    const response = await axios.put(`${URL}/warehouse/${id}`, details);
+    return response.data;
+  };
+  
