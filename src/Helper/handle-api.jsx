@@ -81,3 +81,13 @@ export const updateCustomer = async (id, updatedData) => {
     return response.data;
   };
   
+  //create main category
+export const createMainCategory = async (category) => {
+    const response = await axios.post(`${URL}/category`, category);
+    return response.data;
+};
+
+export const fetchMainCategory = async () => {
+    const response = await axios.get(`${URL}/category`);
+    return response.data;
+};

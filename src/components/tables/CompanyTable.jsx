@@ -36,7 +36,7 @@ const CompanyTable = () => {
     fetchAllWarehouse().then((res) => {
       setAllwarehouse(res);
     });
-  });
+  },[]);
 
   const handleEditClick = (customer) => {
     setSelectedCustomer(customer);
