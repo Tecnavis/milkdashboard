@@ -13,7 +13,10 @@ export const loginAdmin = async (admin) => {
     const response = await axios.post(`${URL}/admin/login`, admin);
     return response.data;
 };
-
+export const fetchAdmins= async () => {
+    const response = await axios.get(`${URL}/admin`);
+    return response.data;
+}
 export const fetchLogo = async () => {
   try {
     const response = await axios.get(`${URL}/logo`);
