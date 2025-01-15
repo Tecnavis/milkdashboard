@@ -31,3 +31,20 @@ export const Customercreate = async (customer) => {
     });
     return response.data;
 };
+
+
+export const FetchCustomer = async () => {
+    const response = await axios.get(`${URL}/customer`);
+    return response.data;
+};
+
+export const FetchCustomerById = async (id) => {
+    const response = await axios.get(`${URL}/customer/${id}`);
+    return response.data;
+};
+
+//delete customer by Id
+export const deleteCustomer = async (id) => {
+    const response = await axios.delete(`${URL}/customer/${id}`);
+    return response.data;
+}

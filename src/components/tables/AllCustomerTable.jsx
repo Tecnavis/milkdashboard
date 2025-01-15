@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Table } from 'react-bootstrap'
 import { allCustomerData } from '../../data/Data';
 import { Link } from 'react-router-dom';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import PaginationSection from './PaginationSection';
+import { FetchCustomer ,deleteCustomer} from '../../Helper/handle-api';
 
 const AllCustomerTable = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -25,6 +26,16 @@ const AllCustomerTable = () => {
        pageNumbers.push(i);
      }
    
+
+     //get all Customers
+     const [customers, setCustomers] = useState([]);
+     useEffect(() => {
+       const fetchCustomers = async () => {
+         const response = await FetchCustomer();
+         setCustomers(response);
+       };
+       fetchCustomers();
+     })
   return (
     <>
       <OverlayScrollbarsComponent>
@@ -46,37 +57,42 @@ const AllCustomerTable = () => {
               <th>Customer Id</th>
               <th>Name</th>
               <th>Phone</th>
-              <th>Email</th>
-              <th>Address</th>
               <th>Location </th>
+              <th>Address</th>
               <th>Route No </th>
               <th>Route Name </th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {currentData.map((data) => (
+            {customers.map((data) => (
               <tr key={data.userName}>
                 <td>
                   <div className="form-check">
                     <input className="form-check-input" type="checkbox" />
                   </div>
                 </td>
-                <td>100</td>
+                <td>{data.customerId}</td>
                 <td>
                   <Link to="#">{data.name}</Link>
                 </td>
-                <td>98765432</td>
-                <td>narji@gmail.com</td>
+                <td>{data.phone}</td>
+                
+                <td>{data.address} </td>
                 <td>
-                  <Link to="#">Address</Link>
-                </td>
-                <td>Kuttiady,location </td>
+  <a 
+    href={`https://www.google.com/maps?q=${data.location}`} 
+    target="_blank" 
+    rel="noopener noreferrer"
+  >
+    Location
+  </a>
+</td>
 
-                <td>Route No 1 </td>
-                <td>Route Kuttiady </td>
+                <td>{data.routeno}</td>
+                <td>{data.routename} </td>
                 <td>   <div className='btn-box'> <button><i className="fa-light fa-pen"></i></button>
-                            <button><i className="fa-light fa-trash"></i></button>
+                            <button><i className="fa-light fa-trash" onClick={() => deleteCustomer(data._id)}></i></button>
                         </div>
                         </td>
               </tr>
