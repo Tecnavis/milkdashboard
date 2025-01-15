@@ -23,7 +23,7 @@ const CompanyHeader = () => {
 
   return (
     <div className="panel-header">
-      <h5>Supplier</h5>
+      <h5>Warehouse</h5>
       <div className="btn-box d-flex gap-2">
         <div id="tableSearch">
           <Form.Control type="text" placeholder="Search..."/>

@@ -56,3 +56,21 @@ export const updateCustomer = async (id, updatedData) => {
     const response = await axios.put(`${URL}/customer/${id}`, updatedData);
     return response.data.updatedCustomer;
   };
+
+  //create warehouse
+  export const createWarehouse = async (warehouse) => {
+    const response = await axios.post(`${URL}/warehouse`, warehouse);
+    return response.data;
+  };
+
+  //fetch All Warehouse
+  export const fetchAllWarehouse = async () => {
+    const response = await axios.get(`${URL}/warehouse`);
+    return response.data;
+  };
+
+  //delete warehouse by Id
+  export const deleteWarehouse = async (id) => {
+    const response = await axios.delete(`${URL}/warehouse/${id}`);
+    return response.data;
+  };

@@ -1,19 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { companyData } from "../../data/Data";
-import { Form } from "react-bootstrap";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import PaginationSection from "./PaginationSection";
+import { fetchAllWarehouse, deleteWarehouse } from "../../Helper/handle-api";
 const CompanyTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
   const [dataList, setDataList] = useState(companyData);
-
-  const handleCheckboxChange = (index) => {
-    const updatedDataList = [...dataList];
-    updatedDataList[indexOfFirstData + index].isChecked =
-      !updatedDataList[indexOfFirstData + index].isChecked;
-    setDataList(updatedDataList);
-  };
 
   // Pagination logic
   const indexOfLastData = currentPage * dataPerPage;
@@ -30,6 +23,13 @@ const CompanyTable = () => {
   for (let i = 1; i <= totalPages; i++) {
     pageNumbers.push(i);
   }
+
+  const [allwarehouse, setAllwarehouse] = useState([]);
+  useEffect(() => {
+    fetchAllWarehouse().then((res) => {
+      setAllwarehouse(res);
+    });
+  });
   return (
     <>
       <OverlayScrollbarsComponent>
@@ -39,22 +39,33 @@ const CompanyTable = () => {
         >
           <thead>
             <tr>
-            <th>Date</th>
               <th> Warehouse</th>
               <th>Address</th>
               <th>Email</th>
               <th>Phone</th>
-
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {currentData.map((data, index) => (
-              <tr key={data.id}>
-                <td>12/3/2024</td>
-                <td>ware house</td>
-                <td>Address</td>
-                <td>email@gmail</td>
-                <td>987654321</td>
+            {allwarehouse.map((data, index) => (
+              <tr key={data._id}>
+                <td>{data.name}</td>
+                <td>{data.address}</td>
+                <td>{data.email}</td>
+                <td>{data.phone}</td>
+                <td>
+                  <div className="btn-box">
+                    <button>
+                      <i className="fa-light fa-pen"></i>
+                    </button>
+                    <button>
+                      <i
+                        className="fa-light fa-trash"
+                        onClick={() => deleteWarehouse(data._id)}
+                      ></i>
+                    </button>
+                  </div>{" "}
+                </td>
               </tr>
             ))}
           </tbody>

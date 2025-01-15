@@ -57,7 +57,7 @@ const [image, setImage] = useState('');
     <div className="col-12">
         <div className="panel">
             <div className="panel-header">
-                <h5>Basic Information</h5>
+                <h5>Customer Create</h5>
             </div>
             <div className="panel-body">
                 <div className="row g-3">

@@ -17,7 +17,7 @@ const CompanyFilter = () => {
                                 </Form.Select>
                             </div> */}
                             <div className="col">
-                                <button className="btn btn-sm btn-primary w-100">NEW SUPPLIER</button>
+                                <button className="btn btn-sm btn-primary w-100">NEW WAREHOUSE</button>
                             </div>
                         </form>
                     </div>
