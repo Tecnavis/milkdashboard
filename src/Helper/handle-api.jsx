@@ -48,3 +48,8 @@ export const deleteCustomer = async (id) => {
     const response = await axios.delete(`${URL}/customer/${id}`);
     return response.data;
 }
+
+export const updateCustomer = async (id, updatedData) => {
+    const response = await axios.put(`${URL}/customer/${id}`, updatedData);
+    return response.data.updatedCustomer;
+  };
