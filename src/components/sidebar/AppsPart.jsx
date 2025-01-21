@@ -126,7 +126,7 @@ const AppsPart = () => {
           </ul>
         </li>
 
-        <li className="sidebar-dropdown-item" >
+        {/* <li className="sidebar-dropdown-item" >
           <Link
             role="button"
             className={`sidebar-link has-sub ${isCrmDropdownOpen ? 'show' : ''}`}
@@ -194,7 +194,7 @@ const AppsPart = () => {
             </NavLink>
           </li>
           </ul>
-        </li>
+        </li> */}
 
         {/* <li className="sidebar-dropdown-item">
             <NavLink to="/task" className="sidebar-link" onClick={handleSubNavLinkClick}>
@@ -202,14 +202,14 @@ const AppsPart = () => {
             </NavLink>
           </li> */}
 
-        <li className="sidebar-dropdown-item">
+        {/* <li className="sidebar-dropdown-item">
           <NavLink to="/task" className="sidebar-link">
             <span className="nav-icon">
               <i className="fa-light fa-calendar"></i>
             </span>{' '}
             <span className="sidebar-txt">Task</span>
           </NavLink>
-        </li>
+        </li> */}
         <li className="sidebar-dropdown-item">
           <NavLink to="/calendar" className="sidebar-link">
             <span className="nav-icon">
@@ -218,7 +218,7 @@ const AppsPart = () => {
             <span className="sidebar-txt">Calendar</span>
           </NavLink>
         </li>
-        <li className="sidebar-dropdown-item">
+        {/* <li className="sidebar-dropdown-item">
           <NavLink to="/chat" className="sidebar-link">
             <span className="nav-icon">
               <i className="fa-light fa-messages"></i>
@@ -249,7 +249,7 @@ const AppsPart = () => {
             </span>{' '}
             <span className="sidebar-txt">Contacts</span>
           </NavLink>
-        </li>
+        </li> */}
       </ul>
     </li>
   );

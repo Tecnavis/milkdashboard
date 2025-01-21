@@ -36,7 +36,7 @@ const DashboardPart = () => {
             <span className="sidebar-txt">Inventory</span>
           </NavLink>
         </li>
-        <li className="sidebar-dropdown-item">
+        {/* <li className="sidebar-dropdown-item">
           <NavLink
             to="/hrmDashboard"
             className="sidebar-link"
@@ -46,7 +46,7 @@ const DashboardPart = () => {
             </span>{' '}
             <span className="sidebar-txt">HRM</span>
           </NavLink>
-        </li>
+        </li> */}
       </ul>
     </li>
   );

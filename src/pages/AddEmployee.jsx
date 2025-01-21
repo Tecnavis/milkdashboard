@@ -14,7 +14,7 @@ import AddNewBreadcrumb from '../components/breadcrumb/AddNewBreadcrumb'
 const AddEmployee = () => {
   return (
     <div className="main-content">
-        <AddNewBreadcrumb link={'/allEmployee'} title={'Add Employee'}/>
+        <AddNewBreadcrumb link={'/allEmployee'} title={'Add Customer and Warehouse'}/>
         <div className="row">
             <BasicInformation/>
             <PersonalInformation/>

@@ -2,8 +2,24 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 
-export const  URL = `http://localhost:3001`;
+// export const  URL = `http://localhost:3001`;
+export const  URL = `https://api.palkkaran.in`;
+//create product
+export const createProduct = async (product) => {
+    const response = await axios.post(`${URL}/product`, product);
+    return response.data;
+}
+//fetch product by id
 
+export const fetchProductById = async (id) => {
+    const response = await axios.get(`${URL}/product/${id}`);
+    return response.data;
+}
+//fetch all products
+export const fetchProducts = async () => {
+    const response = await axios.get(`${URL}/product`);
+    return response.data;
+}
 //signup admin
 export const signupAdmin = async (admin) => {
     const response = await axios.post(`${URL}/admin`, admin);
