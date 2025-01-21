@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { DigiContext } from '../../context/DigiContext';
+import { URL } from '../../Helper/handle-api';
 
 const HeaderProfile = () => {
     const {
@@ -26,6 +27,17 @@ const HeaderProfile = () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }, [isProfileSidebarOpen.dropdown, handleProfileDropdownCheckboxChange]);
+    const handleLogout = () => {
+      localStorage.removeItem('adminDetails');
+      localStorage.removeItem('componentState');
+      localStorage.removeItem('token');
+      localStorage.clear();
+      navigate("/");
+    };
+
+    //profile
+    const admin = JSON.parse(localStorage.getItem('adminDetails'));
+
   return (
     <div className="header-btn-box" ref={profileDropdownRef}>
       <div className="profile-btn-wrapper">
@@ -38,14 +50,14 @@ const HeaderProfile = () => {
               : handleProfileDropdownCheckboxChange
           }
         >
-          <img src="assets/images/admin.png" alt="image" />
-        </button>
+          <img src={`${URL}/images/${admin.image}`} alt="image" />
+          </button>
         {isProfileSidebarOpen.dropdown && (
           <ul className={`dropdown-menu ${isProfileSidebarOpen.dropdown? 'show':''}`} aria-labelledby="profileDropdown">
             <li>
               <div className="dropdown-txt text-center">
-                <p className="mb-0">John Doe</p>
-                <span className="d-block">Web Developer</span>
+                <p className="mb-0">{admin.name}</p>
+                <span className="d-block">{admin.role}</span>
                 <div className="d-flex justify-content-center">
                   <div className="form-check pt-3">
                       <input
@@ -89,7 +101,7 @@ const HeaderProfile = () => {
               </Link>
             </li>
             <li>
-              <Link className="dropdown-item" to="/login">
+              <Link className="dropdown-item" to="/" onClick={handleLogout}>
                 <span className="dropdown-icon"><i className="fa-regular fa-arrow-right-from-bracket"></i></span> Logout
               </Link>
             </li>

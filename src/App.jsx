@@ -64,7 +64,7 @@ function App() {
     <Router>
       <Routes>
         <Route element={<Layout/>}>
-          <Route path="/" element={<Dashboard/>}/>
+          <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/stocklist" element={<StockList/>}/>
           <Route path="/salesorders" element={<Salesorders/>}/>
           <Route path="/fileManager" element={<FileManager/>}/>
@@ -101,7 +101,7 @@ function App() {
           <Route path="/icon" element={<Icon/>}/>
           <Route path="/map" element={<Map/>}/>
         </Route>
-        <Route path="/login" element={<Login/>}/>
+        <Route path="/" element={<Login/>}/>
         <Route path="/login2" element={<Login2/>}/>
         <Route path="/login3" element={<Login3/>}/>
         <Route path="/registration" element={<Registration/>}/>
@@ -121,6 +121,7 @@ function App() {
         {/* <Route path="/pricingTable" element={<PricingTable/>}/> */}
         <Route path="/pricingTable2" element={<PricingTable2/>}/>
         <Route path="/underConstruction" element={<UnderConstruction/>}/>
+        <Route path="*" element={<Error404/>}/>
       </Routes>
     </Router>
   )

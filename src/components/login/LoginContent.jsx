@@ -32,7 +32,7 @@ const LoginContent = () => {
       if (response.token) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('adminDetails', JSON.stringify(response.adminDetails));
-        navigate('/');
+        navigate('/dashboard');
       }else if (response.message === "Your account is blocked") {
       } else {
         setError('Invalid credentials');

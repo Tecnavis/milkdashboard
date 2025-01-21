@@ -27,7 +27,16 @@ const ProfileRightSidebar = () => {
           document.removeEventListener('mousedown', handleClickOutside);
         };
       }, [isProfileSidebarOpen.sidebar, handleProfileSidebarCheckboxChange]);
+      const handleLogout = () => {
+        localStorage.removeItem('adminDetails');
+        localStorage.removeItem('componentState');
+        localStorage.removeItem('token');
+        localStorage.clear();
       
+        navigate("/");
+      }; 
+      const admin = JSON.parse(localStorage.getItem('adminDetails'));    
+
   return (
     <div className={`profile-right-sidebar ${isProfileSidebarOpen.sidebar ? 'active' : ''}`} ref={profileSidebarRef}>
       <button className="right-bar-close" onClick={handleProfileSidebarClose}>
@@ -38,8 +47,8 @@ const ProfileRightSidebar = () => {
           <ul>
             <li>
               <div className="dropdown-txt text-center">
-                <p className="mb-0">John Doe</p>
-                <span className="d-block">Web Developer</span>
+                <p className="mb-0">{admin.name}</p>
+                <span className="d-block">{admin.role}</span>
                 <div className="d-flex justify-content-center">
                   <div className="form-check pt-3">
                     <input
@@ -100,7 +109,7 @@ const ProfileRightSidebar = () => {
             <i className="fa-light fa-gear"></i>
             <span>Settings</span>
           </Link>
-          <Link to="/login">
+          <Link to="/" onClick={handleLogout}>
             <i className="fa-light fa-power-off"></i>
             <span>Logout</span>
           </Link>
