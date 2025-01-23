@@ -3,8 +3,6 @@ import Footer from '../footer/Footer';
 import { Link } from 'react-router-dom';
 import { DigiContext } from '../../context/DigiContext';
 import { useForm } from '../../Helper/useForm';
-// import { signupAdmin, URL } from '../';
-
 import Swal from 'sweetalert2'; 
 import axios from 'axios';
 import { signupAdmin,URL } from '../../Helper/handle-api';

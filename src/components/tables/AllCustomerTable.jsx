@@ -84,7 +84,7 @@ const AllCustomerTable = () => {
               <td>
                 <Link to="#">{data.name}</Link>
               </td>
-              <td>{data.phone}</td>
+              <td>{data.phone}<br/>{data.email}</td>
 
               <td>{data.address} </td>
               <td>
@@ -141,6 +141,15 @@ const AllCustomerTable = () => {
                   type="text"
                   name="phone"
                   value={selectedCustomer.phone || ""}
+                  onChange={handleInputChange}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Email</Form.Label>  
+                <Form.Control
+                  type="email"
+                  name="email"
+                  value={selectedCustomer.email || ""}
                   onChange={handleInputChange}
                 />
               </Form.Group>

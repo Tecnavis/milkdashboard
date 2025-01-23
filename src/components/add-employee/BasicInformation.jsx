@@ -11,6 +11,7 @@ const BasicInformation = () => {
         location: '',
         address: '',
         routeno: '',
+        email: '',
         routename: '',
     });
 const [image, setImage] = useState('');
@@ -25,6 +26,7 @@ const [image, setImage] = useState('');
         formData.append("location", values.location);
         formData.append("address", values.address);
         formData.append("routeno", values.routeno);
+        formData.append("email", values.email);
         formData.append("routename", values.routename);
         formData.append("image", image);
     
@@ -87,12 +89,15 @@ const [image, setImage] = useState('');
                         <label className="form-label">Route No</label>
                         <input type="text" className="form-control form-control-sm" placeholder='Route No' name='routeno' value={values.routeno} onChange={handleChange}/>
                     </div>
-                   
-                    <div className="col-xxl-3 col-lg-6 col-sm-16">
+                   <div className='col-xxl-3 col-lg-4 col-sm-6'>
+                        <label className='form-label'>Email </label>
+                        <input type='email' className='form-control form-control-sm' placeholder='Email' name='email' value={values.email} onChange={handleChange}/>
+                    </div>
+                    <div className="col-xxl-3 col-lg-4 col-sm-6">
                         <label className="form-label">Route Name</label>
                         <input type="text" className="form-control form-control-sm" placeholder='Route Name' name='routename' value={values.routename} onChange={handleChange}/>
                     </div>
-                    <div className="col-xxl-3 col-lg-6 col-sm-6">
+                    <div className="col-xxl-3 col-lg-4 col-sm-6">
                         <label className="form-label">Password</label>
                         <input type="password" className="form-control form-control-sm" placeholder='Password' name='password' value={values.password} onChange={handleChange}/>
                     </div>
