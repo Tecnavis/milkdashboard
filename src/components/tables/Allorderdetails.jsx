@@ -5,27 +5,30 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import DataTableFilter from "../filter/DataTableFilter";
 import PaginationSection from "./PaginationSection";
 import "./style.css"
-import { BsCalendarCheck } from "react-icons/bs"; // Calendar icons for status
-import { FiCheckCircle, FiXCircle } from "react-icons/fi"; // Check and cross icons for plan active status
-import { Modal } from "react-bootstrap"; // Assuming you're using Bootstrap
-import { fetchAllOrders } from "../../Helper/handle-api";
+import { BsCalendarCheck } from "react-icons/bs";
+import { FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { Modal } from "react-bootstrap";
+import { fetchAllOrders, URL } from "../../Helper/handle-api";
+import axios from "axios";
+
 const ScrollDataTableSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
   const [allOrders, setAllOrders] = useState([]);
-  const [selectedPlan, setSelectedPlan] = useState(null); // State for selected plan details
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null); // New state for order ID
   const [showModal, setShowModal] = useState(false);
+
   useEffect(() => {
     fetchAllOrders()
       .then((res) => {
-        setAllOrders(res); // Ensure `res` is an array
+        setAllOrders(res);
       })
       .catch((error) => {
         console.error("Error fetching orders:", error);
       });
   }, []);
 
-  // Pagination logic
   const indexOfLastData = currentPage * dataPerPage;
   const indexOfFirstData = indexOfLastData - dataPerPage;
   const currentData = allOrders.slice(indexOfFirstData, indexOfLastData);
@@ -34,21 +37,62 @@ const ScrollDataTableSection = () => {
     setCurrentPage(pageNumber);
   };
 
-  // Calculate total number of pages
   const totalPages = Math.ceil(allOrders.length / dataPerPage);
   const pageNumbers = [];
   for (let i = 1; i <= totalPages; i++) {
     pageNumbers.push(i);
   }
-  const handlePlanClick = (planDetails) => {
+
+  const handlePlanClick = (planDetails, orderId) => {
     setSelectedPlan(planDetails);
+    setSelectedOrderId(orderId); // Store the order ID when plan is clicked
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setSelectedPlan(null);
+    setSelectedOrderId(null);
     setShowModal(false);
   };
+  
+  const handleDeliveryStatus = async (orderId, date) => {
+    if (!orderId || !date) {
+      console.error("Missing orderId or date for updating status.");
+      return;
+    }
+  
+    try {
+      const response = await axios.patch(`${URL}/orderdetails/${orderId}`, {
+        status: "delivered",
+        date,
+      });
+  
+      if (response.status === 200) {
+        console.log("Status updated successfully:", response.data);
+  
+        setAllOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order._id === orderId
+              ? {
+                  ...order,
+                  selectedPlanDetails: {
+                    ...order.selectedPlanDetails,
+                    dates: order.selectedPlanDetails.dates.map((dateObj) =>
+                      dateObj.date === date
+                        ? { ...dateObj, status: "delivered" }
+                        : dateObj
+                    ),
+                  },
+                }
+              : order
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
   return (
     <div className="col-12">
       <div className="card">
@@ -119,13 +163,12 @@ const ScrollDataTableSection = () => {
                         <Link
                           to="#"
                           onClick={() =>
-                            handlePlanClick(order.selectedPlanDetails)
+                            handlePlanClick(order.selectedPlanDetails, order._id)
                           }
                         >
                           {order.selectedPlanDetails.planType || "N/A"}
                         </Link>
                       </td>
-                      
                       <td>
                         {order.selectedPlanDetails.isActive ? "Yes" : "No"}
                       </td>
@@ -151,7 +194,7 @@ const ScrollDataTableSection = () => {
           />
         </div>
       </div>
-      {/* Plan Details Modal */}
+
       {selectedPlan && (
         <Modal
           show={showModal}
@@ -191,6 +234,16 @@ const ScrollDataTableSection = () => {
                     >
                       {dateObj.status}
                     </span>
+                  </div>
+                  <div className="d-flex align-items-center">
+                    {dateObj.status !== "delivered" && (
+                      <button
+                        className="btn btn-sm btn-primary"
+                        onClick={() => handleDeliveryStatus(selectedOrderId, dateObj.date)}
+                      >
+                        Delivered success
+                      </button>
+                    )}
                   </div>
                 </li>
               ))}
