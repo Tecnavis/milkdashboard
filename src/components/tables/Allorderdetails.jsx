@@ -8,7 +8,7 @@ import "./style.css"
 import { BsCalendarCheck } from "react-icons/bs";
 import { FiCheckCircle, FiXCircle } from "react-icons/fi";
 import { Modal } from "react-bootstrap";
-import { fetchAllOrders, URL } from "../../Helper/handle-api";
+import { fetchAllOrders, URL ,deleteOrder} from "../../Helper/handle-api";
 import axios from "axios";
 
 const ScrollDataTableSection = () => {
@@ -92,7 +92,22 @@ const ScrollDataTableSection = () => {
       console.error("Error updating status:", error);
     }
   };
-
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      // Call the deleteOrder function to delete the order
+      await deleteOrder(orderId);
+  
+      // Update the state to remove the deleted order from the list
+      setAllOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== orderId)
+      );
+  
+      console.log("Order deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    }
+  };
+  
   return (
     <div className="col-12">
       <div className="card">
@@ -163,7 +178,10 @@ const ScrollDataTableSection = () => {
                         <Link
                           to="#"
                           onClick={() =>
-                            handlePlanClick(order.selectedPlanDetails, order._id)
+                            handlePlanClick(
+                              order.selectedPlanDetails,
+                              order._id
+                            )
                           }
                         >
                           {order.selectedPlanDetails.planType || "N/A"}
@@ -176,9 +194,10 @@ const ScrollDataTableSection = () => {
                       <td>{order.paymentMethod}</td>
                       <td>{order.paymentStatus}</td>
                       <td>
-                        <Link to="#" className="btn btn-sm btn-primary">
-                          View
-                        </Link>
+                        <i
+                          className="fa-solid fa-trash"
+                          onClick={() => handleDeleteOrder(order._id)}
+                        ></i>
                       </td>
                     </tr>
                   ))}
@@ -208,7 +227,9 @@ const ScrollDataTableSection = () => {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body className="p-4">
-            <h5 className="mb-4 text-secondary">Plan Type: {selectedPlan.planType}</h5>
+            <h5 className="mb-4 text-secondary">
+              Plan Type: {selectedPlan.planType}
+            </h5>
             <ul className="list-group mb-3">
               {selectedPlan.dates.map((dateObj, idx) => (
                 <li
@@ -221,7 +242,8 @@ const ScrollDataTableSection = () => {
                 >
                   <div>
                     <BsCalendarCheck className="me-2 text-info" />
-                    <strong>Date:</strong> {new Date(dateObj.date).toLocaleDateString()}
+                    <strong>Date:</strong>{" "}
+                    {new Date(dateObj.date).toLocaleDateString()}
                   </div>
                   <div>
                     <strong>Status:</strong>{" "}
@@ -239,7 +261,9 @@ const ScrollDataTableSection = () => {
                     {dateObj.status !== "delivered" && (
                       <button
                         className="btn btn-sm btn-primary"
-                        onClick={() => handleDeliveryStatus(selectedOrderId, dateObj.date)}
+                        onClick={() =>
+                          handleDeliveryStatus(selectedOrderId, dateObj.date)
+                        }
                       >
                         Delivered success
                       </button>
@@ -264,10 +288,7 @@ const ScrollDataTableSection = () => {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <button
-              className="btn btn-secondary"
-              onClick={handleCloseModal}
-            >
+            <button className="btn btn-secondary" onClick={handleCloseModal}>
               Close
             </button>
           </Modal.Footer>

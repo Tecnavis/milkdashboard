@@ -113,3 +113,8 @@ export const fetchAllOrders = async () => {
     const response = await axios.get(`${URL}/orderdetails`);
     return response.data;
 }
+//delete order by Id
+export const deleteOrder = async (id) => {
+    const response = await axios.delete(`${URL}/orderdetails/${id}`);
+    return response.data;
+}
