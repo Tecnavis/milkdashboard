@@ -5,9 +5,8 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import DataTableFilter from "../filter/DataTableFilter";
 import PaginationSection from "./PaginationSection";
 import "./style.css"
-import { BsCalendarCheck, BsCalendarX } from "react-icons/bs"; // Calendar icons for status
+import { BsCalendarCheck } from "react-icons/bs"; // Calendar icons for status
 import { FiCheckCircle, FiXCircle } from "react-icons/fi"; // Check and cross icons for plan active status
-
 import { Modal } from "react-bootstrap"; // Assuming you're using Bootstrap
 import { fetchAllOrders } from "../../Helper/handle-api";
 const ScrollDataTableSection = () => {
@@ -82,8 +81,6 @@ const ScrollDataTableSection = () => {
                     <th>Price</th>
                     <th>Quantity</th>
                     <th>Plan Type</th>
-                    <th>Dates</th>
-                    <th>Status</th>
                     <th>Is Active</th>
                     <th>Total Price</th>
                     <th>Payment Method</th>
@@ -105,7 +102,7 @@ const ScrollDataTableSection = () => {
                       </td>
                       <td>
                         {order.cartItems
-                          .map((item) => item.product._id)
+                          .map((item) => item.product.productId)
                           .join(", ")}
                       </td>
                       <td>
@@ -128,9 +125,7 @@ const ScrollDataTableSection = () => {
                           {order.selectedPlanDetails.planType || "N/A"}
                         </Link>
                       </td>
-                      <td></td>
-
-                      <td>{order.selectedPlanDetails.dates[0].status}</td>
+                      
                       <td>
                         {order.selectedPlanDetails.isActive ? "Yes" : "No"}
                       </td>
