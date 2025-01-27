@@ -107,3 +107,9 @@ export const fetchMainCategory = async () => {
     const response = await axios.get(`${URL}/category`);
     return response.data;
 };
+
+
+export const fetchAllOrders = async () => {
+    const response = await axios.get(`${URL}/orderdetails`);
+    return response.data;
+}

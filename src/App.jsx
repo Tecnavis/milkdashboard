@@ -51,6 +51,7 @@ import Error503 from "./pages/Error503"
 import Error504 from "./pages/Error504"
 import ComingSoon from "./pages/ComingSoon"
 import ComingSoon2 from "./pages/ComingSoon2"
+import AllOrderDetails from "./components/tables/Allorderdetails"
 // import PricingTable from "./pages/PricingTable"
 import PricingTable2 from "./pages/PricingTable2"
 import UnderConstruction from "./pages/UnderConstruction"
@@ -72,6 +73,7 @@ function App() {
           <Route path="/hrmDashboard" element={<HrmDashboard/>}/>
           <Route path="/returnproduct" element={<Return/>}/>
           <Route path="/warehouse" element={<Company/>}/>
+          <Route path="/allorders" element={<AllOrderDetails/>}/>
           <Route path="/task" element={<Task/>}/>
           <Route path="/leads" element={<Leads/>}/>
           <Route path="/purchaseditem" element={<Customer/>}/>
