@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import DataTableFilter from "../filter/DataTableFilter";
 import PaginationSection from "./PaginationSection";
+import "./style.css"
+import { BsCalendarCheck, BsCalendarX } from "react-icons/bs"; // Calendar icons for status
+import { FiCheckCircle, FiXCircle } from "react-icons/fi"; // Check and cross icons for plan active status
 
 import { Modal } from "react-bootstrap"; // Assuming you're using Bootstrap
 import { fetchAllOrders } from "../../Helper/handle-api";
@@ -155,27 +158,68 @@ const ScrollDataTableSection = () => {
       </div>
       {/* Plan Details Modal */}
       {selectedPlan && (
-        <Modal show={showModal} onHide={handleCloseModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Plan Details</Modal.Title>
+        <Modal
+          show={showModal}
+          onHide={handleCloseModal}
+          centered
+          className="custom-modal"
+        >
+          <Modal.Header closeButton className="bg-primary text-white">
+            <Modal.Title className="fw-bold">
+              Plan Details: {selectedPlan.planType}
+            </Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <h5>Plan Type: {selectedPlan.planType}</h5>
-            <ul>
+          <Modal.Body className="p-4">
+            <h5 className="mb-4 text-secondary">Plan Type: {selectedPlan.planType}</h5>
+            <ul className="list-group mb-3">
               {selectedPlan.dates.map((dateObj, idx) => (
-                <li key={idx}>
-                  <strong>Date:</strong>{" "}
-                  {new Date(dateObj.date).toLocaleDateString()} |
-                  <strong>Status:</strong> {dateObj.status}
+                <li
+                  key={idx}
+                  className={`list-group-item d-flex justify-content-between align-items-center ${
+                    dateObj.status === "completed"
+                      ? "bg-light-success"
+                      : "bg-light-warning"
+                  }`}
+                >
+                  <div>
+                    <BsCalendarCheck className="me-2 text-info" />
+                    <strong>Date:</strong> {new Date(dateObj.date).toLocaleDateString()}
+                  </div>
+                  <div>
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={`badge ${
+                        dateObj.status === "completed"
+                          ? "bg-success text-white"
+                          : "bg-warning text-dark"
+                      }`}
+                    >
+                      {dateObj.status}
+                    </span>
+                  </div>
                 </li>
               ))}
             </ul>
-            <div>
-              <strong>Active:</strong> {selectedPlan.isActive ? "Yes" : "No"}
+            <div className="d-flex align-items-center justify-content-between mt-4">
+              <h6 className="mb-0 text-secondary">Plan Active Status:</h6>
+              {selectedPlan.isActive ? (
+                <div className="text-success d-flex align-items-center">
+                  <FiCheckCircle className="me-2" />
+                  Active
+                </div>
+              ) : (
+                <div className="text-danger d-flex align-items-center">
+                  <FiXCircle className="me-2" />
+                  Inactive
+                </div>
+              )}
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <button className="btn btn-secondary" onClick={handleCloseModal}>
+            <button
+              className="btn btn-secondary"
+              onClick={handleCloseModal}
+            >
               Close
             </button>
           </Modal.Footer>
