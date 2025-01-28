@@ -93,7 +93,20 @@ const ScrollDataTableSection = () => {
     }
   };
 
-  
+  const handleDeleteOrder = async (id) => {
+    if (window.confirm("Are you sure you want to delete this order?")) {
+      try {
+        await deleteOrder(id);
+        // Update the state to remove the deleted order
+        setAllOrders((prevOrders) => prevOrders.filter((order) => order._id !== id));
+        alert("Order deleted successfully.");
+      } catch (error) {
+        console.error("Error deleting order:", error);
+        alert("Failed to delete the order. Please try again.");
+      }
+    }
+  };
+   
   return (
     <div className="col-12">
       <div className="card">
@@ -185,8 +198,14 @@ const ScrollDataTableSection = () => {
                       {order.address.apartment}
                       </td>
                       <td>
-                        <i className="fa-solid fa-trash"></i>
-                      </td>
+  <button
+    className="btn btn-danger btn-sm"
+    onClick={() => handleDeleteOrder(order._id)}
+  >
+    <i className="fa-solid fa-trash"></i> Delete
+  </button>
+</td>
+
                     </tr>
                   ))}
                 </tbody>
