@@ -92,21 +92,7 @@ const ScrollDataTableSection = () => {
       console.error("Error updating status:", error);
     }
   };
-  const handleDeleteOrder = async (orderId) => {
-    try {
-      // Call the deleteOrder function to delete the order
-      await deleteOrder(orderId);
-  
-      // Update the state to remove the deleted order from the list
-      setAllOrders((prevOrders) =>
-        prevOrders.filter((order) => order._id !== orderId)
-      );
-  
-      console.log("Order deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting order:", error);
-    }
-  };
+
   
   return (
     <div className="col-12">
@@ -144,6 +130,7 @@ const ScrollDataTableSection = () => {
                     <th>Total Price</th>
                     <th>Payment Method</th>
                     <th>Payment Status</th>
+                    <th>Address</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -160,17 +147,17 @@ const ScrollDataTableSection = () => {
                         <Link to="#">{order.customer.name}</Link>
                       </td>
                       <td>
-                        {order.cartItems
+                        {order.productItems
                           .map((item) => item.product.productId)
                           .join(", ")}
                       </td>
                       <td>
-                        {order.cartItems
+                        {order.productItems
                           .map((item) => item.product.price)
                           .join(", ")}
                       </td>
                       <td>
-                        {order.cartItems
+                        {order.productItems
                           .map((item) => item.quantity)
                           .join(", ")}
                       </td>
@@ -193,11 +180,12 @@ const ScrollDataTableSection = () => {
                       <td>${order.totalPrice}</td>
                       <td>{order.paymentMethod}</td>
                       <td>{order.paymentStatus}</td>
+                      <td>{order.address.postcode}<br/>
+                      {order.address.streetAddress}<br/>
+                      {order.address.apartment}
+                      </td>
                       <td>
-                        <i
-                          className="fa-solid fa-trash"
-                          onClick={() => handleDeleteOrder(order._id)}
-                        ></i>
+                        <i className="fa-solid fa-trash"></i>
                       </td>
                     </tr>
                   ))}
