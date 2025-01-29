@@ -118,3 +118,14 @@ export const deleteOrder = async (id) => {
     const response = await axios.delete(`${URL}/orderdetails/${id}`);
     return response.data;
 }
+//fetch all review
+export const fetchAllReview = async () => {
+    const response = await axios.get(`${URL}/review`);
+    return response.data;
+}
+
+//delete review by Id
+export const deleteReview = async (id) => {
+    const response = await axios.delete(`${URL}/review/${id}`);
+    return response.data;
+}

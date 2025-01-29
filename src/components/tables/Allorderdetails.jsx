@@ -108,6 +108,9 @@ const ScrollDataTableSection = () => {
   };
    
   return (
+    <div className="main-content">
+                <div className="panel">
+                    <div className="panel-body">
     <div className="col-12">
       <div className="card">
         <div className="card-header">All Orders</div>
@@ -202,7 +205,7 @@ const ScrollDataTableSection = () => {
     className="btn btn-danger btn-sm"
     onClick={() => handleDeleteOrder(order._id)}
   >
-    <i className="fa-solid fa-trash"></i> Delete
+    <i className="fa-solid fa-trash"></i> 
   </button>
 </td>
 
@@ -302,6 +305,9 @@ const ScrollDataTableSection = () => {
         </Modal>
       )}
     </div>
+  </div>
+  </div>
+  </div>
   );
 };
 
