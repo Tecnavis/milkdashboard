@@ -184,71 +184,113 @@ const ScrollDataTableSection = () => {
                           <th>Action</th>
                         </tr>
                       </thead>
+ <tbody>
+  {currentData.map((order) =>
+    order.productItems.length > 0
+      ? order.productItems.map((item, index) => (
+          <tr key={`${order._id}-${item.product?.productId}-${index}`}>
+            {index === 0 && (
+              <td rowSpan={order.productItems.length}>
+                <div className="form-check">
+                  <input className="form-check-input" type="checkbox" />
+                </div>
+              </td>
+            )}
+            {index === 0 && (
+              <td rowSpan={order.productItems.length}>
+                <Link to="#">{order.customer?.name || "N/A"}</Link>
+              </td>
+            )}
+            <td>{item.product?.productId || "N/A"}</td>
+            <td>${item.product?.price || "N/A"}</td>
+            <td>{item.quantity || "N/A"}</td>
+            {index === 0 && (
+              <td rowSpan={order.productItems.length}>
+                <Link
+                  to="#"
+                  onClick={() => handlePlanClick(order.selectedPlanDetails, order._id)}
+                >
+                  {order.selectedPlanDetails?.planType || "N/A"}
+                </Link>
+              </td>
+            )}
+            {index === 0 && (
+              <td rowSpan={order.productItems.length}>
+                {order.selectedPlanDetails?.isActive ? "Yes" : "No"}
+              </td>
+            )}
+            {index === 0 && (
+              <td rowSpan={order.productItems.length}>${order.totalPrice || 0}</td>
+            )}
+            {index === 0 && (
+              <td rowSpan={order.productItems.length}>{order.paymentMethod || "N/A"}</td>
+            )}
+            {index === 0 && (
+              <td rowSpan={order.productItems.length}>{order.paymentStatus || "N/A"}</td>
+            )}
+            {index === 0 && (
+              <td rowSpan={order.productItems.length}>
+                {order.address?.postcode || "N/A"}
+                <br />
+                {order.address?.streetAddress || "N/A"}
+                <br />
+                {order.address?.apartment || "N/A"}
+              </td>
+            )}
+            {index === 0 && (
+              <td rowSpan={order.productItems.length}>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => handleDeleteOrder(order._id)}
+                >
+                  <i className="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            )}
+          </tr>
+        ))
+      : // If no products, show a single row for the order
+        <tr key={order._id}>
+          <td>
+            <div className="form-check">
+              <input className="form-check-input" type="checkbox" />
+            </div>
+          </td>
+          <td>
+            <Link to="#">{order.customer?.name || "N/A"}</Link>
+          </td>
+          <td colSpan="3">No products available</td>
+          <td>
+            <Link
+              to="#"
+              onClick={() => handlePlanClick(order.selectedPlanDetails, order._id)}
+            >
+              {order.selectedPlanDetails?.planType || "N/A"}
+            </Link>
+          </td>
+          <td>{order.selectedPlanDetails?.isActive ? "Yes" : "No"}</td>
+          <td>${order.totalPrice || 0}</td>
+          <td>{order.paymentMethod || "N/A"}</td>
+          <td>{order.paymentStatus || "N/A"}</td>
+          <td>
+            {order.address?.postcode || "N/A"}
+            <br />
+            {order.address?.streetAddress || "N/A"}
+            <br />
+            {order.address?.apartment || "N/A"}
+          </td>
+          <td>
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={() => handleDeleteOrder(order._id)}
+            >
+              <i className="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+  )}
+</tbody>
 
-                      <tbody>
-                        {currentData.map((order) => (
-                          <tr key={order._id}>
-                            <td>
-                              <div className="form-check">
-                                <input className="form-check-input" type="checkbox" />
-                              </div>
-                            </td>
-                            <td>
-                              <Link to="#">{order.customer?.name || 'N/A'}</Link>
-                            </td>
-                            <td>
-                              {order.productItems
-                                ?.map((item) => item.product?.productId)
-                                .filter(Boolean)
-                                .join(", ") || 'N/A'}
-                            </td>
-                            <td>
-                              {order.productItems
-                                ?.map((item) => item.product?.price)
-                                .filter(Boolean)
-                                .join(", ") || 'N/A'}
-                            </td>
-                            <td>
-                              {order.productItems
-                                ?.map((item) => item.quantity)
-                                .filter(Boolean)
-                                .join(", ") || 'N/A'}
-                            </td>
-                            <td>
-                              <Link
-                                to="#"
-                                onClick={() =>
-                                  handlePlanClick(
-                                    order.selectedPlanDetails,
-                                    order._id
-                                  )
-                                }
-                              >
-                                {order.selectedPlanDetails?.planType || "N/A"}
-                              </Link>
-                            </td>
-                            <td>
-                              {order.selectedPlanDetails?.isActive ? "Yes" : "No"}
-                            </td>
-                            <td>${order.totalPrice || 0}</td>
-                            <td>{order.paymentMethod || 'N/A'}</td>
-                            <td>{order.paymentStatus || 'N/A'}</td>
-                            <td>
-                              {order.address?.postcode || 'N/A'}<br/>
-                              {order.address?.streetAddress || 'N/A'}<br/>
-                              {order.address?.apartment || 'N/A'}
-                            </td>
-                            <td>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => handleDeleteOrder(order._id)}
-                              >
-                                <i className="fa-solid fa-trash"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
                     </Table>
                   </div>
                 </OverlayScrollbarsComponent>
