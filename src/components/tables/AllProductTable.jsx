@@ -136,7 +136,16 @@ const AllProductTable = () => {
                     </div>
                   </td>
                   <td>{product.productId}</td>
-                  <td>{product.description}</td>
+                  <td
+                    style={{
+                      maxWidth: "300px",
+                      wordWrap: "break-word",
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {product.description}
+                  </td>
+
                   <td>${product.price}</td>
                   <td>{product.discount}</td>
                   <td>
