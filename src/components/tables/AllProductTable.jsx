@@ -6,25 +6,25 @@ import { fetchProducts, URL } from "../../Helper/handle-api";
 import EditProductModal from "./editproductmodal";
 import axios from "axios";
 import Swal from "sweetalert2";
-const AllProductTable = ({ filteredProducts }) => {
+const AllProductTable = () => {
   const [products, setProducts] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [dataPerPage] = useState(20);
-  const dataList = products;
-  const [selectedSizeStock, setSelectedSizeStock] = useState({});
+  const [dataPerPage] = useState(10);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showModal, setShowModal] = useState(false);
   // Pagination logic
   const indexOfLastData = currentPage * dataPerPage;
   const indexOfFirstData = indexOfLastData - dataPerPage;
+  const currentData = products.slice(indexOfFirstData, indexOfLastData);
+
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
   // Calculate total number of pages
-//   const totalPages = Math.ceil(filteredProducts.length / dataPerPage);
-//   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const totalPages = Math.ceil(products.length / dataPerPage);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   // All product list
 
@@ -39,7 +39,7 @@ const AllProductTable = ({ filteredProducts }) => {
   // Handle size selection and set stock count for each size
   useEffect(() => {
     setCurrentPage(1);
-  }, [filteredProducts]);
+  }, [products]);
 
  
 
@@ -111,7 +111,7 @@ const AllProductTable = ({ filteredProducts }) => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => {
+            {currentData.map((product) => {
 
               return (
                 <tr key={product._id}>
@@ -156,12 +156,12 @@ const AllProductTable = ({ filteredProducts }) => {
           </tbody>
         </Table>
       </OverlayScrollbarsComponent>
-      {/* <PaginationSection
+      <PaginationSection
         currentPage={currentPage}
         totalPages={totalPages}
         paginate={paginate}
         pageNumbers={pageNumbers}
-      /> */}
+      />
       <EditProductModal
         productId={selectedProduct?._id}
         show={showModal}

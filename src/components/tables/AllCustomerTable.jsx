@@ -25,10 +25,15 @@ const AllCustomerTable = () => {
     setShowModal(true);
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e, index) => {
     const { name, value } = e.target;
-    setSelectedCustomer((prev) => ({ ...prev, [name]: value }));
+    setSelectedCustomer((prev) => {
+      const updatedAddresses = [...prev.address];
+      updatedAddresses[index] = { ...updatedAddresses[index], [name]: value };
+      return { ...prev, address: updatedAddresses };
+    });
   };
+  
 
   const handleUpdate = async () => {
     try {
@@ -64,8 +69,8 @@ const AllCustomerTable = () => {
             <th>Customer Id</th>
             <th>Name</th>
             <th>Phone</th>
-            <th>Location </th>
             <th>Address</th>
+            <th>Location </th>
             <th>Route No </th>
             <th>Route Name </th>
             <th>Action</th>
@@ -86,7 +91,15 @@ const AllCustomerTable = () => {
               </td>
               <td>{data.phone}<br/>{data.email}</td>
 
-              <td>{data.address} </td>
+              <td>
+  {data.address.map((addr, index) => (
+    <div key={addr._id}>
+      {addr.streetAddress}, {addr.apartment}, {addr.postcode}
+    </div>
+  ))}
+</td>
+
+
               <td>
   <a
     href={`https://www.google.com/maps?q=${encodeURIComponent(data.location)}`}
@@ -163,14 +176,36 @@ const AllCustomerTable = () => {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>Address</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="address"
-                  value={selectedCustomer.address || ""}
-                  onChange={handleInputChange}
-                />
-              </Form.Group>
+  <Form.Label>Addresses</Form.Label>
+  {selectedCustomer?.address.map((addr, index) => (
+    <div key={addr._id} style={{ marginBottom: "10px", borderBottom: "1px solid #ddd", paddingBottom: "10px" }}>
+      <Form.Control
+        type="text"
+        name="streetAddress"
+        placeholder="Street Address"
+        value={addr.streetAddress || ""}
+        onChange={(e) => handleInputChange(e, index)}
+      />
+      <Form.Control
+        type="text"
+        name="apartment"
+        placeholder="Apartment"
+        value={addr.apartment || ""}
+        onChange={(e) => handleInputChange(e, index)}
+      />
+      <Form.Control
+        type="text"
+        name="postcode"
+        placeholder="Postcode"
+        value={addr.postcode || ""}
+        onChange={(e) => handleInputChange(e, index)}
+      />
+    </div>
+  ))}
+</Form.Group>
+
+
+
               <Form.Group>
                 <Form.Label>Route No</Form.Label>
                 <Form.Control
