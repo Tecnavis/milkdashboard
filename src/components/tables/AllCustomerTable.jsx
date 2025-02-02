@@ -4,13 +4,17 @@ import {
   FetchCustomer,
   deleteCustomer,
   updateCustomer,
+  fetchRoutes,
+  confirmCustomer
 } from "../../Helper/handle-api";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AllCustomerTable = () => {
   const [customers, setCustomers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [allRoutes, setAllRoutes] = useState([]);
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -18,6 +22,19 @@ const AllCustomerTable = () => {
       setCustomers(response);
     };
     fetchCustomers();
+
+    const fetchAllRoutes = async () => {
+      const response = await fetchRoutes();
+      // Adjust this based on the actual response structure
+      if (response && response.routes) {
+        setAllRoutes(response.routes);
+      } else if (Array.isArray(response)) {
+        setAllRoutes(response);
+      } else {
+        setAllRoutes([]);
+      }
+    };
+    fetchAllRoutes();
   }, []);
 
   const handleEditClick = (customer) => {
@@ -25,15 +42,24 @@ const AllCustomerTable = () => {
     setShowModal(true);
   };
 
+  // Updated handleInputChange to handle both top-level fields and addresses
   const handleInputChange = (e, index) => {
     const { name, value } = e.target;
-    setSelectedCustomer((prev) => {
-      const updatedAddresses = [...prev.address];
-      updatedAddresses[index] = { ...updatedAddresses[index], [name]: value };
-      return { ...prev, address: updatedAddresses };
-    });
+    // If an index is provided, update the address field
+    if (typeof index === "number") {
+      setSelectedCustomer((prev) => {
+        const updatedAddresses = [...prev.address];
+        updatedAddresses[index] = { ...updatedAddresses[index], [name]: value };
+        return { ...prev, address: updatedAddresses };
+      });
+    } else {
+      // Otherwise, update the top-level field (e.g., routeno)
+      setSelectedCustomer((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
-  
 
   const handleUpdate = async () => {
     try {
@@ -51,80 +77,95 @@ const AllCustomerTable = () => {
       console.error("Failed to update customer:", error);
     }
   };
-
+// Handle the confirmation button click
+const handleConfirm = async (customerId) => {
+  try {
+    // Call the API endpoint to confirm the customer
+    const response = await confirmCustomer(customerId);
+    Swal.fire({
+      icon: "success",
+      title: "Confirmed",
+      text: response.message || "Customer confirmed successfully.",
+    });
+    // Update the local state to reflect confirmation
+    setCustomers((prev) =>
+      prev.map((customer) =>
+        customer.customerId === customerId
+          ? { ...customer, isConfirmed: true }
+          : customer
+      )
+    );
+  } catch (error) {
+    console.error("Confirmation failed:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.response?.data.message || "Confirmation failed.",
+    });
+  }
+};
   return (
     <>
       <Table className="table table-dashed table-hover digi-dataTable all-product-table table-striped">
         <thead>
           <tr>
-            <th className="no-sort">
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="markAllProduct"
-                />
-              </div>
-            </th>
             <th>Customer Id</th>
             <th>Name</th>
             <th>Phone</th>
             <th>Address</th>
             <th>Location </th>
             <th>Route No </th>
-            <th>Route Name </th>
             <th>Action</th>
+            <th>Confirmation</th>
           </tr>
         </thead>
-
         <tbody>
           {customers.map((data) => (
             <tr key={data._id}>
-              <td>
-                <div className="form-check">
-                  <input className="form-check-input" type="checkbox" />
-                </div>
-              </td>
               <td>{data.customerId}</td>
               <td>
                 <Link to="#">{data.name}</Link>
               </td>
-              <td>{data.phone}<br/>{data.email}</td>
-
               <td>
-  {data.address.map((addr, index) => (
-    <div key={addr._id}>
-      {addr.streetAddress}, {addr.apartment}, {addr.postcode}
-    </div>
-  ))}
-</td>
-
-
+                {data.phone}
+                <br />
+                {data.email}
+              </td>
               <td>
-  <a
-    href={`https://www.google.com/maps?q=${encodeURIComponent(data.location)}`}
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Location
-  </a>
-</td>
-
-
-              <td>{data.routeno}</td>
-              <td>{data.routename} </td>
+                {data.address.map((addr, index) => (
+                  <div key={index}>
+                    {addr.streetAddress}, {addr.apartment}, {addr.postcode}
+                  </div>
+                ))}
+              </td>
+              <td>
+                <a
+                  href={`https://www.google.com/maps?q=${encodeURIComponent(
+                    data.location
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Location
+                </a>
+              </td>
+              <td>{data.routeno}<br/>{data.routename}</td>
               <td>
                 <div className="btn-box">
                   <button onClick={() => handleEditClick(data)}>
                     <i className="fa-light fa-pen"></i>
                   </button>
-                  <button>
-                    <i
-                      className="fa-light fa-trash"
-                      onClick={() => deleteCustomer(data._id)}
-                    ></i>
+                  <button onClick={() => deleteCustomer(data._id)}>
+                    <i className="fa-light fa-trash"></i>
                   </button>
-                </div>{" "}
+                </div>
+              </td>
+              <td>
+                <div className="btn-box">
+                  <button className="btn btn-primary" onClick={() => handleConfirm(data.customerId)} >
+                    confirm
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -158,7 +199,7 @@ const AllCustomerTable = () => {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>Email</Form.Label>  
+                <Form.Label>Email</Form.Label>
                 <Form.Control
                   type="email"
                   name="email"
@@ -176,44 +217,55 @@ const AllCustomerTable = () => {
                 />
               </Form.Group>
               <Form.Group>
-  <Form.Label>Addresses</Form.Label>
-  {selectedCustomer?.address.map((addr, index) => (
-    <div key={addr._id} style={{ marginBottom: "10px", borderBottom: "1px solid #ddd", paddingBottom: "10px" }}>
-      <Form.Control
-        type="text"
-        name="streetAddress"
-        placeholder="Street Address"
-        value={addr.streetAddress || ""}
-        onChange={(e) => handleInputChange(e, index)}
-      />
-      <Form.Control
-        type="text"
-        name="apartment"
-        placeholder="Apartment"
-        value={addr.apartment || ""}
-        onChange={(e) => handleInputChange(e, index)}
-      />
-      <Form.Control
-        type="text"
-        name="postcode"
-        placeholder="Postcode"
-        value={addr.postcode || ""}
-        onChange={(e) => handleInputChange(e, index)}
-      />
-    </div>
-  ))}
-</Form.Group>
-
-
-
+                <Form.Label>Addresses</Form.Label>
+                {selectedCustomer?.address.map((addr, index) => (
+                  <div
+                    key={addr._id}
+                    style={{
+                      marginBottom: "10px",
+                      borderBottom: "1px solid #ddd",
+                      paddingBottom: "10px"
+                    }}
+                  >
+                    <Form.Control
+                      type="text"
+                      name="streetAddress"
+                      placeholder="Street Address"
+                      value={addr.streetAddress || ""}
+                      onChange={(e) => handleInputChange(e, index)}
+                    />
+                    <Form.Control
+                      type="text"
+                      name="apartment"
+                      placeholder="Apartment"
+                      value={addr.apartment || ""}
+                      onChange={(e) => handleInputChange(e, index)}
+                    />
+                    <Form.Control
+                      type="text"
+                      name="postcode"
+                      placeholder="Postcode"
+                      value={addr.postcode || ""}
+                      onChange={(e) => handleInputChange(e, index)}
+                    />
+                  </div>
+                ))}
+              </Form.Group>
               <Form.Group>
                 <Form.Label>Route No</Form.Label>
-                <Form.Control
-                  type="text"
+                <select
                   name="routeno"
                   value={selectedCustomer.routeno || ""}
                   onChange={handleInputChange}
-                />
+                >
+                  <option value="">Select Route No</option>
+                  {Array.isArray(allRoutes) &&
+                    allRoutes.map((route) => (
+                      <option key={route._id} value={route.name}>
+                        {route.name}
+                      </option>
+                    ))}
+                </select>
               </Form.Group>
               <Form.Group>
                 <Form.Label>Route Name</Form.Label>
