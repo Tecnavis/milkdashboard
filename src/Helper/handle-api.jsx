@@ -140,3 +140,13 @@ export const confirmCustomer = async (customerId) => {
     const response = await axios.get(`${URL}/customer/confirm/${customerId}`);
     return response.data;
   };
+
+  export const assignRoute = async (adminId, route) => {
+    try {
+        const response = await axios.put(`${API_URL}/admin/assign-route/${adminId}`, { route });
+        return response.data;
+    } catch (error) {
+        console.error("Error assigning route:", error);
+        return null;
+    }
+};
