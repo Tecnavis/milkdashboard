@@ -8,17 +8,28 @@ const AllEmployeeTable = () => {
   const [show, setShow] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [route, setRoute] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchAdminsData = async () => {
-      const admins = await fetchAdmins();
-      setAdmins(admins.filter((admin) => admin.role === "Delivery Boy"));
+      try {
+        const adminsData = await fetchAdmins();
+        setAdmins(adminsData.filter((admin) => admin.role === "Delivery Boy"));
+      } catch (err) {
+        console.error("Error fetching admins:", err);
+      }
     };
     fetchAdminsData();
 
     const fetchAllRoutes = async () => {
-      const response = await fetchRoutes();
-      setAllRoutes(response?.routes || (Array.isArray(response) ? response : []));
+      try {
+        const response = await fetchRoutes();
+        // Make sure to handle both cases if response.routes exists or response is an array.
+        setAllRoutes(response?.routes || (Array.isArray(response) ? response : []));
+      } catch (err) {
+        console.error("Error fetching routes:", err);
+      }
     };
     fetchAllRoutes();
   }, []);
@@ -29,6 +40,44 @@ const AllEmployeeTable = () => {
     setShow(true);
   };
 
+  const handleSaveRoute = async () => {
+    if (!selectedAdmin) return;
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${URL}/admin/assign-route/${selectedAdmin._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ route }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // If the backend returns an error message.
+        setError(data.message || "Failed to update the route.");
+        return;
+      }
+
+      // Update the admin list with the new route
+      setAdmins((prevAdmins) =>
+        prevAdmins.map((admin) =>
+          admin._id === selectedAdmin._id ? data.admin : admin
+        )
+      );
+
+      // Optionally, you can display a success message here
+      setShow(false);
+    } catch (err) {
+      console.error("Error updating route:", err);
+      setError("An error occurred while updating the route.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -48,7 +97,11 @@ const AllEmployeeTable = () => {
           {admins.map((data) => (
             <tr key={data._id}>
               <td>
-                <img src={`${URL}/images/${data.image}`} alt="User" className="avatar" />
+                <img
+                  src={`${URL}/images/${data.image}`}
+                  alt="User"
+                  className="avatar"
+                />
               </td>
               <td>{data.name}</td>
               <td>{data.role}</td>
@@ -56,7 +109,10 @@ const AllEmployeeTable = () => {
               <td>{data.email}</td>
               <td>{data.route || "Unassigned"}</td>
               <td>
-                <button className="btn btn-primary" onClick={() => handleAssignRouteClick(data)}>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleAssignRouteClick(data)}
+                >
                   Assign Route
                 </button>
               </td>
@@ -76,19 +132,20 @@ const AllEmployeeTable = () => {
             className="form-control"
             value={route}
             onChange={(e) => setRoute(e.target.value)}
-            placeholder="Enter route"
-          ><option value="">Select Route No</option>
-          {Array.isArray(allRoutes) &&
-            allRoutes.map((route) => (
-              <option key={route._id} value={route.name}>
-                {route.name}
-              </option>
-            ))}
+          >
+            <option value="">Select Route No</option>
+            {Array.isArray(allRoutes) &&
+              allRoutes.map((routeItem) => (
+                <option key={routeItem._id} value={routeItem.name}>
+                  {routeItem.name}
+                </option>
+              ))}
           </select>
+          {error && <p className="text-danger mt-2">{error}</p>}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" >
-            Save
+          <Button variant="success" onClick={handleSaveRoute} disabled={loading}>
+            {loading ? "Saving..." : "Save"}
           </Button>
           <Button variant="danger" onClick={() => setShow(false)}>
             Close
