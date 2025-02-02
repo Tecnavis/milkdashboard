@@ -13,7 +13,7 @@ const StockList = () => {
                 <div className="panel">
                     <AllStockListHeader/>
                     <div className="panel-body">
-                        <AllStockListFilter/>
+                        {/* <AllStockListFilter/> */}
                         <AllStockListTable/>
                     </div>
                 </div>
