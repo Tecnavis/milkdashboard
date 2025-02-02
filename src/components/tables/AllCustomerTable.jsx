@@ -115,8 +115,8 @@ const handleConfirm = async (customerId) => {
             <th>Address</th>
             <th>Location </th>
             <th>Route No </th>
-            <th>Action</th>
             <th>Confirmation</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -151,6 +151,15 @@ const handleConfirm = async (customerId) => {
               </td>
               <td>{data.routeno}<br/>{data.routename}</td>
               <td>
+    <button 
+      className="btn btn-primary"
+      onClick={() => handleConfirm(data.customerId)}
+      disabled={data.isConfirmed} // Disable if isConfirmed is true
+    >
+      {data.isConfirmed ? "Confirmed" : "Confirm"}
+    </button>
+              </td>
+              <td>
                 <div className="btn-box">
                   <button onClick={() => handleEditClick(data)}>
                     <i className="fa-light fa-pen"></i>
@@ -160,13 +169,7 @@ const handleConfirm = async (customerId) => {
                   </button>
                 </div>
               </td>
-              <td>
-                <div className="btn-box">
-                  <button className="btn btn-primary" onClick={() => handleConfirm(data.customerId)} >
-                    confirm
-                  </button>
-                </div>
-              </td>
+              
             </tr>
           ))}
         </tbody>
