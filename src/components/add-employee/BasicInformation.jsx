@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from '../../Helper/useForm';
-import { Customercreate } from '../../Helper/handle-api';
+import { Customercreate, fetchRoutes } from '../../Helper/handle-api';
 import Swal from 'sweetalert2';
 
 const BasicInformation = () => {
@@ -17,7 +17,7 @@ const BasicInformation = () => {
     addressStreet: '',
     addressApartment: '',
   });
-
+const [allRoutes, setAllRoutes] = useState([]);
   const [image, setImage] = useState('');
 
   const handleImage = (e) => {
@@ -68,7 +68,20 @@ const BasicInformation = () => {
       }
     }
   };
-
+useEffect(() => {
+    const fetchAllRoutes = async () => {
+          const response = await fetchRoutes();
+          // Adjust this based on the actual response structure
+          if (response && response.routes) {
+            setAllRoutes(response.routes);
+          } else if (Array.isArray(response)) {
+            setAllRoutes(response);
+          } else {
+            setAllRoutes([]);
+          }
+        };
+        fetchAllRoutes();
+  }, []);
   return (
     <div className="col-12">
       <div className="panel">
@@ -130,14 +143,29 @@ const BasicInformation = () => {
             {/* Route No */}
             <div className="col-xxl-3 col-lg-4 col-sm-6">
               <label className="form-label">Route No</label>
-              <input
+              {/* <input
                 type="text"
                 className="form-control form-control-sm"
                 placeholder="Route No"
                 name="routeno"
                 value={values.routeno}
                 onChange={handleChange}
-              />
+              /> */}
+              <select
+                className="form-control form-control-sm"
+                name="routeno"
+                value={values.routeno}
+                onChange={handleChange}
+              >
+                <option value="">Select Route No</option>
+                <option value="">Select Route No</option>
+                  {Array.isArray(allRoutes) &&
+                    allRoutes.map((route) => (
+                      <option key={route._id} value={route.name}>
+                        {route.name}
+                      </option>
+                    ))}
+              </select>
             </div>
 
             {/* Email */}

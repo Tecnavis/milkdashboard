@@ -106,6 +106,7 @@ const handleConfirm = async (customerId) => {
 };
   return (
     <>
+    <div style={{ overflowX: "auto" }}>
       <Table className="table table-dashed table-hover digi-dataTable all-product-table table-striped">
         <thead>
           <tr>
@@ -115,6 +116,7 @@ const handleConfirm = async (customerId) => {
             <th>Address</th>
             <th>Location </th>
             <th>Route No </th>
+            <th>Route Name</th>
             <th>Confirmation</th>
             <th>Action</th>
           </tr>
@@ -149,7 +151,8 @@ const handleConfirm = async (customerId) => {
                   Location
                 </a>
               </td>
-              <td>{data.routeno}<br/>{data.routename}</td>
+              <td>{data.routeno}</td>
+              <td>{data.routename}</td>
               <td>
     <button 
       className="btn btn-primary"
@@ -174,6 +177,7 @@ const handleConfirm = async (customerId) => {
           ))}
         </tbody>
       </Table>
+      </div>
 
       {/* Edit Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
