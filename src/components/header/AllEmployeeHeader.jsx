@@ -11,7 +11,7 @@ const AllEmployeeHeader = () => {
             <div id="tableSearch">
                 <Form.Text placeholder='Search...'/>
             </div>
-            <Link to="/addEmployee" className="btn btn-sm btn-primary"><i className="fa-light fa-plus"></i> Add New</Link>
+            <Link to="/registration" className="btn btn-sm btn-primary"><i className="fa-light fa-plus"></i> Add New</Link>
         </div>
     </div>
   )

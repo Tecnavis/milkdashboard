@@ -143,21 +143,12 @@ useEffect(() => {
             {/* Route No */}
             <div className="col-xxl-3 col-lg-4 col-sm-6">
               <label className="form-label">Route No</label>
-              {/* <input
-                type="text"
-                className="form-control form-control-sm"
-                placeholder="Route No"
-                name="routeno"
-                value={values.routeno}
-                onChange={handleChange}
-              /> */}
               <select
                 className="form-control form-control-sm"
                 name="routeno"
                 value={values.routeno}
                 onChange={handleChange}
               >
-                <option value="">Select Route No</option>
                 <option value="">Select Route No</option>
                   {Array.isArray(allRoutes) &&
                     allRoutes.map((route) => (

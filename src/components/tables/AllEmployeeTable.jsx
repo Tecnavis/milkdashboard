@@ -306,13 +306,19 @@ const AllEmployeeTable = () => {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Role</Form.Label>
-                <Form.Control
-                  type="text"
+                <Form.Select
                   value={editingAdmin.role}
                   onChange={(e) =>
                     setEditingAdmin({ ...editingAdmin, role: e.target.value })
                   }
-                />
+                >
+                  <option value="">Select Role</option>
+                  <option value="Delivery Boy">Delivery Boy</option>
+                  <option value="Main Admin">Main Admin</option>
+                  <option value="Secondary Admin">Secondary Admin</option>
+                  <option value="Accountant">Accountant</option>
+                  <option value="Sales">Sales</option>
+                </Form.Select>
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Phone</Form.Label>

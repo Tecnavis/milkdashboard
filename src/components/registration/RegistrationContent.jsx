@@ -173,10 +173,10 @@ useEffect(() => {
                   value={values.role}
                 >
                   <option value="">Select Role</option>
+                  <option value="Delivery Boy">Delivery Boy</option>
                   <option value="Main Admin">Main Admin</option>
                   <option value="Secondary Admin">Secondary Admin</option>
                   <option value="Accountant">Accountant</option>
-                  <option value="Inventory Manager">Inventory Manager</option>
                   <option value="Sales">Sales</option>
                 </select>
               </div>
