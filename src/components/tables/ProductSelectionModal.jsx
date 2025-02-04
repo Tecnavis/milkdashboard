@@ -23,6 +23,11 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
         <table className="table">
           <thead>
             <tr>
+                <th>
+                  <div className="form-check">
+                    <input className="form-check-input" type="checkbox" id="markAllProduct"/>
+                  </div>
+                </th>
               <th>Product</th>
               <th>Category</th>
               <th>Price</th>
@@ -31,6 +36,18 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
           <tbody>
             {allProducts.map((product) => (
               <tr key={product._id}>
+                <td>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id={product._id}
+                      onChange={() =>
+                        handleSelectProduct(product._id, product.price)
+                      }
+                    />
+                  </div>
+                </td>
                 <td>{product.productId}</td>
                 <td>{product.category}</td>
                 <td>
