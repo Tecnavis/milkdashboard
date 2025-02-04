@@ -9,40 +9,49 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
 
   const handleSelectProduct = (productId, price) => {
     setSelectedProducts((prev) => {
-      const updatedProducts = prev.filter((p) => p.productId !== productId);
-      if (price > 0) {
-        updatedProducts.push({ productId, price });
+      const existingProduct = prev.find(p => p.productId === productId);
+      if (existingProduct) {
+        return prev.map(p => p.productId === productId ? { ...p, price } : p);
+      } else if (price > 0) {
+        return [...prev, { productId, price }];
       }
-      return updatedProducts;
+      return prev;
     });
   };
+  
 
   const handleSubmit = async () => {
     if (selectedProducts.length === 0) {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Missing fields',
-      text: 'Please select at least one product.',
-    })
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing fields',
+        text: 'Please select at least one product.',
+      });
       return;
     }
-
+  
     try {
       const response = await axios.post(`${URL}/route`, {
         name: route.name,
         products: selectedProducts,
       });
-    Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: 'Products saved successfully!',
-    })
+  
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Products saved successfully!',
+      });
       onClose(); // Close modal after saving
     } catch (error) {
       console.error("Error saving products:", error);
-      alert("Failed to save products.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to save products.',
+      });
     }
   };
+  
 
   if (!isOpen) return null;
 
