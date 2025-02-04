@@ -29,7 +29,7 @@ const CustomerHeader = () => {
       };
   return (
     <div className="panel-header">
-        <h5>Purchased Items</h5>
+        <h5> Assign Products for Routes</h5>
         <div className="btn-box d-flex gap-2">
             <div id="tableSearch">
                 <Form.Control type="text" placeholder="Search..." />
