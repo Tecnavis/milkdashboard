@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import "./styles.css"
+import axios from "axios";
+import "./styles.css";
+import { URL } from "../../Helper/handle-api";
+import Swal from "sweetalert2";
+
 const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
 
@@ -13,6 +17,32 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
     });
   };
 
+  const handleSubmit = async () => {
+    if (selectedProducts.length === 0) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Missing fields',
+      text: 'Please select at least one product.',
+    })
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${URL}/route`, {
+        name: route.name,
+        products: selectedProducts,
+      });
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: 'Products saved successfully!',
+    })
+      onClose(); // Close modal after saving
+    } catch (error) {
+      console.error("Error saving products:", error);
+      alert("Failed to save products.");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -23,11 +53,11 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
         <table className="table">
           <thead>
             <tr>
-                <th>
-                  <div className="form-check">
-                    <input className="form-check-input" type="checkbox" id="markAllProduct"/>
-                  </div>
-                </th>
+              <th>
+                <div className="form-check">
+                  <input className="form-check-input" type="checkbox" id="markAllProduct" />
+                </div>
+              </th>
               <th>Product</th>
               <th>Category</th>
               <th>Price</th>
@@ -42,8 +72,8 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
                       className="form-check-input"
                       type="checkbox"
                       id={product._id}
-                      onChange={() =>
-                        handleSelectProduct(product._id, product.price)
+                      onChange={(e) =>
+                        handleSelectProduct(product._id, e.target.checked ? product.price || 0 : 0)
                       }
                     />
                   </div>
@@ -63,7 +93,7 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
             ))}
           </tbody>
         </table>
-        <button className="btn btn-success" >
+        <button className="btn btn-success" onClick={handleSubmit}>
           Save
         </button>
         <button className="btn btn-danger" onClick={onClose}>
