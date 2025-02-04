@@ -2,57 +2,42 @@ import React, { useEffect, useState } from "react";
 import { customerData } from "../../data/Data";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import PaginationSection from "./PaginationSection";
-import { fetchRoutes,fetchProducts } from "../../Helper/handle-api";
+import { fetchRoutes, fetchProducts } from "../../Helper/handle-api";
+import ProductSelectionModal from "./ProductSelectionModal"; // Import the modal component
+
 const CustomerTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
   const [allRoutes, setAllRoutes] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
-  const [dataList, setDataList] = useState(
-    customerData.map((data) => ({ ...data, showDropdown: false }))
-  );
+  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Pagination logic
-  const indexOfLastData = currentPage * dataPerPage;
-  const indexOfFirstData = indexOfLastData - dataPerPage;
-  const currentData = dataList.slice(indexOfFirstData, indexOfLastData);
-    
-  const paginate = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  useEffect(() => {
+    const fetchAllRoutes = async () => {
+      const response = await fetchRoutes();
+      if (response && response.routes) {
+        setAllRoutes(response.routes);
+      } else {
+        setAllRoutes(Array.isArray(response) ? response : []);
+      }
+    };
+    fetchAllRoutes();
+
+    fetchProducts().then((res) => {
+      setAllProducts(res);
+    });
+  }, []);
+
+  const handleSelectProduct = (route) => {
+    setSelectedRoute(route);
+    setIsModalOpen(true);
   };
-
-  // Calculate total number of pages
-  const totalPages = Math.ceil(dataList.length / dataPerPage);
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
- useEffect(() => {
-     const fetchAllRoutes = async () => {
-           const response = await fetchRoutes();
-           // Adjust this based on the actual response structure
-           if (response && response.routes) {
-             setAllRoutes(response.routes);
-           } else if (Array.isArray(response)) {
-             setAllRoutes(response);
-           } else {
-             setAllRoutes([]);
-           }
-         };
-         fetchAllRoutes();
-
-         fetchProducts().then((res)=>{
-            setAllProducts(res);
-         })
-   }, []);
 
   return (
     <>
       <OverlayScrollbarsComponent>
-        <table
-          className="table table-dashed table-hover digi-dataTable all-customer-table table-striped"
-          id="allCustomerTable"
-        >
+        <table className="table table-striped">
           <thead>
             <tr>
               <th>ID</th>
@@ -62,28 +47,37 @@ const CustomerTable = () => {
           </thead>
           <tbody>
             {allRoutes.map((route, index) => (
-                
-            
-            <tr key={index}>
-              <td>{index+1}</td>
-              <td>{route.name}</td>
-              <td>
-                <button className="btn btn-sm btn-primary">
-                  Select Product
-                </button>
-              </td>
-            </tr>
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{route.name}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() => handleSelectProduct(route)}
+                  >
+                    Select Product
+                  </button>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
       </OverlayScrollbarsComponent>
 
-      <PaginationSection
+      {/* <PaginationSection
         currentPage={currentPage}
-        totalPages={totalPages}
-        paginate={paginate}
-        pageNumbers={pageNumbers}
-      />
+        totalPages={Math.ceil(allRoutes.length / dataPerPage)}
+        paginate={setCurrentPage}
+      /> */}
+
+      {isModalOpen && (
+        <ProductSelectionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          route={selectedRoute}
+          allProducts={allProducts}
+        />
+      )}
     </>
   );
 };
