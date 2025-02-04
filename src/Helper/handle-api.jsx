@@ -150,3 +150,19 @@ export const confirmCustomer = async (customerId) => {
         return null;
     }
 };
+
+export const getAllRoutes = async () => {
+    try {
+        const response = await axios.get(`${URL}/route`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching routes:", error);
+        return [];
+    }
+};
+
+//delete route by id
+export const deleteRoute = async (id) => {
+    const response = await axios.delete(`${URL}/route/${id}`);
+    return response.data;
+}

@@ -74,7 +74,7 @@ function App() {
           <Route path="/fileManager" element={<FileManager/>}/>
           <Route path="/inventorydashboard" element={<CrmDashboard/>}/>
           <Route path="/hrmDashboard" element={<HrmDashboard/>}/>
-          <Route path="/returnproduct" element={<Return/>}/>
+          <Route path="/routeProduct" element={<Return/>}/>
           <Route path="/warehouse" element={<Company/>}/>
           <Route path="/allorders" element={<AllOrderDetails/>}/>
           <Route path="/task" element={<Task/>}/>
