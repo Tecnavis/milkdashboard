@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Modal, Button, Form } from "react-bootstrap";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { FetchCustomer, getDetailsByRouteName, createPlan, createOrder, URL } from "../../Helper/handle-api"; 
+import Swal from "sweetalert2";
 
 const Salesorders = () => {
   const [allCustomer, setAllCustomer] = useState([]);
@@ -59,21 +60,30 @@ const Salesorders = () => {
 
   // Confirm order
   const handleOrder = async () => {
+    // Get the total price by summing the routePrice of selected products
+    const totalRoutePrice = selectedProducts.reduce((total, product) => total + product.routePrice, 0);
+  
     try {
       const response = await createOrder({
         customerId: selectedCustomer._id,
         productItems: selectedProducts.map((p) => ({ productId: p.productId, quantity: 1 })),
         planId: selectedPlan._id,
         paymentMethod: "Cash",
-        routeprice: 10, // Example route price
+        routeprice: totalRoutePrice, // Use the calculated route price
       });
+  
       if (response.order) {
-        alert("Order placed successfully!");
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Order created successfully!",
+        });
       }
     } catch (error) {
       console.error("Error creating order:", error);
     }
   };
+  
 
   return (
     <>
@@ -157,29 +167,46 @@ const Salesorders = () => {
 
 
       {/* Plan Selection Modal */}
-      <Modal show={showPlanModal} onHide={() => setShowPlanModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Select Plan</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {plans.map((plan) => (
-            <div key={plan}>
+     {/* Plan Selection Modal */}
+<Modal show={showPlanModal} onHide={() => setShowPlanModal(false)} size="lg">
+  <Modal.Header closeButton>
+    <Modal.Title>Select Plan</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <div className="row">
+      {plans.map((plan) => (
+        <div key={plan} className="col-12 col-md-4 mb-3">
+          <div className={`card ${selectedPlan === plan ? "border-primary" : "border-secondary"}`}>
+            <div className="card-body text-center">
+              <h5 className="card-title">{plan.charAt(0).toUpperCase() + plan.slice(1)}</h5>
+              <p className="card-text">Select this plan to proceed.</p>
               <input
                 type="radio"
                 name="plan"
                 value={plan}
                 checked={selectedPlan === plan}
                 onChange={() => setSelectedPlan(plan)}
+                className="btn-check"
+                id={`plan-${plan}`}
               />
-              {plan}
+              <label htmlFor={`plan-${plan}`} className="btn btn-outline-primary mt-2">
+                Choose Plan
+              </label>
             </div>
-          ))}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowPlanModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleCreatePlan}>Create Plan</Button>
-        </Modal.Footer>
-      </Modal>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowPlanModal(false)}>
+      Cancel
+    </Button>
+    <Button variant="primary" onClick={handleCreatePlan}>
+      Create Plan
+    </Button>
+  </Modal.Footer>
+</Modal>
 
       {/* Order Button */}
       {orderConfirmed && (
