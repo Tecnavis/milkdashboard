@@ -166,3 +166,8 @@ export const deleteRoute = async (id) => {
     const response = await axios.delete(`${URL}/route/${id}`);
     return response.data;
 }
+//get details by route name
+export const getDetailsByRouteName = async (routeName) => {
+    const response = await axios.get(`${URL}/route/name/${routeName}`);
+    return response.data;
+}
