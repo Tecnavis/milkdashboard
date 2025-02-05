@@ -171,3 +171,9 @@ export const getDetailsByRouteName = async (routeName) => {
     const response = await axios.get(`${URL}/route/name/${routeName}`);
     return response.data;
 }
+
+//get plans by customer id
+export const getPlansByCustomerId = async (customerId) => {
+    const response = await axios.get(`${URL}/plan/customer/${customerId}`);
+    return response.data;
+}
