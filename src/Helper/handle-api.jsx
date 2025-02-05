@@ -177,3 +177,22 @@ export const getPlansByCustomerId = async (customerId) => {
     const response = await axios.get(`${URL}/plan/customer/${customerId}`);
     return response.data;
 }
+
+export const createPlan = async (planData) => {
+    const response = await fetch(`${URL}/plan`, {
+      method: "POST",
+      body: JSON.stringify(planData),
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.json();
+  };
+  
+  export const createOrder = async (orderData) => {
+    const response = await fetch(`${URL}/orderdetails`, {
+      method: "POST",
+      body: JSON.stringify(orderData),
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.json();
+  };
+  

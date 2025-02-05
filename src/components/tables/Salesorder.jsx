@@ -1,67 +1,87 @@
 import React, { useEffect, useState } from "react";
-import { Table, Modal, Button } from "react-bootstrap";
+import { Table, Modal, Button, Form } from "react-bootstrap";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
-import PaginationSection from "./PaginationSection";
-import { FetchCustomer, URL } from "../../Helper/handle-api";
-import { getDetailsByRouteName, getPlansByCustomerId } from "../../Helper/handle-api"; 
+import { FetchCustomer, getDetailsByRouteName, createPlan, createOrder, URL } from "../../Helper/handle-api"; 
 
 const Salesorders = () => {
-  const [currentPage, setCurrentPage] = useState(1);
   const [allCustomer, setAllCustomer] = useState([]);
-  const [dataPerPage] = useState(10);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const [customerId, setCustomerId] = useState(null);
-  const [plans, setPlans] = useState([]); // Store fetched plans
-  const [showModal, setShowModal] = useState(false);
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [plans, setPlans] = useState([]);
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [orderConfirmed, setOrderConfirmed] = useState(false);
 
   useEffect(() => {
-    FetchCustomer().then((res) => {
-      setAllCustomer(res);
-    });
+    FetchCustomer().then((res) => setAllCustomer(res));
   }, []);
 
-  // Handle Select Product button click
- // Modify handleSelectProduct to reset plans when a new customer is selected
-const handleSelectProduct = async (customer) => {
+  // Fetch products based on customer
+  const handleSelectProduct = async (customer) => {
+    setSelectedCustomer(customer);
     try {
       const route = await getDetailsByRouteName(customer.routeno);
-      setCustomerId(customer._id); // Store selected customer's ID
-      setSelectedProducts(route?.products || []);
-      setPlans([]); // Clear previous plans
-      setShowModal(true);
+      if (route && route.products.length > 0) {
+        setSelectedProducts(route.products);
+      } else {
+        setSelectedProducts([]);
+      }
+      setShowProductModal(true);
     } catch (error) {
       console.error("Error fetching products:", error);
-      setSelectedProducts([]);
-      setShowModal(true);
     }
   };
-  
-  // Fetch plans when "Continue" button is clicked
-  const handleFetchPlans = async () => {
-    if (!customerId) {
-      console.error("No customer selected");
-      return;
-    }
+
+  // Fetch plans after selecting products
+  const handleContinueToPlans = async () => {
+    setShowProductModal(false);
+    setShowPlanModal(true);
+    setPlans(["daily", "custom", "weekly", "alternative", "monthly"]); // Plan types
+  };
+
+  // Create plan and proceed to order
+  const handleCreatePlan = async () => {
     try {
-      const response = await getPlansByCustomerId(customerId);
-      if (response.length === 0) {
-        console.warn("No plans found for this customer.");
+      const response = await createPlan({
+        customerId: selectedCustomer._id,
+        planType: selectedPlan,
+      });
+      if (response.plan) {
+        setSelectedPlan(response.plan);
+        setShowPlanModal(false);
+        setOrderConfirmed(true);
       }
-      setPlans(response); // Store fetched plans
     } catch (error) {
-      console.error("Error fetching plans:", error);
-      setPlans([]); // Reset plans on error
+      console.error("Error creating plan:", error);
     }
   };
-  
+
+  // Confirm order
+  const handleOrder = async () => {
+    try {
+      const response = await createOrder({
+        customerId: selectedCustomer._id,
+        productItems: selectedProducts.map((p) => ({ productId: p.productId, quantity: 1 })),
+        planId: selectedPlan._id,
+        paymentMethod: "Cash",
+        routeprice: 10, // Example route price
+      });
+      if (response.order) {
+        alert("Order placed successfully!");
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+    }
+  };
 
   return (
     <>
       <OverlayScrollbarsComponent>
-        <Table className="table table-dashed table-hover">
+        <Table className="table table-hover">
           <thead>
             <tr>
-              <th style={{ textAlign: "center" }}>Customer ID</th>
+              <th>Customer ID</th>
               <th>Name</th>
               <th>Route Name</th>
               <th>Action</th>
@@ -69,17 +89,12 @@ const handleSelectProduct = async (customer) => {
           </thead>
           <tbody>
             {allCustomer.map((customer) => (
-              <tr key={customer._id}>
-                <td style={{ textAlign: "center" }}>{customer.customerId}</td>
+              <tr key={customer.customerId}>
+                <td>{customer.customerId}</td>
                 <td>{customer.name}</td>
                 <td>{customer.routeno}</td>
                 <td>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => handleSelectProduct(customer)}
-                  >
-                    Select Product
-                  </button>
+                  <Button onClick={() => handleSelectProduct(customer)}>Select Products</Button>
                 </td>
               </tr>
             ))}
@@ -87,92 +102,91 @@ const handleSelectProduct = async (customer) => {
         </Table>
       </OverlayScrollbarsComponent>
 
-      <PaginationSection
-        currentPage={currentPage}
-        totalPages={Math.ceil(allCustomer.length / dataPerPage)}
-        paginate={setCurrentPage}
-        pageNumbers={Array.from({ length: Math.ceil(allCustomer.length / dataPerPage) }, (_, i) => i + 1)}
-      />
+      {/* Product Selection Modal */}
+<Modal show={showProductModal} onHide={() => setShowProductModal(false)} size="lg">
+  <Modal.Header closeButton>
+    <Modal.Title>Select Products</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {selectedProducts.length > 0 ? (
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Image</th>
+            <th>Product ID</th>
+            <th>Product Name</th>
+            <th>Price ($)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {selectedProducts.map((product) => (
+            <tr key={product._id}>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={selectedProducts.some((p) => p._id === product._id)}
+                  onChange={(e) =>
+                    setSelectedProducts(
+                      e.target.checked
+                        ? [...selectedProducts, product]
+                        : selectedProducts.filter((p) => p._id !== product._id)
+                    )
+                  }
+                />
+              </td>
+              <td>
+                <img src={`${URL}/images/${product.productId.coverimage}`} alt={product.productId.image} style={{ width: "50px", height: "50px" }}/>
+              </td>
+              <td>{product.productIds}</td>
+              <td>{product.productId.category}</td>
+              <td>{product.routePrice}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    ) : (
+      <p>No products available</p>
+    )}
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowProductModal(false)}>Cancel</Button>
+    <Button variant="primary" onClick={handleContinueToPlans}>Continue</Button>
+  </Modal.Footer>
+</Modal>
 
-      {/* Product & Plans Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
+
+      {/* Plan Selection Modal */}
+      <Modal show={showPlanModal} onHide={() => setShowPlanModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Product Details</Modal.Title>
+          <Modal.Title>Select Plan</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedProducts.length > 0 ? (
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Product ID</th>
-                  <th>Title</th>
-                  <th>Category</th>
-                  <th>Route Price</th>
-                  <th style={{ textAlign: "center" }}>Image</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedProducts.map((item, index) => (
-                  <tr key={item._id}>
-                    <td>{index + 1}</td>
-                    <td>{item.productId.productId}</td>
-                    <td>{item.productId.title}</td>
-                    <td>{item.productId.category}</td>
-                    <td>₹ {item.routePrice}</td>
-                    <td style={{ textAlign: "center" }}>
-                      <img
-                        src={`${URL}/images/${item.productId.coverimage}`}
-                        alt={item.productId.title}
-                        style={{ width: "50px", height: "50px" }}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          ) : (
-            <p>No products available for this route.</p>
-          )}
-
-          {/* Plans Table */}
-          {plans.length > 0 && (
-            <>
-              <h5 className="mt-4">Plans</h5>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Customer Id</th>
-                    <th>Plan Type</th>
-                    <th>Leaves</th>
-                    <th>Active</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {plans.map((plan, index) => (
-                    <tr key={plan._id}>
-                      <td>{index + 1}</td>
-                      <td>{plan.customerId}</td>
-                      <td>{plan.planType}</td>
-                      <td>{plan.leaves.length > 0 ? plan.leaves.join(", ") : "None"}</td>
-                      <td>{plan.isActive ? "Yes" : "No"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </>
-          )}
+          {plans.map((plan) => (
+            <div key={plan}>
+              <input
+                type="radio"
+                name="plan"
+                value={plan}
+                checked={selectedPlan === plan}
+                onChange={() => setSelectedPlan(plan)}
+              />
+              {plan}
+            </div>
+          ))}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleFetchPlans}>
-            Continue
-          </Button>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Close
-          </Button>
+          <Button variant="secondary" onClick={() => setShowPlanModal(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreatePlan}>Create Plan</Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Order Button */}
+      {orderConfirmed && (
+        <Button variant="success" onClick={handleOrder}>
+          Order Now
+        </Button>
+      )}
     </>
   );
 };
