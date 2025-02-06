@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'react-bootstrap';
-import { fetchAllOrders } from '../../Helper/handle-api';
+import { fetchAllOrders, URL } from '../../Helper/handle-api';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import PaginationSection from './PaginationSection';
 
@@ -43,57 +43,84 @@ const OrderListTable = () => {
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
     return (
-        <div>
-            <OverlayScrollbarsComponent>
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Customer Name</th>
-                            <th>Route</th>
-                            <th>Address</th>
-                            <th>Product</th>
-                            <th>Total Price</th>
-                            <th>Plan Type</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentData.length > 0 ? (
-                            currentData.map((order, index) => (
-                                <tr key={order._id}>
-                                    <td>{index + 1}</td>
-                                    <td>{order.customer?.name}</td>
-                                    <td>{order.customer?.routeno}</td>
-                                    <td>
-                                        {order.address?.streetAddress}<br/>
-                                        {order.address?.postcode}<br/>
-                                        {order.address?.apartment}<br/>
-                                    </td>
-                                    <td>{order.productItems?.product?.category}({order.productItems.quantity})</td>
-                                    <td>{order.routeprice}</td>
-                                    <td>{order.plan?.planType}</td>
-                                    <td>{order.selectedPlanDetails.dates[0].status}</td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="4" className="text-center">No orders found for today.</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </Table>
-            </OverlayScrollbarsComponent>
-            {/* Pagination */}
-            {filteredOrders.length > dataPerPage && (
-                <PaginationSection
-                    currentPage={currentPage}
-                    dataPerPage={dataPerPage}
-                    totalData={filteredOrders.length}
-                    paginate={paginate}
-                />
-            )}
-        </div>
+      <div>
+        <OverlayScrollbarsComponent>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Customer Name</th>
+                <th>Route</th>
+                <th>Address</th>
+                <th>Product</th>
+                <th>Total Price</th>
+                <th>Plan Type</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentData.length > 0 ? (
+                currentData.map((order, index) => (
+                  <tr key={order._id}>
+                    <td>{index + 1}</td>
+                    <td>{order.customer?.name}</td>
+                    <td>{order.customer?.routeno}</td>
+                    <td>
+                      {order.address?.streetAddress}
+                      <br />
+                      {order.address?.postcode}
+                      <br />
+                      {order.address?.apartment}
+                      <br />
+                    </td>
+                    <td>
+                      {order.productItems?.map((item) => (
+                        <div key={item._id}>
+                          {item.product?.category} ({item.quantity})<br />
+                          <img
+                            src={`${URL}/images/${item.product?.coverimage}`}
+                            alt={item.product?.category}
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </td>
+
+                    <td>{order.routeprice}</td>
+                    <td>{order.plan?.planType}</td>
+                    <td>{order.selectedPlanDetails.dates[0].status}</td>
+                    <td>
+                      <button className="btn btn-sm btn-primary">
+                        Delivered
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center">
+                    No orders found for today.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </Table>
+        </OverlayScrollbarsComponent>
+        {/* Pagination */}
+        {filteredOrders.length > dataPerPage && (
+          <PaginationSection
+            currentPage={currentPage}
+            dataPerPage={dataPerPage}
+            totalData={filteredOrders.length}
+            paginate={paginate}
+          />
+        )}
+      </div>
     );
 };
 
