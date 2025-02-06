@@ -9,6 +9,7 @@ import PaginationSection from "./PaginationSection";
 import { fetchAllOrders, URL, deleteOrder } from "../../Helper/handle-api";
 import axios from "axios";
 import "./style.css";
+import Swal from "sweetalert2";
 
 const ScrollDataTableSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,17 +120,26 @@ const ScrollDataTableSection = () => {
   };
 
   const handleDeleteOrder = async (id) => {
-    if (!id || !window.confirm("Are you sure you want to delete this order?")) {
+    // if (!id || !window.confirm("Are you sure you want to delete this order?")) {
+    //   return;
+    // }
+
+    if (!id) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Order ID not found. Please try again.",
+      });
       return;
     }
 
     try {
       await deleteOrder(id);
       setAllOrders((prevOrders) => prevOrders.filter((order) => order._id !== id));
-      alert("Order deleted successfully.");
+      Swal.fire("Deleted!", "The order has been deleted.", "success");
     } catch (error) {
       console.error("Error deleting order:", error);
-      alert("Failed to delete the order. Please try again.");
+      Swal.fire("Error", "Failed to delete the order. Please try again.", "error");
     }
   };
 
@@ -159,7 +169,7 @@ const ScrollDataTableSection = () => {
                     },
                   }}
                 >
-                  <div style={{ maxHeight: "300px" }}>
+                  <div >
                     <Table
                       className="table table-dashed table-hover digi-dataTable table-striped"
                       id="componentDataTable"

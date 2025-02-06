@@ -1,6 +1,5 @@
 
 import axios from "axios";
-import Swal from "sweetalert2";
 
 export const  URL = `http://localhost:3001`;
 // export const  URL = `https://api.palkkaran.in`;

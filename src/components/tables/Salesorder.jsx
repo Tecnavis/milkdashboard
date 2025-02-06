@@ -14,6 +14,10 @@ const Salesorders = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [orderConfirmed, setOrderConfirmed] = useState(false);
 
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [startDate, setStartDate] = useState('');
+  const [interval, setInterval] = useState(2);
+  const [customDates, setCustomDates] = useState([]);
   useEffect(() => {
     FetchCustomer().then((res) => setAllCustomer(res));
   }, []);
@@ -44,19 +48,133 @@ const Salesorders = () => {
   // Create plan and proceed to order
   const handleCreatePlan = async () => {
     try {
-      const response = await createPlan({
+      let planData = {
         customerId: selectedCustomer._id,
         planType: selectedPlan,
-      });
+      };
+
+      // Add specific data based on plan type
+      switch (selectedPlan) {
+        case 'weekly':
+          planData.weeklyDays = selectedDays;
+          break;
+        case 'alternative':
+          planData.startDate = startDate;
+          planData.interval = interval;
+          break;
+        case 'custom':
+          planData.customDates = customDates;
+          break;
+      }
+
+      const response = await createPlan(planData);
       if (response.plan) {
         setSelectedPlan(response.plan);
         setShowPlanModal(false);
         setOrderConfirmed(true);
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Plan created successfully!",
+        });
       }
     } catch (error) {
-      console.error("Error creating plan:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to create plan",
+      });
     }
   };
+
+  const renderPlanOptions = () => {
+    switch (selectedPlan) {
+      case 'weekly':
+        return (
+          <div className="mt-3">
+            <h6>Select Days</h6>
+            {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day, index) => (
+              <Form.Check
+                key={day}
+                type="checkbox"
+                label={day}
+                checked={selectedDays.includes(index)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedDays([...selectedDays, index]);
+                  } else {
+                    setSelectedDays(selectedDays.filter(d => d !== index));
+                  }
+                }}
+              />
+            ))}
+          </div>
+        );
+
+      case 'alternative':
+        return (
+          <div className="mt-3">
+            <Form.Group className="mb-3">
+              <Form.Label>Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Interval (days)</Form.Label>
+              <Form.Control
+                type="number"
+                value={interval}
+                onChange={(e) => setInterval(parseInt(e.target.value))}
+                min={1}
+              />
+            </Form.Group>
+          </div>
+        );
+
+      case 'custom':
+        return (
+          <div className="mt-3">
+            <Form.Group className="mb-3">
+              <Form.Label>Select Dates</Form.Label>
+              <Form.Control
+                type="date"
+                onChange={(e) => {
+                  const newDate = e.target.value;
+                  if (!customDates.includes(newDate)) {
+                    setCustomDates([...customDates, newDate]);
+                  }
+                }}
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </Form.Group>
+            <div className="selected-dates">
+              {customDates.map((date, index) => (
+                <div key={index} className="d-flex align-items-center mb-2">
+                  <span>{new Date(date).toLocaleDateString()}</span>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    className="ms-2"
+                    onClick={() => setCustomDates(customDates.filter((_, i) => i !== index))}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  
 
   // Confirm order
   const handleOrder = async () => {
@@ -148,7 +266,7 @@ const Salesorders = () => {
               <td>
                 <img src={`${URL}/images/${product.productId.coverimage}`} alt={product.productId.image} style={{ width: "50px", height: "50px" }}/>
               </td>
-              <td>{product.productIds}</td>
+              <td>{product.productId.productId}</td>
               <td>{product.productId.category}</td>
               <td>{product.routePrice}</td>
             </tr>
@@ -168,45 +286,48 @@ const Salesorders = () => {
 
       {/* Plan Selection Modal */}
      {/* Plan Selection Modal */}
-<Modal show={showPlanModal} onHide={() => setShowPlanModal(false)} size="lg">
-  <Modal.Header closeButton>
-    <Modal.Title>Select Plan</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <div className="row">
-      {plans.map((plan) => (
-        <div key={plan} className="col-12 col-md-4 mb-3">
-          <div className={`card ${selectedPlan === plan ? "border-primary" : "border-secondary"}`}>
-            <div className="card-body text-center">
-              <h5 className="card-title">{plan.charAt(0).toUpperCase() + plan.slice(1)}</h5>
-              <p className="card-text">Select this plan to proceed.</p>
-              <input
-                type="radio"
-                name="plan"
-                value={plan}
-                checked={selectedPlan === plan}
-                onChange={() => setSelectedPlan(plan)}
-                className="btn-check"
-                id={`plan-${plan}`}
-              />
-              <label htmlFor={`plan-${plan}`} className="btn btn-outline-primary mt-2">
-                Choose Plan
-              </label>
-            </div>
+     <Modal show={showPlanModal} onHide={() => setShowPlanModal(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Select Plan</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="row mb-4">
+            {plans.map((plan) => (
+              <div key={plan} className="col-12 col-md-4 mb-3">
+                <div className={`card ${selectedPlan === plan ? "border-primary" : "border-secondary"}`}>
+                  <div className="card-body text-center">
+                    <h5 className="card-title">{plan.charAt(0).toUpperCase() + plan.slice(1)}</h5>
+                    <input
+                      type="radio"
+                      name="plan"
+                      value={plan}
+                      checked={selectedPlan === plan}
+                      onChange={() => {
+                        setSelectedPlan(plan);
+                        setSelectedDays([]);
+                        setStartDate('');
+                        setInterval(2);
+                        setCustomDates([]);
+                      }}
+                      className="btn-check"
+                      id={`plan-${plan}`}
+                    />
+                    <label htmlFor={`plan-${plan}`} className="btn btn-outline-primary mt-2">
+                      Choose Plan
+                    </label>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      ))}
-    </div>
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="secondary" onClick={() => setShowPlanModal(false)}>
-      Cancel
-    </Button>
-    <Button variant="primary" onClick={handleCreatePlan}>
-      Create Plan
-    </Button>
-  </Modal.Footer>
-</Modal>
+          
+          {renderPlanOptions()}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPlanModal(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleCreatePlan}>Create Plan</Button>
+        </Modal.Footer>
+      </Modal>
 
       {/* Order Button */}
       {orderConfirmed && (
