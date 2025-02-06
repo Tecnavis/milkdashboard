@@ -3,6 +3,7 @@ import { Table } from 'react-bootstrap';
 import { fetchAllOrders, URL } from '../../Helper/handle-api';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import PaginationSection from './PaginationSection';
+import axios from 'axios';
 
 const OrderListTable = () => {
     const [orders, setOrders] = useState([]);
@@ -42,6 +43,45 @@ const OrderListTable = () => {
 
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
+
+
+
+    const handleDeliveryStatus = async (orderId, date) => {
+      if (!orderId || !date) {
+        console.error("Missing orderId or date for updating status.");
+        return;
+      }
+  
+      try {
+        const response = await axios.patch(`${URL}/orderdetails/${orderId}`, {
+          status: "delivered",
+          date,
+        });
+  
+        if (response.status === 200) {
+          setOrders((prevOrders) =>
+            prevOrders.map((order) =>
+              order._id === orderId
+                ? {
+                    ...order,
+                    selectedPlanDetails: {
+                      ...order.selectedPlanDetails,
+                      dates: (order.selectedPlanDetails?.dates || []).map((dateObj) =>
+                        dateObj.date === date
+                          ? { ...dateObj, status: "delivered" }
+                          : dateObj
+                      ),
+                    },
+                  }
+                : order
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Error updating status:", error);
+        alert("Failed to update delivery status. Please try again.");
+      }
+    };
     return (
       <div>
         <OverlayScrollbarsComponent>
@@ -95,7 +135,9 @@ const OrderListTable = () => {
                     <td>{order.plan?.planType}</td>
                     <td>{order.selectedPlanDetails.dates[0].status}</td>
                     <td>
-                      <button className="btn btn-sm btn-primary">
+                      <button className="btn btn-sm btn-primary" onClick={() =>
+                              handleDeliveryStatus(order._id, order.selectedPlanDetails.dates[0].date)
+                            }>
                         Delivered
                       </button>
                     </td>
