@@ -135,12 +135,20 @@ const OrderListTable = () => {
                     <td>{order.plan?.planType}</td>
                     <td>{order.selectedPlanDetails.dates[0].status}</td>
                     <td>
-                      <button className="btn btn-sm btn-primary" onClick={() =>
-                              handleDeliveryStatus(order._id, order.selectedPlanDetails.dates[0].date)
-                            }>
-                        Delivered
-                      </button>
-                    </td>
+  <button
+    className={`btn btn-sm ${
+      order.selectedPlanDetails.dates[0].status === "delivered"
+        ? "btn-success"
+        : "btn-primary"
+    }`}
+    onClick={() =>
+      handleDeliveryStatus(order._id, order.selectedPlanDetails.dates[0].date)
+    }
+  >
+    Delivered
+  </button>
+</td>
+
                   </tr>
                 ))
               ) : (
