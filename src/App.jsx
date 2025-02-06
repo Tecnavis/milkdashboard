@@ -87,7 +87,7 @@ function App() {
           <Route path="/addNewProduct" element={<AddNewProduct/>}/>
           <Route path="/allProduct" element={<AllProduct/>}/>
           <Route path="/category" element={<Category/>}/>
-          <Route path="/customerorders" element={<Order/>}/>
+          <Route path="/taskmanagement" element={<Order/>}/>
           <Route path="/chat" element={<Chat/>}/>
           <Route path="/calendar" element={<Calendar/>}/>
           <Route path="/email" element={<Email/>}/>

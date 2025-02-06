@@ -31,12 +31,11 @@ const AudienceTable = () => {
             <thead>
                 <tr>
                 <th>ID</th>
-                <th>ROUTE</th>
-                <th>PRODUCT ID</th>
+                <th>Route</th>
+                <th>Product ID</th>
                 <th>Cover image</th>
-                <th>TITLE</th>
-                <th>DESCRIPTION</th>
-                <th>PRICE</th>
+                <th>Title</th>
+                <th>Price</th>
                 <th>Status</th>
                 </tr>
             </thead>
@@ -61,7 +60,6 @@ const AudienceTable = () => {
           />
         </td>
         <td>{product.productId.title}</td>
-        <td>{product.productId.description}</td>
         <td> ₹{product.routePrice}</td> {/* Route-specific price */}
         {productIndex === 0 && (
           <td rowSpan={route.products.length}>

@@ -6,7 +6,7 @@ const Invoices = () => {
     <div className="panel">
         <div className="panel-header">
             <h5>Invoices</h5>
-            <Link className="btn btn-sm btn-primary" to="/customerorders">View All</Link>
+            <Link className="btn btn-sm btn-primary" to="/taskmanagement">View All</Link>
         </div>
         <div className="panel-body p-0">
             <div className="table-responsive">

@@ -174,14 +174,15 @@ const AppsPart = () => {
             </li>
             
            
-            {/* <li className="sidebar-dropdown-item">
-              <NavLink to="/customerorders" className="sidebar-link" onClick={handleSubNavLinkClick}>
-               Customer Order Management
-              </NavLink>
-            </li> */}
+            
             <li className="sidebar-dropdown-item">
               <NavLink to="/salesorders" className="sidebar-link" onClick={handleSubNavLinkClick}>
                Order product
+              </NavLink>
+            </li>
+            <li className="sidebar-dropdown-item">
+              <NavLink to="/taskmanagement" className="sidebar-link" onClick={handleSubNavLinkClick}>
+               Task Management
               </NavLink>
             </li>
           </ul>

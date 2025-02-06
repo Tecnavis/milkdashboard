@@ -109,9 +109,9 @@ const CategoryTable = () => {
   return (
     <>
       <OverlayScrollbarsComponent>
-        <div className="container">
+        {/* <div className="container">
           <h5 style={{ color: "gray", textAlign: "center" }}>MAIN CATEGORIES</h5>
-        </div>
+        </div> */}
         <br />
         <Table
           className="table table-dashed table-hover digi-dataTable all-product-table table-striped"
