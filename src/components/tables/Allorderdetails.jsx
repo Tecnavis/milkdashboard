@@ -10,6 +10,7 @@ import { fetchAllOrders, URL, deleteOrder } from "../../Helper/handle-api";
 import axios from "axios";
 import "./style.css";
 import Swal from "sweetalert2";
+import ChangePlanModal from "./Changeplan";
 
 const ScrollDataTableSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -20,6 +21,8 @@ const ScrollDataTableSection = () => {
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showChangePlanModal, setShowChangePlanModal] = useState(false);
+  const [currentOrderIdForPlanChange, setCurrentOrderIdForPlanChange] = useState(null);
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -147,6 +150,11 @@ const ScrollDataTableSection = () => {
     return <div className="alert alert-danger m-4">{error}</div>;
   }
 
+  const handleChangePlan = (orderId) => {
+    setCurrentOrderIdForPlanChange(orderId);
+    setShowChangePlanModal(true);
+  };
+  
   return (
     <div className="main-content">
       <div className="panel">
@@ -249,6 +257,12 @@ const ScrollDataTableSection = () => {
                 >
                   <i className="fa-solid fa-trash"></i>
                 </button>
+                <button 
+    className="btn btn-primary btn-sm ms-2"
+    onClick={() => handleChangePlan(order._id)}
+  >
+    Change Plan
+  </button>
               </td>
             )}
           </tr>
@@ -351,6 +365,12 @@ const ScrollDataTableSection = () => {
           </div>
         </div>
       </div>
+      <ChangePlanModal
+    show={showChangePlanModal}
+    onHide={() => setShowChangePlanModal(false)}
+    orderId={currentOrderIdForPlanChange}
+    url={URL}  // Assuming URL is defined in your helper/handle-api
+  />
     </div>
   );
 };
