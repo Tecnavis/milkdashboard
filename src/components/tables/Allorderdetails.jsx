@@ -81,7 +81,7 @@ const ScrollDataTableSection = () => {
     setSelectedOrderId(null);
     setShowModal(false);
   };
-
+//update delivery status
   const handleDeliveryStatus = async (orderId, date) => {
     if (!orderId || !date) {
       console.error("Missing orderId or date for updating status.");
@@ -118,12 +118,8 @@ const ScrollDataTableSection = () => {
       alert("Failed to update delivery status. Please try again.");
     }
   };
-
+//delete order
   const handleDeleteOrder = async (id) => {
-    // if (!id || !window.confirm("Are you sure you want to delete this order?")) {
-    //   return;
-    // }
-
     if (!id) {
       Swal.fire({
         icon: "error",
@@ -183,11 +179,10 @@ const ScrollDataTableSection = () => {
                           </th>
                           <th>Customer Name</th>
                           <th>Product ID</th>
-                          <th>Price</th>
-                          <th>Quantity</th>
+                          <th>Product Name</th>
                           <th>Plan Type</th>
                           <th>Is Active</th>
-                          <th>Total Price</th>
+                          <th>Unit Price</th>
                           <th>Payment Method</th>
                           <th>Payment Status</th>
                           <th>Address</th>
@@ -212,8 +207,7 @@ const ScrollDataTableSection = () => {
               </td>
             )}
             <td>{item.product?.productId || "N/A"}</td>
-            <td>${item.product?.price || "N/A"}</td>
-            <td>{item.quantity || "N/A"}</td>
+            <td>{item.product?.category || "N/A"} ({item.quantity})</td>
             {index === 0 && (
               <td rowSpan={order.productItems.length}>
                 <Link
@@ -230,7 +224,7 @@ const ScrollDataTableSection = () => {
               </td>
             )}
             {index === 0 && (
-              <td rowSpan={order.productItems.length}>${order.totalPrice || 0}</td>
+              <td rowSpan={order.productItems.length}>₹{order.routeprice || 0}</td>
             )}
             {index === 0 && (
               <td rowSpan={order.productItems.length}>{order.paymentMethod || "N/A"}</td>
@@ -259,45 +253,8 @@ const ScrollDataTableSection = () => {
             )}
           </tr>
         ))
-      : // If no products, show a single row for the order
-        <tr key={order._id}>
-          <td>
-            <div className="form-check">
-              <input className="form-check-input" type="checkbox" />
-            </div>
-          </td>
-          <td>
-            <Link to="#">{order.customer?.name || "N/A"}</Link>
-          </td>
-          <td colSpan="3">No products available</td>
-          <td>
-            <Link
-              to="#"
-              onClick={() => handlePlanClick(order.selectedPlanDetails, order._id)}
-            >
-              {order.selectedPlanDetails?.planType || "N/A"}
-            </Link>
-          </td>
-          <td>{order.selectedPlanDetails?.isActive ? "Yes" : "No"}</td>
-          <td>${order.totalPrice || 0}</td>
-          <td>{order.paymentMethod || "N/A"}</td>
-          <td>{order.paymentStatus || "N/A"}</td>
-          <td>
-            {order.address?.postcode || "N/A"}
-            <br />
-            {order.address?.streetAddress || "N/A"}
-            <br />
-            {order.address?.apartment || "N/A"}
-          </td>
-          <td>
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => handleDeleteOrder(order._id)}
-            >
-              <i className="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        </tr>
+      : 
+      <>No orders found</>
   )}
 </tbody>
 
