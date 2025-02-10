@@ -22,7 +22,8 @@ const ScrollDataTableSection = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showChangePlanModal, setShowChangePlanModal] = useState(false);
-  const [currentOrderIdForPlanChange, setCurrentOrderIdForPlanChange] = useState(null);
+  const [currentOrderIdForPlanChange, setCurrentOrderIdForPlanChange] =
+    useState(null);
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -30,20 +31,20 @@ const ScrollDataTableSection = () => {
         setLoading(true);
         const res = await fetchAllOrders();
         // Validate and transform the data
-        const validatedOrders = res.map(order => ({
+        const validatedOrders = res.map((order) => ({
           ...order,
           selectedPlanDetails: order.selectedPlanDetails || {
-            planType: 'N/A',
+            planType: "N/A",
             dates: [],
-            isActive: false
+            isActive: false,
           },
-          customer: order.customer || { name: 'Unknown' },
+          customer: order.customer || { name: "Unknown" },
           productItems: order.productItems || [],
           address: order.address || {
-            postcode: 'N/A',
-            streetAddress: 'N/A',
-            apartment: 'N/A'
-          }
+            postcode: "N/A",
+            streetAddress: "N/A",
+            apartment: "N/A",
+          },
         }));
         setAllOrders(validatedOrders);
         setError(null);
@@ -84,7 +85,7 @@ const ScrollDataTableSection = () => {
     setSelectedOrderId(null);
     setShowModal(false);
   };
-//update delivery status
+  //update delivery status
   const handleDeliveryStatus = async (orderId, date) => {
     if (!orderId || !date) {
       console.error("Missing orderId or date for updating status.");
@@ -105,10 +106,11 @@ const ScrollDataTableSection = () => {
                   ...order,
                   selectedPlanDetails: {
                     ...order.selectedPlanDetails,
-                    dates: (order.selectedPlanDetails?.dates || []).map((dateObj) =>
-                      dateObj.date === date
-                        ? { ...dateObj, status: "delivered" }
-                        : dateObj
+                    dates: (order.selectedPlanDetails?.dates || []).map(
+                      (dateObj) =>
+                        dateObj.date === date
+                          ? { ...dateObj, status: "delivered" }
+                          : dateObj
                     ),
                   },
                 }
@@ -121,7 +123,7 @@ const ScrollDataTableSection = () => {
       alert("Failed to update delivery status. Please try again.");
     }
   };
-//delete order
+  //delete order
   const handleDeleteOrder = async (id) => {
     if (!id) {
       Swal.fire({
@@ -134,11 +136,17 @@ const ScrollDataTableSection = () => {
 
     try {
       await deleteOrder(id);
-      setAllOrders((prevOrders) => prevOrders.filter((order) => order._id !== id));
+      setAllOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== id)
+      );
       Swal.fire("Deleted!", "The order has been deleted.", "success");
     } catch (error) {
       console.error("Error deleting order:", error);
-      Swal.fire("Error", "Failed to delete the order. Please try again.", "error");
+      Swal.fire(
+        "Error",
+        "Failed to delete the order. Please try again.",
+        "error"
+      );
     }
   };
 
@@ -154,7 +162,45 @@ const ScrollDataTableSection = () => {
     setCurrentOrderIdForPlanChange(orderId);
     setShowChangePlanModal(true);
   };
-  
+  //stop plan
+  const handleStopPlan = async (orderId) => {
+    if (!orderId) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Order ID not found. Please try again.",
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `${URL}/orderdetails/stop-plan/${orderId}`
+      );
+
+      if (response.status === 200) {
+        setAllOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order._id === orderId
+              ? {
+                  ...order,
+                  selectedPlanDetails: {
+                    ...order.selectedPlanDetails,
+                    isActive: false,
+                  },
+                }
+              : order
+          )
+        );
+
+        Swal.fire("Success", "Plan stopped successfully", "success");
+      }
+    } catch (error) {
+      console.error("Error stopping plan:", error);
+      Swal.fire("Error", "Failed to stop the plan. Please try again.", "error");
+    }
+  };
+
   return (
     <div className="main-content">
       <div className="panel">
@@ -173,7 +219,7 @@ const ScrollDataTableSection = () => {
                     },
                   }}
                 >
-                  <div >
+                  <div>
                     <Table
                       className="table table-dashed table-hover digi-dataTable table-striped"
                       id="componentDataTable"
@@ -182,7 +228,10 @@ const ScrollDataTableSection = () => {
                         <tr>
                           <th className="no-sort">
                             <div className="form-check">
-                              <input className="form-check-input" type="checkbox" />
+                              <input
+                                className="form-check-input"
+                                type="checkbox"
+                              />
                             </div>
                           </th>
                           <th>Customer Name</th>
@@ -194,84 +243,133 @@ const ScrollDataTableSection = () => {
                           <th>Payment Method</th>
                           <th>Payment Status</th>
                           <th>Address</th>
-                          <th>Action</th>
+                          <th style={{textAlign:"center"}}>Action</th>
                         </tr>
                       </thead>
- <tbody>
-  {currentData.map((order) =>
-    order.productItems.length > 0
-      ? order.productItems.map((item, index) => (
-          <tr key={`${order._id}-${item.product?.productId}-${index}`}>
-            {index === 0 && (
-              <td rowSpan={order.productItems.length}>
-                <div className="form-check">
-                  <input className="form-check-input" type="checkbox" />
-                </div>
-              </td>
-            )}
-            {index === 0 && (
-              <td rowSpan={order.productItems.length}>
-                <Link to="#">{order.customer?.name || "N/A"}</Link>
-              </td>
-            )}
-            <td>{item.product?.productId || "N/A"}</td>
-            <td>{item.product?.category || "N/A"} ({item.quantity})</td>
-            {index === 0 && (
-              <td rowSpan={order.productItems.length}>
-                <Link
-                  to="#"
-                  onClick={() => handlePlanClick(order.selectedPlanDetails, order._id)}
-                >
-                  {order.selectedPlanDetails?.planType || "N/A"}
-                </Link>
-              </td>
-            )}
-            {index === 0 && (
-              <td rowSpan={order.productItems.length}>
-                {order.selectedPlanDetails?.isActive ? "Yes" : "No"}
-              </td>
-            )}
-            {index === 0 && (
-              <td rowSpan={order.productItems.length}>₹{order.routeprice || 0}</td>
-            )}
-            {index === 0 && (
-              <td rowSpan={order.productItems.length}>{order.paymentMethod || "N/A"}</td>
-            )}
-            {index === 0 && (
-              <td rowSpan={order.productItems.length}>{order.paymentStatus || "N/A"}</td>
-            )}
-            {index === 0 && (
-              <td rowSpan={order.productItems.length}>
-                {order.address?.postcode || "N/A"}
-                <br />
-                {order.address?.streetAddress || "N/A"}
-                <br />
-                {order.address?.apartment || "N/A"}
-              </td>
-            )}
-            {index === 0 && (
-              <td rowSpan={order.productItems.length}>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleDeleteOrder(order._id)}
-                >
-                  <i className="fa-solid fa-trash"></i>
-                </button>
-                <button 
-    className="btn btn-primary btn-sm ms-2"
-    onClick={() => handleChangePlan(order._id)}
-  >
-    Change Plan
-  </button>
-              </td>
-            )}
-          </tr>
-        ))
-      : 
-      <>No orders found</>
-  )}
-</tbody>
-
+                      <tbody>
+                        {currentData.map((order) =>
+                          order.productItems.length > 0 ? (
+                            order.productItems.map((item, index) => (
+                              <tr
+                                key={`${order._id}-${item.product?.productId}-${index}`}
+                              >
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    <div className="form-check">
+                                      <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                      />
+                                    </div>
+                                  </td>
+                                )}
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    <Link to="#">
+                                      {order.customer?.name || "N/A"}
+                                    </Link>
+                                  </td>
+                                )}
+                                <td>{item.product?.productId || "N/A"}</td>
+                                <td>
+                                  {item.product?.category || "N/A"} (
+                                  {item.quantity})
+                                </td>
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    <Link
+                                      to="#"
+                                      onClick={() =>
+                                        handlePlanClick(
+                                          order.selectedPlanDetails,
+                                          order._id
+                                        )
+                                      }
+                                    >
+                                      {order.selectedPlanDetails?.planType ||
+                                        "N/A"}
+                                    </Link>
+                                  </td>
+                                )}
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    {order.selectedPlanDetails?.isActive
+                                      ? "Yes"
+                                      : "No"}
+                                  </td>
+                                )}
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    ₹{order.routeprice || 0}
+                                  </td>
+                                )}
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    {order.paymentMethod || "N/A"}
+                                  </td>
+                                )}
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    {order.paymentStatus || "N/A"}
+                                  </td>
+                                )}
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    {order.address?.postcode || "N/A"}
+                                    <br />
+                                    {order.address?.streetAddress || "N/A"}
+                                    <br />
+                                    {order.address?.apartment || "N/A"}
+                                  </td>
+                                )}
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    
+                                    <button
+                                      className="btn btn-primary btn-sm ms-2"
+                                      onClick={() =>
+                                        handleChangePlan(order._id)
+                                      }
+                                    >
+                                      Change Plan
+                                    </button>
+                                    {order.selectedPlanDetails?.isActive ? (
+                                      <button
+                                        className="btn btn-warning btn-sm ms-2"
+                                        onClick={() =>
+                                          handleStopPlan(order._id)
+                                        }
+                                      >
+                                        Stop Plan
+                                      </button>
+                                    ) : (
+                                      <span
+                                        className="btn btn btn-sm ms-2"
+                                        style={{
+                                          backgroundColor: "gray",
+                                          color: "white",
+                                        }}
+                                      >
+                                        Stopped
+                                      </span>
+                                    )}
+                                    <button
+                                      className="btn btn-danger btn-sm ms-2"
+                                      onClick={() =>
+                                        handleDeleteOrder(order._id)
+                                      }
+                                    >
+                                      <i className="fa-solid fa-trash"></i>
+                                    </button>
+                                  </td>
+                                )}
+                              </tr>
+                            ))
+                          ) : (
+                            <>No orders found</>
+                          )
+                        )}
+                      </tbody>
                     </Table>
                   </div>
                 </OverlayScrollbarsComponent>
@@ -292,12 +390,12 @@ const ScrollDataTableSection = () => {
             >
               <Modal.Header closeButton className="bg-primary text-white">
                 <Modal.Title className="fw-bold">
-                  Plan Details: {selectedPlan?.planType || 'N/A'}
+                  Plan Details: {selectedPlan?.planType || "N/A"}
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body className="p-4">
                 <h5 className="mb-4 text-secondary">
-                  Plan Type: {selectedPlan?.planType || 'N/A'}
+                  Plan Type: {selectedPlan?.planType || "N/A"}
                 </h5>
                 <ul className="list-group mb-3">
                   {selectedPlan?.dates?.map((dateObj, idx) => (
@@ -331,10 +429,13 @@ const ScrollDataTableSection = () => {
                           <button
                             className="btn btn-sm btn-primary"
                             onClick={() =>
-                              handleDeliveryStatus(selectedOrderId, dateObj.date)
+                              handleDeliveryStatus(
+                                selectedOrderId,
+                                dateObj.date
+                              )
                             }
                           >
-                            Delivered 
+                            Delivered
                           </button>
                         )}
                       </div>
@@ -357,7 +458,10 @@ const ScrollDataTableSection = () => {
                 </div>
               </Modal.Body>
               <Modal.Footer>
-                <button className="btn btn-secondary" onClick={handleCloseModal}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={handleCloseModal}
+                >
                   Close
                 </button>
               </Modal.Footer>
@@ -366,11 +470,11 @@ const ScrollDataTableSection = () => {
         </div>
       </div>
       <ChangePlanModal
-    show={showChangePlanModal}
-    onHide={() => setShowChangePlanModal(false)}
-    orderId={currentOrderIdForPlanChange}
-    url={URL}  // Assuming URL is defined in your helper/handle-api
-  />
+        show={showChangePlanModal}
+        onHide={() => setShowChangePlanModal(false)}
+        orderId={currentOrderIdForPlanChange}
+        url={URL} // Assuming URL is defined in your helper/handle-api
+      />
     </div>
   );
 };
