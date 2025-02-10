@@ -234,6 +234,7 @@ const ScrollDataTableSection = () => {
                               />
                             </div>
                           </th>
+                          <th>Customer ID</th>
                           <th>Customer Name</th>
                           <th>Product ID</th>
                           <th>Product Name</th>
@@ -253,6 +254,7 @@ const ScrollDataTableSection = () => {
                               <tr
                                 key={`${order._id}-${item.product?.productId}-${index}`}
                               >
+
                                 {index === 0 && (
                                   <td rowSpan={order.productItems.length}>
                                     <div className="form-check">
@@ -261,6 +263,11 @@ const ScrollDataTableSection = () => {
                                         type="checkbox"
                                       />
                                     </div>
+                                  </td>
+                                )}
+                                {index === 0 && (
+                                  <td rowSpan={order.productItems.length}>
+                                    {order.customer?.customerId || "N/A"}
                                   </td>
                                 )}
                                 {index === 0 && (
