@@ -56,6 +56,7 @@ import AllOrderDetails from "./components/tables/Allorderdetails"
 import PricingTable2 from "./pages/PricingTable2"
 import UnderConstruction from "./pages/UnderConstruction"
 import AllReviewTable from "./components/tables/AllReviews"
+import Banner from "./components/tables/banner"
 import ProductAssign from "./pages/productassign"
 //
 import StockList from "./pages/Stocklist"
@@ -68,6 +69,7 @@ function App() {
         <Route element={<Layout/>}>
           <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/stocklist" element={<StockList/>}/>
+          <Route path="/banner" element={<Banner/>}/>
           <Route path="/productassign" element={<ProductAssign/>}/>
           <Route path="/allReview" element={<AllReviewTable/>}/>
           <Route path="/salesorders" element={<Salesorders/>}/>

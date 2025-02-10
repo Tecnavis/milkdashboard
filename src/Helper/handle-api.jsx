@@ -194,4 +194,34 @@ export const createPlan = async (planData) => {
     });
     return response.json();
   };
+
+  export const fetchBanner = async () => {
+    const response = await axios.get(`${URL}/banner`);
+    return response.data;
+  }
+
+  export const deleteBanner = async (id) => {
+    const response = await axios.delete(`${URL}/banner/${id}`);
+    return response.data;
+  }
+
+  export const updateBanner = async (id, updatedData) => {
+    const response = await axios.put(`${URL}/banner/${id}`, updatedData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    return response.data;
+};
+
+
+  export const createBanner = async (formData) => {
+    const response = await axios.post(`${URL}/banner`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  };
+  
   
