@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchBanner, URL, deleteBanner, updateBanner } from "../../Helper/handle-api";
-import "./bannerstyle.css";
+import "./bannerstyle.scss";
 
 const BannerTable = () => {
   const [banners, setBanners] = useState([]);

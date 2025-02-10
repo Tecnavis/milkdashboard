@@ -8,7 +8,7 @@ import DataTableFilter from "../filter/DataTableFilter";
 import PaginationSection from "./PaginationSection";
 import { fetchAllOrders, URL, deleteOrder } from "../../Helper/handle-api";
 import axios from "axios";
-import "./style.css";
+import "./style.scss";
 import Swal from "sweetalert2";
 import ChangePlanModal from "./Changeplan";
 

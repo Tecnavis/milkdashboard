@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import "./bannerstyle.css";
+import "./bannerstyle.scss";
 import { Button } from "react-bootstrap";
 import BannerTable from "./bannertable";
 import { createBanner } from "../../Helper/handle-api"; // Ensure `URL` is removed from import

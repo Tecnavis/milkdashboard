@@ -1,8 +1,8 @@
 
 import axios from "axios";
 
-export const  URL = `http://localhost:3001`;
-// export const  URL = `https://api.palkkaran.in`;
+// export const  URL = `http://localhost:3001`;
+export const  URL = `https://api.palkkaran.in`;
 //create product
 export const createProduct = async (product) => {
     const response = await axios.post(`${URL}/product`, product);
