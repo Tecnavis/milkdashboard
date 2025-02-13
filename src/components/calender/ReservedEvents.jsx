@@ -47,7 +47,7 @@ const ReservedEvents = () => {
   return (
     <div className="panel mb-30">
       <div className="panel-header">
-        <h5>Total Quantity Orders of Today</h5>
+        <h5>Today's Orders</h5>
       </div>
       <div className="panel-body">
         <div id="external-events" className="sidebar-event-list">
