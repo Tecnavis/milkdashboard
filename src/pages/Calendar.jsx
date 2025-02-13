@@ -8,7 +8,7 @@ const CalendarMainContent = () => {
     <div className="main-content">
         <div className="row">
             <FullCalender/>
-            <div className="col-xxl-12 col-lg-12 calendar-sidebar">
+            <div className="col-xxl-3 col-lg-4 calendar-sidebar">
               <ReservedEvents/>
               <UpcomingEvents/>
             </div>

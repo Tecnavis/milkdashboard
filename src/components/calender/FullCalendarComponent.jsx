@@ -48,7 +48,7 @@ const FullCalendarComponent = () => {
   }, []);
 
   return (
-    <div className="col-xxl-12 col-lg-12">
+    <div className="col-xxl-9 col-lg-8">
       <div className="panel">
         <div className="panel-body">
           <div id="calendar">
