@@ -146,8 +146,8 @@ const AllProductTable = () => {
                     {product.description}
                   </td>
 
-                  <td>${product.price}</td>
-                  <td>{product.discount}</td>
+                  <td>₹{product.price}</td>
+                  <td>₹{product.discount}</td>
                   <td>
                     <div className="btn-box">
                       <button onClick={() => handleEditProduct(product)}>
