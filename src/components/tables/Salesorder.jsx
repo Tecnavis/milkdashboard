@@ -244,6 +244,7 @@ const Salesorders = () => {
             <th>Image</th>
             <th>Product ID</th>
             <th>Product Name</th>
+            <th>Quantity</th>
             <th>Price </th>
           </tr>
         </thead>
@@ -268,6 +269,7 @@ const Salesorders = () => {
               </td>
               <td>{product.productId.productId}</td>
               <td>{product.productId.category}</td>
+              <td>{product.productId.quantity}</td>
               <td>₹{product.routePrice}</td>
             </tr>
           ))}
