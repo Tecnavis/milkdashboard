@@ -4,6 +4,7 @@ import { URL } from "../../Helper/handle-api";
 
 const UpcomingEvents = () => {
   const [nextDayOrders, setNextDayOrders] = useState([]);
+  const [totalLiters, setTotalLiters] = useState(0);
 
   useEffect(() => {
     const fetchNextDayOrders = async () => {
@@ -26,11 +27,23 @@ const UpcomingEvents = () => {
 
         // Group and count quantities
         const quantityMap = {};
+        let totalLiters = 0;
+
         filteredOrders.forEach((order) => {
           order.productItems.forEach((item) => {
-            const quantity = item.product?.quantity;
-            if (quantity) {
-              quantityMap[quantity] = (quantityMap[quantity] || 0) + item.quantity;
+            const quantityStr = item.product?.quantity;
+            if (quantityStr) {
+              // Extract numeric value from quantity (e.g., "200ML" → 200)
+              const numericQuantity = parseInt(quantityStr.replace(/\D/g, ""), 10);
+              
+              // Convert to liters
+              const liters = numericQuantity / 1000;
+              
+              // Add to total liters
+              totalLiters += liters * item.quantity;
+
+              // Store quantity count
+              quantityMap[quantityStr] = (quantityMap[quantityStr] || 0) + item.quantity;
             }
           });
         });
@@ -42,6 +55,7 @@ const UpcomingEvents = () => {
         }));
 
         setNextDayOrders(groupedOrders);
+        setTotalLiters(totalLiters.toFixed(2)); // Round to 2 decimal places
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -53,7 +67,7 @@ const UpcomingEvents = () => {
   return (
     <div className="panel">
       <div className="panel-header">
-        <h5>Tomorrow 's Orders</h5>
+        <h5>Tomorrow's Orders</h5>
       </div>
       <div className="panel-body">
         <div className="upcoming-event-list sidebar-event-list">
@@ -70,6 +84,7 @@ const UpcomingEvents = () => {
           ) : (
             <p>No orders for tomorrow</p>
           )}
+          <p className="fc-event"><strong>Total Liters:</strong> {totalLiters} L</p>
         </div>
       </div>
     </div>
