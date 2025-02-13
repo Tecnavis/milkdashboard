@@ -1,29 +1,50 @@
-import React, { useContext, useState } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import EventModal from '../modal/EventModal';
-import { DigiContext } from '../../context/DigiContext';
-import DeleteConfirmationModal from '../modal/DeleteConfirmationModal';
+import React, { useContext, useState, useEffect } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import axios from "axios";
+import { DigiContext } from "../../context/DigiContext";
+import { URL } from "../../Helper/handle-api";
 
 const FullCalendarComponent = () => {
-  const {
-    INITIAL_EVENTS,
-    handleDateSelect,
-    renderEventContent,
-    handleEventClick,
-    handleEvents,
-    handleAddNewModalHide,
-    addNewEventModal,
-    handleSaveEvent,
-    selectedEvent,
-    calendarRef,
-    deleteConfirmationModal,
-    handleCloseDeleteConfirmationModal,
-    handleDelete,
-  } = useContext(DigiContext);
+  const { calendarRef } = useContext(DigiContext);
+  const [events, setEvents] = useState([]);
 
+  // Fetch all orders
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get(`${URL}/orderdetails`);
+        const orders = response.data;
+
+        // Transform orders into FullCalendar event format
+        const orderEvents = orders.flatMap((order) =>
+          order.selectedPlanDetails?.dates?.map((dateEntry) => ({
+            title: `${order.customer?.name} - ${order.productItems
+              .map((item) => `${item.product?.category} (${item.product?.quantity})`)
+              .join(", ")}`,
+            start: dateEntry.date, // Use order delivery date
+            allDay: true, // Full-day event
+            extendedProps: {
+              customer: order.customer?.name,
+              products: order.productItems.map((item) => ({
+                category: item.product?.category,
+                quantity: item.product?.quantity,
+              })),
+              status: dateEntry.status,
+            },
+          }))
+        );
+
+        setEvents(orderEvents);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   return (
     <div className="col-xxl-9 col-lg-8">
@@ -31,39 +52,32 @@ const FullCalendarComponent = () => {
         <div className="panel-body">
           <div id="calendar">
             <FullCalendar
-              ref={calendarRef} // Set the ref to access the calendar instance
+              ref={calendarRef}
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               headerToolbar={{
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay',
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek,timeGridDay",
               }}
               initialView="dayGridMonth"
               editable={true}
               selectable={true}
               selectMirror={true}
               dayMaxEvents={true}
-              initialEvents={INITIAL_EVENTS}
-              select={handleDateSelect}
-              eventContent={renderEventContent}
-              eventClick={handleEventClick}
-              eventsSet={handleEvents}
+              events={events} // Set transformed orders as events
+              eventClick={(info) => {
+                const { customer, products, status } = info.event.extendedProps;
+                const productDetails = products
+                  .map((product) => `${product.category} (${product.quantity})`)
+                  .join(", ");
+                alert(
+                  `Customer: ${customer}\nProducts: ${productDetails}\nStatus: ${status}`
+                );
+              }}
             />
           </div>
         </div>
       </div>
-
-      <EventModal
-        show={addNewEventModal}
-        handleClose={handleAddNewModalHide}
-        handleSaveEvent={handleSaveEvent}
-        event={selectedEvent || {}}
-      />
-       <DeleteConfirmationModal
-        show={deleteConfirmationModal}
-        handleClose={handleCloseDeleteConfirmationModal}
-        handleDelete={handleDelete}
-      />
     </div>
   );
 };
