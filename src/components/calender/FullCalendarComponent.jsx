@@ -6,6 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 import { DigiContext } from "../../context/DigiContext";
 import { URL } from "../../Helper/handle-api";
+import Swal from "sweetalert2";
 
 const FullCalendarComponent = () => {
   const { calendarRef } = useContext(DigiContext);
@@ -47,7 +48,7 @@ const FullCalendarComponent = () => {
   }, []);
 
   return (
-    <div className="col-xxl-9 col-lg-8">
+    <div className="col-xxl-12 col-lg-12">
       <div className="panel">
         <div className="panel-body">
           <div id="calendar">
@@ -70,10 +71,15 @@ const FullCalendarComponent = () => {
                 const productDetails = products
                   .map((product) => `${product.category} (${product.quantity})`)
                   .join(", ");
-                alert(
-                  `Customer: ${customer}\nProducts: ${productDetails}\nStatus: ${status}`
-                );
-              }}
+                  Swal.fire({
+                    title: "Order Details",
+                    html: `<strong>Customer:</strong> ${customer}<br>
+                           <strong>Products:</strong> ${productDetails}<br>
+                           <strong>Status:</strong> ${status}`,
+                    icon: "info",
+                    confirmButtonText: "OK",
+                  });
+                }}
             />
           </div>
         </div>
