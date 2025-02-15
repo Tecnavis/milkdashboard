@@ -193,7 +193,7 @@ const AppsPart = () => {
             </li>
           </ul>
         </li>
-        <li className="sidebar-dropdown-item">
+        {/* <li className="sidebar-dropdown-item">
           <Link
             role="button"
             className={`sidebar-link has-sub ${isAccountsDropdownOpen ? 'show' : ''}`}
@@ -216,7 +216,7 @@ const AppsPart = () => {
             </NavLink>
           </li>
           </ul>
-        </li>
+        </li> */}
 
         {/* <li className="sidebar-dropdown-item">
             <NavLink to="/task" className="sidebar-link" onClick={handleSubNavLinkClick}>

@@ -18,7 +18,7 @@ const DashboardPart = () => {
       </Link>
       <ul className={`sidebar-link-group ${layoutPosition.horizontal ? (dropdownOpen.dashboard ? 'd-block' : '') : (isMainDropdownOpen ? 'd-none' : '')}`}>       
        <li className="sidebar-dropdown-item">
-          <NavLink to="/" className="sidebar-link">
+          <NavLink to="/dashboard" className="sidebar-link">
             <span className="nav-icon">
               <i className="fa-light fa-cart-shopping-fast"></i>
             </span>{' '}

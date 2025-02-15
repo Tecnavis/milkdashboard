@@ -38,20 +38,21 @@ const Header = () => {
         <div className="col-xxl-6 col-xl-5 col-4 d-flex align-items-center gap-20">
           <div className="main-logo d-lg-block d-none">
             <div className="logo-big">
-              <Link to="/">
-                <img
+              <Link to="/dashboard">
+                {/* <img
                   src={`${
                     isLightTheme
                       ? "assets/images/logo-black.png"
                       : "assets/images/logo-big.png"
                   }`}
                   alt="Logo"
-                />
+                /> */}
+                <h4 style={{color:"black"}}>Palkkaran</h4>
               </Link>
             </div>
             <div className="logo-small">
-              <Link to="/">
-                <img src="assets/images/logo-small.png" alt="Logo" />
+              <Link to="/dashboard">
+                <img src="assets/images/logo-small.png" alt="Logo" /> 
               </Link>
             </div>
           </div>
@@ -67,7 +68,7 @@ const Header = () => {
             )}
           </div>
           <Link
-            to="/"
+            to="/dashboard"
             target="_blank"
             className="btn btn-sm btn-primary site-view-btn"
           >
@@ -77,13 +78,13 @@ const Header = () => {
         <div className="col-4 d-lg-none">
           {isLightTheme ? (
             <div className="mobile-logo">
-              <Link to="/">
+              <Link to="/dashboard">
                 <img src="assets/images/logo-black.png" alt="Logo" />
               </Link>
             </div>
           ) : (
             <div className="mobile-logo">
-              <Link to="/">
+              <Link to="/dashboard">
                 <img src="assets/images/logo-big.png" alt="Logo" />
               </Link>
             </div>
