@@ -11,7 +11,7 @@ import axios from "axios";
 import "./style.scss";
 import Swal from "sweetalert2";
 import ChangePlanModal from "./Changeplan";
-
+import InvoiceModal from './invoicemodal';
 const ScrollDataTableSection = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
@@ -22,6 +22,8 @@ const ScrollDataTableSection = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showChangePlanModal, setShowChangePlanModal] = useState(false);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [currentOrderIdForPlanChange, setCurrentOrderIdForPlanChange] =
     useState(null);
 
@@ -272,9 +274,15 @@ const ScrollDataTableSection = () => {
                                 )}
                                 {index === 0 && (
                                   <td rowSpan={order.productItems.length}>
-                                    <Link to="#">
-                                      {order.customer?.name || "N/A"}
-                                    </Link>
+                                   <Link
+  to="#"
+  onClick={() => {
+    setSelectedCustomerId(order.customer?._id);
+    setShowInvoiceModal(true);
+  }}
+>
+  {order.customer?.name || "N/A"}
+</Link>
                                   </td>
                                 )}
                                 <td>{item.product?.productId || "N/A"}</td>
@@ -482,6 +490,12 @@ const ScrollDataTableSection = () => {
         orderId={currentOrderIdForPlanChange}
         url={URL} // Assuming URL is defined in your helper/handle-api
       />
+      <InvoiceModal
+  show={showInvoiceModal}
+  onHide={() => setShowInvoiceModal(false)}
+  customerId={selectedCustomerId}
+  URL={URL}
+/>
     </div>
   );
 };

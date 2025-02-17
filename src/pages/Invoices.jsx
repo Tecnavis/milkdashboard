@@ -114,33 +114,6 @@ const InvoicesMainContent = () => {
                                         <td>$00</td>
                                         <td>$108</td>
                                     </tr>
-                                    <tr>
-                                        <td>02</td>
-                                        <td>StellarBloom Infinity Scarf</td>
-                                        <td>02</td>
-                                        <td>$150</td>
-                                        <td>$10</td>
-                                        <td>$00</td>
-                                        <td>$160</td>
-                                    </tr>
-                                    <tr>
-                                        <td>03</td>
-                                        <td>LuminaFlex Smart Desk Lamp</td>
-                                        <td>03</td>
-                                        <td>$03</td>
-                                        <td>$03</td>
-                                        <td>$00</td>
-                                        <td>$06</td>
-                                    </tr>
-                                    <tr>
-                                        <td>04</td>
-                                        <td>AquaGlow HydroTech Water Bottle</td>
-                                        <td>04</td>
-                                        <td>$04</td>
-                                        <td>$04</td>
-                                        <td>$00</td>
-                                        <td>$08</td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
