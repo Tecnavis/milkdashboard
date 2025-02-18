@@ -102,7 +102,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                       <th>Status</th>
                       <th>Products</th>
                       <th>Qty.</th>
-                      <th>RouterPrice</th>
+                      <th>Router Price</th>
                       <th>Subtotal</th>
                     </tr>
                   </thead>
