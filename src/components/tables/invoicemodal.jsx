@@ -98,20 +98,24 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                   <thead>
                     <tr>
                       <th>No.</th>
+                      <th>Date</th>
+                      <th>Status</th>
                       <th>Products</th>
                       <th>Qty.</th>
-                      <th>Price</th>
+                      <th>RouterPrice</th>
                       <th>Subtotal</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {invoiceData?.[0]?.productItems.map((item, index) => (
+                    {invoiceData?.[0]?.selectedPlanDetails?.dates?.map((dateItem, index) => (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{item.product?.category || 'N/A'}</td>
-                        <td>{item.quantity}</td>
-                        <td>₹{item.routePrice|| 0}</td>
-                        <td>₹{(item.quantity * (item.routePrice || 0)).toFixed(2)}</td>
+                        <td>{new Date(dateItem.date).toLocaleDateString()}</td>
+                        <td>{dateItem.status}</td>
+                        <td>{invoiceData?.[0]?.productItems.map(item => item.product?.category).join(", ")}</td>
+                        <td>{invoiceData?.[0]?.productItems.map(item => item.quantity).reduce((acc, curr) => acc + curr, 0)}</td>
+                        <td>₹{invoiceData?.[0]?.productItems.map(item => item.routePrice).reduce((acc, curr) => acc + curr, 0)}</td>
+                        <td>₹{invoiceData?.[0]?.productItems.reduce((acc, item) => acc + item.quantity * item.routePrice, 0).toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -122,7 +126,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                 <div className="col-md-4">
                   <ul>
                     <li className="d-flex justify-content-between">
-                    Total:<span>₹{invoiceData?.[0]?.productItems.reduce((total, item) => total + item.quantity * (item.routePrice || 0), 0).toFixed(2)}</span>
+                      Total:<span>₹{invoiceData?.[0]?.productItems.reduce((total, item) => total + item.quantity * (item.routePrice || 0), 0).toFixed(2)}</span>
                     </li>
                   </ul>
                 </div>
