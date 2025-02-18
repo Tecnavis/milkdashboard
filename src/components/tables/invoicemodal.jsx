@@ -54,30 +54,6 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                     </div>
                   </div>
                 </div>
-                <div className="col-sm-6">
-                  <div className="d-flex gap-xl-4 gap-3 status-row">
-                    <div className="w-50">
-                      <div className="payment-status">
-                        <label className="form-label">Payment Status:</label>
-                        <Form.Select className="form-control">
-                          <option value="0">Paid</option>
-                          <option value="1">Unpaid</option>
-                          <option value="2">Partial</option>
-                        </Form.Select>
-                      </div>
-                    </div>
-                    <div className="w-50">
-                      <div className="Order-status">
-                        <label className="form-label">Order Status:</label>
-                        <Form.Select className="form-control">
-                          <option value="0">Pending</option>
-                          <option value="1">Delivered</option>
-                          <option value="2">Canceled</option>
-                        </Form.Select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -88,7 +64,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                     <div className="info-card">
                       <h3>Customer Details:</h3>
                       <ul className="p-0">
-                        <li><span>Name:</span> {invoiceData?.[0]?.customer?.customername || 'N/A'}</li>
+                        <li><span>Name:</span> {invoiceData?.[0]?.customer?.name || 'N/A'}</li>
                         <li><span>Email:</span> {invoiceData?.[0]?.customer?.email || 'N/A'}</li>
                         <li><span>Phone:</span> {invoiceData?.[0]?.customer?.phone || 'N/A'}</li>
                       </ul>
