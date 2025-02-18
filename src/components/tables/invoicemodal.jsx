@@ -35,8 +35,8 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
 
   return (
     <Modal show={show} onHide={onHide} size="xl" centered>
-      <Modal.Header closeButton className="bg-primary text-white">
-        <Modal.Title>Invoice Details</Modal.Title>
+      <Modal.Header closeButton className="text-white">
+        <Modal.Title style={{color:"white"}}>Invoice Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {loading ? (
@@ -46,71 +46,40 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
         ) : (
           <div className="invoice">
             <div className="invoice-header mb-30">
-              <div className="row justify-content-between align-items-end">
-                <div className="col-xl-4 col-lg-5 col-sm-6">
-                  <div className="shop-address">
-                    <div className="part-txt">
-                      <p className="mb-1">
-                        Address: 456 E-Commerce Avenue, Cityville
-                      </p>
-                      <p className="mb-1">Email: support@example.com</p>
-                      <p className="mb-1">Phone: +1 (800) 123-4567</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Customer, Shipping, and Invoice Details */}
             <div className="invoice-body">
               <div className="info-card-wrap mb-30">
                 <div className="row">
-                  <div className="col-md-4">
+                  <div className="col-md-4" style={{textAlign:"start"}}>
                     <div className="info-card">
-                      <h3>Customer Details:</h3>
-                      <ul className="p-0">
-                        <li>
-                          <span>Name:</span> {invoiceData[0]?.customer?.name || "N/A"}
-                        </li>
-                        <li>
-                          <span>Email:</span> {invoiceData[0]?.customer?.email || "N/A"}
-                        </li>
-                        <li>
-                          <span>Phone:</span> {invoiceData[0]?.customer?.phone || "N/A"}
-                        </li>
-                      </ul>
+                    <b className="mb-1" style={{marginBottom:"5px"}}>CUSTOMER DETAILS</b><br/>
+                        <p className="mb-1">Name: {invoiceData[0]?.customer?.name || "N/A"}</p>
+                      <p className="mb-1">
+                        Address: {invoiceData[0]?.address?.postcode || " "} {invoiceData[0]?.address?.streetAddress || " "}, {invoiceData[0]?.address?.streetAddress || " "}
+                      </p>
+                      <p className="mb-1">Email: {invoiceData[0]?.customer?.email || " "}</p>
+                      <p className="mb-1">Phone: +91 {invoiceData[0]?.customer?.phone || " "}</p>
                     </div>
                   </div>
-                  <div className="col-md-4">
+                  <div className="col-md-4" style={{textAlign:"center"}}>
                     <div className="info-card">
-                      <h3>Shipping Address:</h3>
-                      <ul className="p-0">
-                        <li>
-                          <span>Address:</span> {invoiceData[0]?.address?.streetAddress || "N/A"}
-                        </li>
-                        <li>
-                          <span>Apartment:</span> {invoiceData[0]?.address?.apartment || "N/A"}
-                        </li>
-                        <li>
-                          <span>Postcode:</span> {invoiceData[0]?.address?.postcode || "N/A"}
-                        </li>
-                      </ul>
+                    <b className="mb-1" >PALKKARAN INVOICE</b>
                     </div>
                   </div>
-                  <div className="col-md-4">
+
+                  <div className="col-md-4" style={{textAlign:"end"}}>
                     <div className="info-card">
-                      <h3>Invoice Details:</h3>
-                      <ul className="p-0">
-                        <li>
-                          <span>Invoice No.:</span> {invoiceData[0]?._id || "N/A"}
-                        </li>
-                        <li>
-                          <span>Payment Type:</span> {invoiceData[0]?.paymentMethod || "N/A"}
-                        </li>
-                        <li>
-                          <span>Payment Status:</span> {invoiceData[0]?.paymentStatus || "N/A"}
-                        </li>
-                      </ul>
+                    <b className="mb-1" style={{marginBottom:"5px"}}>INVOICE DETAILS</b><br/>
+                        <p className="mb-1">Invoice No: {invoiceData[0]?.customer.customerId || "N/A"}</p>
+                      <p className="mb-1">
+                      Payment Type: {invoiceData[0]?.paymentMethod || "N/A"}
+                      </p>
+                      <p className="mb-1">
+                      Payment Status: {invoiceData[0]?.paymentStatus || "N/A"}
+                      </p>
+                     
                     </div>
                   </div>
                 </div>
@@ -169,25 +138,30 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
 
               {/* Total Amount */}
               <div className="total-payment-area row justify-content-end mb-30">
-                <div className="col-md-4">
-                  <ul>
-                    <li className="d-flex justify-content-between">
-                      Total:
-                      <span>
-                        ₹
-                        {invoiceData
-                          .flatMap((invoice) =>
-                            invoice.productItems.map(
-                              (item) => item.quantity * item.routePrice
-                            )
-                          )
-                          .reduce((total, item) => total + item, 0)
-                          .toFixed(2)}
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+  <div className="col-md-4">
+    <ul>
+      <li className="d-flex justify-content-between">
+        Total:
+        <span>
+          ₹
+          {invoiceData
+            .flatMap((invoice) =>
+              invoice.selectedPlanDetails?.dates
+                .filter((dateItem) => dateItem.status === "delivered")
+                .map((dateItem) =>
+                  invoice.productItems.reduce(
+                    (acc, item) => acc + item.quantity * item.routePrice,
+                    0
+                  )
+                )
+            )
+            .reduce((total, subtotal) => total + subtotal, 0)
+            .toFixed(2)}
+        </span>
+      </li>
+    </ul>
+  </div>
+</div>
             </div>
           </div>
         )}
@@ -197,7 +171,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
           className="btn btn-sm btn-primary"
           onClick={() => window.print()}
         >
-          <i className="fa-light fa-print"></i> Print
+         Send
         </button>
         <button className="btn btn-sm btn-secondary" onClick={onHide}>
           Close
