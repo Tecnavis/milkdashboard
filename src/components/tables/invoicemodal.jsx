@@ -110,8 +110,8 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                         <td>{index + 1}</td>
                         <td>{item.product?.category || 'N/A'}</td>
                         <td>{item.quantity}</td>
-                        <td>₹{item.product?.price || 0}</td>
-                        <td>₹{(item.quantity * (item.product?.price || 0)).toFixed(2)}</td>
+                        <td>₹{item.routePrice|| 0}</td>
+                        <td>₹{(item.quantity * (item.routePrice || 0)).toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -122,7 +122,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                 <div className="col-md-4">
                   <ul>
                     <li className="d-flex justify-content-between">
-                      Total:<span>₹{invoiceData?.[0]?.routeprice || 0}</span>
+                    Total:<span>₹{invoiceData?.[0]?.productItems.reduce((total, item) => total + item.quantity * (item.routePrice || 0), 0).toFixed(2)}</span>
                     </li>
                   </ul>
                 </div>

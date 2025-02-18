@@ -178,29 +178,47 @@ const Salesorders = () => {
 
   // Confirm order
   const handleOrder = async () => {
-    // Get the total price by summing the routePrice of selected products
-    const totalRoutePrice = selectedProducts.reduce((total, product) => total + product.routePrice, 0);
-  
     try {
-      const response = await createOrder({
+      // Create product items array with route prices
+      const productItemsWithPrices = selectedProducts.map((product) => ({
+        productId: product.productId._id,
+        quantity: 1,
+        routePrice: product.routePrice // Include the routePrice from the selected product
+      }));
+  
+      // Calculate total route price
+      const totalRoutePrice = selectedProducts.reduce(
+        (sum, product) => sum + (product.routePrice || 0),
+        0
+      );
+  
+      const orderData = {
         customerId: selectedCustomer._id,
-        productItems: selectedProducts.map((p) => ({ productId: p.productId, quantity: 1 })),
+        productItems: productItemsWithPrices,
         planId: selectedPlan._id,
         paymentMethod: "Cash",
-        routeprice: totalRoutePrice, // Use the calculated route price
-      });
+        routeprice: totalRoutePrice
+      };
+  
+      const response = await createOrder(orderData);
   
       if (response.order) {
         Swal.fire({
           icon: "success",
           title: "Success",
-          text: "Order created successfully!",
+          text: "Order created successfully!"
         });
       }
     } catch (error) {
       console.error("Error creating order:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to create order"
+      });
     }
   };
+  
   
 
   return (
