@@ -6,11 +6,9 @@ const BalanceOverview = () => {
     <div className="col-lg-8">
         <div className="panel chart-panel-1">
             <div className="panel-header">
-                <h5>Balance Overview</h5>
+                <h5>Weekly Order Insights</h5>
                 <div className="btn-box">
                     <button className="btn btn-sm btn-outline-primary">Week</button>
-                    <button className="btn btn-sm btn-outline-primary">Month</button>
-                    <button className="btn btn-sm btn-outline-primary">Year</button>
                 </div>
             </div>
             <div className="panel-body">
