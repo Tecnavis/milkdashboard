@@ -83,7 +83,7 @@ const HeaderProfile = () => {
               </Link>
             </li>
             <li>
-              <Link className="dropdown-item" to="/task">
+              <Link className="dropdown-item" to="/taskmanagement">
                 <span className="dropdown-icon"><i className="fa-regular fa-calendar-check"></i></span> Taskboard
               </Link>
             </li>

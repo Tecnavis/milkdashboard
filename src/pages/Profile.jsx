@@ -12,13 +12,13 @@ const ProfileMainContent = () => {
         </div>
 
         <div className="row g-4">
-            <div className="col-md-4">
+            <div className="col-md-12">
                 <UserInformation/>
             </div>
-            <div className="col-md-8">
+            {/* <div className="col-md-8">
                 <ViewProfileCards/>
                 <UserActivity/>
-            </div>
+            </div> */}
         </div>
 
         <Footer/>

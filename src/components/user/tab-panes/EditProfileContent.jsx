@@ -1,8 +1,89 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { URL } from "../../../Helper/handle-api";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const EditProfileContent = () => {
+  const [adminDetails, setAdminDetails] = useState({
+    id: "",
+    name: "",
+    address: "",
+    role: "",
+    phone: "",
+    email: "",
+    image: "",
+  });
+
+  useEffect(() => {
+    const adminDetailsFromLocalStorage = JSON.parse(
+      localStorage.getItem("adminDetails")
+    );
+
+    if (adminDetailsFromLocalStorage) {
+      setAdminDetails(adminDetailsFromLocalStorage);
+    }
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setAdminDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("name", adminDetails.name);
+    formData.append("address", adminDetails.address);
+    formData.append("role", adminDetails.role);
+    formData.append("phone", adminDetails.phone);
+    formData.append("email", adminDetails.email);
+
+    // Append image if it's a file
+    if (adminDetails.image instanceof File) {
+      formData.append("image", adminDetails.image);
+    }
+
+    try {
+      if (!adminDetails._id) {
+        throw new Error("Admin ID is undefined. Cannot update details.");
+      }
+
+      const response = await axios.put(
+        `${URL}/admin/${adminDetails._id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      localStorage.setItem(
+        "adminDetails",
+        JSON.stringify(response.data.updatedAdmin)
+      );
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Admin details updated successfully!",
+      });
+    } catch (error) {
+      console.error("Error updating admin details:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to update admin details. Please try again.",
+      });
+    }
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
+
       <div className="profile-edit-tab-title">
         <h6>Public Information</h6>
       </div>
@@ -12,19 +93,38 @@ const EditProfileContent = () => {
             <div className="admin-profile">
               <div className="image-wrap">
                 <div className="part-img rounded-circle overflow-hidden">
-                  <img src="assets/images/admin.png" alt="admin" />
+                  <img
+                    src={`${URL}/images/${adminDetails.image}`}
+                    alt="admin"
+                  />
                 </div>
-                <button className="image-change">
+                <label
+                  className="image-change"
+                  style={{ paddingInline: "6px", paddingTop: "3px" }}
+                >
                   <i className="fa-light fa-camera" />
-                </button>
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={(e) =>
+                      setAdminDetails({
+                        ...adminDetails,
+                        image: e.target.files[0],
+                      })
+                    }
+                  />
+                </label>
               </div>
-              <span className="admin-name">Mitchell C. Shay</span>
-              <span className="admin-role">Graphic Designer</span>
+              <span className="admin-name">{adminDetails.name}</span>
+              <span className="admin-role">{adminDetails.role}</span>
             </div>
           </div>
+
           <div className="col-md-9">
             <div className="row g-3">
-              <div className="col-sm-6">
+              <div className="col-sm-12">
                 <div className="input-group">
                   <span className="input-group-text">
                     <i className="fa-light fa-user" />
@@ -33,31 +133,19 @@ const EditProfileContent = () => {
                     type="text"
                     className="form-control"
                     placeholder="Full Name"
-                    value="Mitchell C. Shay"
-                    readOnly
-                  />
-                </div>
-              </div>
-              <div className="col-sm-6">
-                <div className="input-group">
-                  <span className="input-group-text">
-                    <i className="fa-light fa-at" />
-                  </span>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Username"
-                    value="@mitchellc"
-                    readOnly
+                    name="name"
+                    value={adminDetails.name}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
               <div className="col-12">
                 <textarea
-                    className="form-control h-150-p"
-                    placeholder="Biography"
-                    value="It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets"
-                    readOnly
+                  className="form-control h-150-p"
+                  placeholder="Address"
+                  name="address"
+                  value={adminDetails.address}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -69,67 +157,27 @@ const EditProfileContent = () => {
       </div>
       <div className="private-information mb-30">
         <div className="row g-3">
-          <div className="col-md-4 col-sm-6">
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="fa-light fa-user" />
-              </span>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Unique ID"
-                value="1D233"
-                readOnly
-              />
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-6">
+          <div className="col-md-12 col-sm-6">
             <div className="input-group flex-nowrap">
               <span className="input-group-text">
                 <i className="fa-light fa-user-tie" />
               </span>
-              <select className="form-control select-search" defaultValue="">
-                <option value="">Role</option>
-                <option value="0">Admin</option>
-                <option value="1">Manager</option>
-                <option value="2">Project Manager</option>
-                <option value="3">Managing Director</option>
-                <option value="4">Chairman</option>
-                <option value="5" defaultValue>
-                  Graphic Designer
-                </option>
+              <select
+                className="form-control select-search"
+                name="role"
+                value={adminDetails.role}
+                onChange={handleChange}
+              >
+                <option value="">Select Role</option>
+                <option value="Main Admin">Main Admin</option>
+                <option value="Secondary Admin">Secondary Admin</option>
+                <option value="Accountant">Accountant</option>
+                <option value="Inventory Manager">Inventory Manager</option>
+                <option value="Sales">Sales</option>
               </select>
             </div>
           </div>
-          <div className="col-md-4 col-sm-6">
-            <div className="input-group flex-nowrap">
-              <span className="input-group-text">
-                <i className="fa-light fa-circle-check" />
-              </span>
-              <select className="form-control" defaultValue="">
-                <option value="">Status</option>
-                <option value="0" defaultValue>
-                  Enable
-                </option>
-                <option value="1">Disable</option>
-              </select>
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-6">
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="fa-light fa-envelope" />
-              </span>
-              <input
-                type="email"
-                className="form-control"
-                placeholder="Email"
-                value="example@mail.com"
-                readOnly
-              />
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-6">
+          <div className="col-md-6 col-sm-6">
             <div className="input-group">
               <span className="input-group-text">
                 <i className="fa-light fa-phone" />
@@ -138,119 +186,32 @@ const EditProfileContent = () => {
                 type="tel"
                 className="form-control"
                 placeholder="Phone"
-                value="+0 123 456 789"
-                readOnly
+                name="phone"
+                value={adminDetails.phone}
+                onChange={handleChange}
               />
             </div>
           </div>
-          <div className="col-md-4 col-sm-6">
+          <div className="col-md-6 col-sm-6">
             <div className="input-group">
               <span className="input-group-text">
-                <i className="fa-light fa-globe" />
+                <i className="fa-light fa-envelope" />
               </span>
               <input
-                type="url"
+                type="email"
                 className="form-control"
-                placeholder="Website"
-                value="https://themeforest.net/"
-                readOnly
+                placeholder="Email"
+                name="email"
+                value={adminDetails.email}
+                onChange={handleChange}
               />
             </div>
-          </div>
-          <div className="col-12">
-            <textarea className="form-control h-100-p" placeholder="Address" value="California, United States" readOnly/>
           </div>
         </div>
       </div>
-      <div className="profile-edit-tab-title">
-        <h6>Social Information</h6>
-      </div>
       <div className="social-information">
         <div className="row g-3">
-          <div className="col-sm-6">
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="fa-brands fa-facebook-f" />
-              </span>
-              <input
-                type="url"
-                className="form-control"
-                placeholder="Facebook"
-                value="https://www.facebook.com/"
-                readOnly
-              />
-            </div>
-          </div>
-          <div className="col-sm-6">
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="fa-brands fa-twitter" />
-              </span>
-              <input
-                type="url"
-                className="form-control"
-                placeholder="Twitter"
-                value="https://twitter.com/"
-                readOnly
-              />
-            </div>
-          </div>
-          <div className="col-sm-6">
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="fa-brands fa-linkedin-in" />
-              </span>
-              <input
-                type="url"
-                className="form-control"
-                placeholder="Linkedin"
-                value="https://www.linkedin.com/"
-                readOnly
-              />
-            </div>
-          </div>
-          <div className="col-sm-6">
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="fa-brands fa-instagram" />
-              </span>
-              <input
-                type="url"
-                className="form-control"
-                placeholder="Instagram"
-                value="https://www.instagram.com/"
-                readOnly
-              />
-            </div>
-          </div>
-          <div className="col-sm-6">
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="fa-brands fa-youtube" />
-              </span>
-              <input
-                type="url"
-                className="form-control"
-                placeholder="Youtube"
-                value="https://www.youtube.com/"
-                readOnly
-              />
-            </div>
-          </div>
-          <div className="col-sm-6">
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="fa-brands fa-pinterest-p" />
-              </span>
-              <input
-                type="url"
-                className="form-control"
-                placeholder="Pinterest"
-                value="https://www.pinterest.com/"
-                readOnly
-              />
-            </div>
-          </div>
+          
           <div className="col-12">
             <button type="submit" className="btn btn-primary">
               Save Changes

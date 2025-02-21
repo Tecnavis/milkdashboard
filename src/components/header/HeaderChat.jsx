@@ -25,7 +25,7 @@ const HeaderChat = () => {
 
   return (
       <div className="header-btn-box" ref={chatDropdownRef}>
-        <button
+        {/* <button
           className={`header-btn ${isChatDropdownOpen? 'show':''}`}
           id="messageDropdown"
           data-bs-toggle="dropdown"
@@ -34,7 +34,7 @@ const HeaderChat = () => {
         >
           <i className="fa-light fa-comment-dots"></i>
           <span className="badge bg-danger">3</span>
-        </button>
+        </button> */}
         <ul
           className={`message-dropdown dropdown-menu ${
             isChatDropdownOpen ? 'show' : ''

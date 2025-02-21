@@ -37,7 +37,7 @@ const EditProfileMainContent = () => {
                            Edit Profile
                         </Nav.Link>
                         </Nav.Item>
-                        <Nav.Item>
+                        {/* <Nav.Item>
                         <Nav.Link
                             eventKey="change"
                             className={`btn btn-sm btn-outline-primary ${
@@ -46,8 +46,8 @@ const EditProfileMainContent = () => {
                         >
                            Change Password
                         </Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item>
+                        </Nav.Item> */}
+                        {/* <Nav.Item>
                         <Nav.Link
                             eventKey="other"
                             className={`btn btn-sm btn-outline-primary ${
@@ -56,7 +56,7 @@ const EditProfileMainContent = () => {
                         >
                            Other Settings
                         </Nav.Link>
-                        </Nav.Item>
+                        </Nav.Item> */}
                         </Nav>
                     </div>
                     <div className="panel-body">

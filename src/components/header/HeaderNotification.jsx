@@ -30,7 +30,7 @@ const HeaderNotification = () => {
         onClick={toggleNotificationDropdown}
       >
         <i className="fa-light fa-bell"></i>
-        <span className="badge bg-danger">9+</span>
+        <span className="badge bg-danger">2+</span>
       </button>
       <ul
         className={`notification-dropdown dropdown-menu ${
@@ -61,58 +61,6 @@ const HeaderNotification = () => {
                 <i className="fa-solid fa-comment-dots"></i>
               </span>{' '}
               <span className="fw-bold">Cody</span> Commented on your post
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link to="#" className="d-flex align-items-center">
-            <div className="avatar">
-              <img src="assets/images/avatar-3.png" alt="image" />
-            </div>
-            <div className="notification-txt">
-              <span className="notification-icon">
-                <i className="fa-solid fa-share"></i>
-              </span>{' '}
-              <span className="fw-bold">Zane</span> Shared your post
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link to="#" className="d-flex align-items-center">
-            <div className="avatar">
-              <img src="assets/images/avatar-4.png" alt="image" />
-            </div>
-            <div className="notification-txt">
-              <span className="notification-icon text-primary">
-                <i className="fa-solid fa-thumbs-up"></i>
-              </span>{' '}
-              <span className="fw-bold">Christopher</span> Likes your post
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link to="#" className="d-flex align-items-center">
-            <div className="avatar">
-              <img src="assets/images/avatar-5.png" alt="image" />
-            </div>
-            <div className="notification-txt">
-              <span className="notification-icon text-success">
-                <i className="fa-solid fa-comment-dots"></i>
-              </span>{' '}
-              <span className="fw-bold">Charlie</span> Commented on your post
-            </div>
-          </Link>
-        </li>
-        <li>
-          <Link to="#" className="d-flex align-items-center">
-            <div className="avatar">
-              <img src="assets/images/avatar-6.png" alt="image" />
-            </div>
-            <div className="notification-txt">
-              <span className="notification-icon">
-                <i className="fa-solid fa-share"></i>
-              </span>{' '}
-              <span className="fw-bold">Jayden</span> Shared your post
             </div>
           </Link>
         </li>

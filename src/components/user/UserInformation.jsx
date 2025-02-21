@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { URL } from '../../Helper/handle-api'
 
 const UserInformation = () => {
     const [dropdownBtnOpen,setDropdownBtnOpen] = useState(false)
@@ -24,13 +25,14 @@ const UserInformation = () => {
         document.removeEventListener('click', handleOutsideClick);
       };
     }, []);
-  
+  //admin Details
+  const adminDetails = JSON.parse(localStorage.getItem("adminDetails"));
   return (
     <div className="panel">
         <div className="panel-body">
             <div className="profile-sidebar">
                 <div className="d-flex justify-content-between align-items-center">
-                    <h5 className="profile-sidebar-title">User Information</h5>
+                    <h5 className="profile-sidebar-title"> Information</h5>
                     <div className="dropdown" ref={headerRef}>
                         <button className="btn btn-sm btn-icon btn-outline-primary" onClick={handleDropdownBtn}>
                             <i className="fa-solid fa-ellipsis"></i>
@@ -43,13 +45,13 @@ const UserInformation = () => {
                 <div className="top">
                     <div className="image-wrap">
                         <div className="part-img rounded-circle overflow-hidden">
-                            <img src="assets/images/admin.png" alt="admin"/>
+                        <img src={`${URL}/images/${adminDetails.image}`} alt="admin"/>
                         </div>
                         <button className="image-change"><i className="fa-light fa-camera"></i></button>
                     </div>
                     <div className="part-txt">
-                        <h4 className="admin-name">Mitchell C. Shay</h4>
-                        <span className="admin-role">Graphic Designer</span>
+                        <h4 className="admin-name">{adminDetails.name}</h4>
+                        <span className="admin-role">{adminDetails.role}</span>
                         <div className="admin-social">
                             <Link to="#"><i className="fa-brands fa-facebook-f"></i></Link>
                             <Link to="#"><i className="fa-brands fa-twitter"></i></Link>
@@ -61,14 +63,13 @@ const UserInformation = () => {
                 <div className="bottom">
                     <h6 className="profile-sidebar-subtitle">Communication Info</h6>
                     <ul>
-                        <li><span>Full Name:</span>Anna Adame</li>
-                        <li><span>Mobile:</span>+(1) 987 65433</li>
-                        <li><span>Mail:</span>example@mail.com</li>
-                        <li><span>Address:</span>California, United States</li>
-                        <li><span>Joining Date:</span>24 Nov 2022</li>
+                        <li><span>Full Name:</span>{adminDetails.name}</li>
+                        <li><span>Mobile:</span>+91 {adminDetails.phone}</li>
+                        <li><span>Mail:</span>{adminDetails.email}</li>
+                        <li><span>Role:</span>{adminDetails.role}</li>
+                        <li><span>Address:</span>{adminDetails.address}</li>
                     </ul>
-                    <h6 className="profile-sidebar-subtitle">About Me</h6>
-                    <p>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets</p>
+                    {/* <h6 className="profile-sidebar-subtitle">About Me</h6> */}
                 </div>
             </div>
         </div>
