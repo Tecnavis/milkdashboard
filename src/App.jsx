@@ -67,14 +67,14 @@ function App() {
     <Router>
       <Routes>
         <Route element={<Layout/>}>
-          <Route path="/dashboard" element={<Dashboard/>}/>
+          <Route path="/inventorydashboard" element={<Dashboard/>}/>
           <Route path="/stocklist" element={<StockList/>}/>
           <Route path="/banner" element={<Banner/>}/>
           <Route path="/productassign" element={<ProductAssign/>}/>
           <Route path="/allReview" element={<AllReviewTable/>}/>
           <Route path="/salesorders" element={<Salesorders/>}/>
           <Route path="/fileManager" element={<FileManager/>}/>
-          <Route path="/inventorydashboard" element={<CrmDashboard/>}/>
+          <Route path="/dashboard" element={<CrmDashboard/>}/>
           <Route path="/hrmDashboard" element={<HrmDashboard/>}/>
           <Route path="/routeProduct" element={<Return/>}/>
           <Route path="/warehouse" element={<Company/>}/>

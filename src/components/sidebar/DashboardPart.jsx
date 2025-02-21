@@ -17,17 +17,17 @@ const DashboardPart = () => {
         Dashboard
       </Link>
       <ul className={`sidebar-link-group ${layoutPosition.horizontal ? (dropdownOpen.dashboard ? 'd-block' : '') : (isMainDropdownOpen ? 'd-none' : '')}`}>       
-       <li className="sidebar-dropdown-item">
+       {/* <li className="sidebar-dropdown-item">
           <NavLink to="/dashboard" className="sidebar-link">
             <span className="nav-icon">
               <i className="fa-light fa-cart-shopping-fast"></i>
             </span>{' '}
             <span className="sidebar-txt">eCommerce</span>
           </NavLink>
-        </li>
+        </li> */}
         <li className="sidebar-dropdown-item">
           <NavLink
-            to="/inventorydashboard"
+            to="/dashboard"
             className="sidebar-link"
           >
             <span className="nav-icon">
