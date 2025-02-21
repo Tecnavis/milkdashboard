@@ -25,8 +25,8 @@ const CrmDashboardMainContent = () => {
               <Invoices/>
             </div>
             <MyTasks/>
-            <NoticeBoard/>
-            <Deadlines/>
+            {/* <NoticeBoard/>
+            <Deadlines/> */}
         </div>
 
         <Footer/>
