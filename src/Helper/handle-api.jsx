@@ -138,7 +138,6 @@ export const fetchRoutes = async () => {
 export const fetchRoutes1 = async () => {
   try {
       const response = await axios.get(`${URL}/route`);
-      console.log("API Response:", response.data);
       return response.data;
   } catch (error) {
       console.error("Error fetching routes:", error);
@@ -148,7 +147,6 @@ export const fetchRoutes1 = async () => {
 export const FetchallOrders1 = async () => {
   try {
       const response = await axios.get(`${URL}/orderdetails`);
-      console.log("API Response:", response.data);
       return response.data;
   } catch (error) {
       console.error("Error fetching routes:", error);
