@@ -31,7 +31,7 @@ const RecentProjects = () => {
         <div className="panel-header">
           <h5>Route Based Orders</h5>
           <div className="btn-box">
-            <Link to="/task" className="btn btn-sm btn-outline-primary">
+            <Link to="/allorders" className="btn btn-sm btn-outline-primary">
               View All
             </Link>
           </div>
