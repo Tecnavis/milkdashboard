@@ -5,7 +5,8 @@ import {
   deleteCustomer,
   updateCustomer,
   fetchRoutes,
-  confirmCustomer
+  confirmCustomer,
+  URL
 } from "../../Helper/handle-api";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -111,6 +112,7 @@ const handleConfirm = async (customerId) => {
         <thead>
           <tr>
             <th>Customer Id</th>
+            <th>Proof Image</th>
             <th>Name</th>
             <th>Phone</th>
             <th>Address</th>
@@ -126,6 +128,14 @@ const handleConfirm = async (customerId) => {
             <tr key={data._id}>
               <td>{data.customerId}</td>
               <td>
+  {data.image ? (
+    <img
+      src={`${URL}/images/${data.image}`}
+      alt="Proof"
+      style={{ width: "100px", height: "100px" }}
+    />
+  ) : null}
+</td>              <td>
                 <Link to="#">{data.name}</Link>
               </td>
               <td>
