@@ -50,23 +50,23 @@ const Salesorders = () => {
     try {
       let planData = {
         customerId: selectedCustomer._id,
-        planType: selectedPlan,
+        planType: selectedPlan || "none", // Ensure it is never null
       };
-
+  
       // Add specific data based on plan type
       switch (selectedPlan) {
-        case 'weekly':
+        case "weekly":
           planData.weeklyDays = selectedDays;
           break;
-        case 'alternative':
+        case "alternative":
           planData.startDate = startDate;
           planData.interval = interval;
           break;
-        case 'custom':
+        case "custom":
           planData.customDates = customDates;
           break;
       }
-
+  
       const response = await createPlan(planData);
       if (response.plan) {
         setSelectedPlan(response.plan);
@@ -86,7 +86,43 @@ const Salesorders = () => {
       });
     }
   };
-
+  
+  const handleSkipPlan = async () => {
+    
+    try {
+      const planData = {
+        customerId: selectedCustomer._id,
+        planType: "none", // Set null without quotes
+        selectedPlanDetails: {
+          dates: [{ date: new Date(), status: "pending" }],
+          isActive: true,
+        },
+      };
+  
+      // Send request to backend (if needed)
+      const response = await createPlan(planData);
+  
+      if (response.success) {
+        setSelectedPlan(null);
+        setShowPlanModal(false);
+        setOrderConfirmed(true);
+        Swal.fire({
+          icon: "success",
+          title: "Plan Skipped",
+          text: "You can proceed to order products without a plan.",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to skip plan",
+      });
+    }
+  };
+  
+  
+  
   const renderPlanOptions = () => {
     switch (selectedPlan) {
       case 'weekly':
@@ -179,14 +215,12 @@ const Salesorders = () => {
   // Confirm order
   const handleOrder = async () => {
     try {
-      // Create product items array with route prices
       const productItemsWithPrices = selectedProducts.map((product) => ({
         productId: product.productId._id,
         quantity: 1,
-        routePrice: product.routePrice // Include the routePrice from the selected product
+        routePrice: product.routePrice, // Include the routePrice
       }));
   
-      // Calculate total route price
       const totalRoutePrice = selectedProducts.reduce(
         (sum, product) => sum + (product.routePrice || 0),
         0
@@ -195,9 +229,9 @@ const Salesorders = () => {
       const orderData = {
         customerId: selectedCustomer._id,
         productItems: productItemsWithPrices,
-        planId: selectedPlan._id,
+        planId: selectedPlan ? selectedPlan._id : null, // Allow null plan
         paymentMethod: "Cash",
-        routeprice: totalRoutePrice
+        routeprice: totalRoutePrice,
       };
   
       const response = await createOrder(orderData);
@@ -206,15 +240,14 @@ const Salesorders = () => {
         Swal.fire({
           icon: "success",
           title: "Success",
-          text: "Order created successfully!"
+          text: "Order created successfully!",
         });
       }
     } catch (error) {
-      console.error("Error creating order:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error.message || "Failed to create order"
+        text: error.message || "Failed to create order",
       });
     }
   };
@@ -305,49 +338,37 @@ const Salesorders = () => {
 
 
       {/* Plan Selection Modal */}
-     {/* Plan Selection Modal */}
-     <Modal show={showPlanModal} onHide={() => setShowPlanModal(false)} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Select Plan</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="row mb-4">
-            {plans.map((plan) => (
-              <div key={plan} className="col-12 col-md-4 mb-3">
-                <div className={`card ${selectedPlan === plan ? "border-primary" : "border-secondary"}`}>
-                  <div className="card-body text-center">
-                    <h5 className="card-title">{plan.charAt(0).toUpperCase() + plan.slice(1)}</h5>
-                    <input
-                      type="radio"
-                      name="plan"
-                      value={plan}
-                      checked={selectedPlan === plan}
-                      onChange={() => {
-                        setSelectedPlan(plan);
-                        setSelectedDays([]);
-                        setStartDate('');
-                        setInterval(2);
-                        setCustomDates([]);
-                      }}
-                      className="btn-check"
-                      id={`plan-${plan}`}
-                    />
-                    <label htmlFor={`plan-${plan}`} className="btn btn-outline-primary mt-2">
-                      Choose Plan
-                    </label>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {renderPlanOptions()}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowPlanModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleCreatePlan}>Create Plan</Button>
-        </Modal.Footer>
-      </Modal>
+      <Modal show={showPlanModal} onHide={() => setShowPlanModal(false)}>
+  <Modal.Header closeButton>
+    <Modal.Title>Select Plan</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <div className="d-flex flex-wrap">
+      {plans.map((plan) => (
+        <Button
+          key={plan}
+          variant={selectedPlan === plan ? "primary" : "outline-primary"}
+          className="m-2"
+          onClick={() => setSelectedPlan(plan)}
+        >
+          {plan.toUpperCase()}
+        </Button>
+      ))}
+    </div>
+
+    {selectedPlan && renderPlanOptions()}
+
+    <div className="d-flex justify-content-between mt-4">
+      <Button variant="danger" onClick={handleSkipPlan}>
+        Skip Plan
+      </Button>
+      <Button variant="success" onClick={handleCreatePlan}>
+        Continue
+      </Button>
+    </div>
+  </Modal.Body>
+</Modal>
+
 
       {/* Order Button */}
       {orderConfirmed && (
