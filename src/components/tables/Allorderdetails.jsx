@@ -315,7 +315,7 @@ const [selectedCustomerId, setSelectedCustomerId] = useState(null);
                                 )}
                                 {index === 0 && (
                                   <td rowSpan={order.productItems.length}>
-                                    ₹{order.routeprice || 0}
+                                    ₹{order.totalPrice || 0}
                                   </td>
                                 )}
                                 {index === 0 && (
