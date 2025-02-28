@@ -18,13 +18,13 @@ const AddEmployee = () => {
         <div className="row">
             <BasicInformation/>
             <PersonalInformation/>
-            <SalarySection/>
-            <BankDetails/>
-            <PermanentAddress/>
-            <BiologicalInfo/>
-            <EmergencyContact/>
-            <LoginInfo/>
-            <SaveBtn/>
+            {/* <SalarySection/> */}
+            {/* <BankDetails/> */}
+            {/* <PermanentAddress/> */}
+            {/* <BiologicalInfo/> */}
+            {/* <EmergencyContact/> */}
+            {/* <LoginInfo/> */}
+            {/* <SaveBtn/> */}
         </div>
         <Footer/>
     </div>
