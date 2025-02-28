@@ -1,5 +1,6 @@
 
 import axios from "axios";
+import Swal from "sweetalert2";
 
 // export const  URL = `http://localhost:3001`;
 export const  URL = `https://api.palkkaran.in`;
@@ -65,9 +66,27 @@ export const FetchCustomerById = async (id) => {
 
 //delete customer by Id
 export const deleteCustomer = async (id) => {
-    const response = await axios.delete(`${URL}/customer/${id}`);
-    return response.data;
-}
+  const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+  });
+
+  if (result.isConfirmed) {
+      try {
+          const response = await axios.delete(`${URL}/customer/${id}`);
+          Swal.fire("Deleted!", "Customer has been deleted.", "success");
+          return response.data;
+      } catch (error) {
+          Swal.fire("Error!", "Failed to delete customer.", "error");
+      }
+  }
+};
+
 
 export const updateCustomer = async (id, updatedData) => {
     const response = await axios.put(`${URL}/customer/${id}`, updatedData);
