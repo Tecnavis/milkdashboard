@@ -19,34 +19,29 @@ const PendingWork = () => {
 
   // Filter orders for today's date based on plan type
   const filteredOrders = orders
-    .map((order) => {
-      if (order.selectedPlanDetails?.dates) {
-        const todayPlan = order.selectedPlanDetails.dates.find(
-          (d) => d.date.split("T")[0] === today
-        );
+  .map((order) => {
+    if (order?.selectedPlanDetails?.dates) {
+      const todayPlan = order.selectedPlanDetails.dates.find(
+        (d) => d.date?.split("T")[0] === today
+      );
 
-        // Check for both "monthly" and "custom" plans
-        if (
-          (order.plan.planType === "monthly" ||
-            order.plan.planType === "custom" ||
-            order.plan.planType === "daily" ||
-            order.plan.planType === "weekly" ||
-            order.plan.planType === "alternative") &&
-          todayPlan
-        ) {
-          return {
-            ...order,
-            selectedPlanDetails: {
-              ...order.selectedPlanDetails,
-              dates: [todayPlan],
-            },
-          };
-        }
+      if (
+        order?.plan?.planType && // Ensure `order.plan` exists before accessing `planType`
+        ["monthly", "custom", "daily", "weekly", "alternative"].includes(order.plan.planType) &&
+        todayPlan
+      ) {
+        return {
+          ...order,
+          selectedPlanDetails: {
+            ...order.selectedPlanDetails,
+            dates: [todayPlan],
+          },
+        };
       }
-      return null;
-    })
-    .filter((order) => order !== null);
-  // const currentData = filteredOrders.slice(indexOfFirstData, indexOfLastData);
+    }
+    return null;
+  })
+  .filter((order) => order !== null);
 
   return (
     <div className="col-lg-6">
