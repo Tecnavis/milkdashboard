@@ -88,22 +88,17 @@ const Salesorders = () => {
   };
   
   const handleSkipPlan = async () => {
-    
     try {
       const planData = {
         customerId: selectedCustomer._id,
-        planType: "none", // Set null without quotes
-        selectedPlanDetails: {
-          dates: [{ date: new Date(), status: "pending" }],
-          isActive: true,
-        },
+        planType: "none"
       };
-  
-      // Send request to backend (if needed)
+    
+      // Send request to backend
       const response = await createPlan(planData);
-  
-      if (response.success) {
-        setSelectedPlan(null);
+    
+      if (response.plan) { // Check for plan in response
+        setSelectedPlan(response.plan);
         setShowPlanModal(false);
         setOrderConfirmed(true);
         Swal.fire({
@@ -359,13 +354,15 @@ const Salesorders = () => {
     {selectedPlan && renderPlanOptions()}
 
     <div className="d-flex justify-content-between mt-4">
-      <Button variant="danger" onClick={handleSkipPlan}>
-        Skip Plan
-      </Button>
-      <Button variant="success" onClick={handleCreatePlan}>
-        Continue
-      </Button>
-    </div>
+  <Button variant="danger" onClick={handleSkipPlan}>
+    Skip Plan
+  </Button>
+  {selectedPlan && ( // Only show Continue if a plan is selected
+    <Button variant="success" onClick={handleCreatePlan}>
+      Continue
+    </Button>
+  )}
+</div>
   </Modal.Body>
 </Modal>
 
