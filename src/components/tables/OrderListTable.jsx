@@ -46,18 +46,20 @@ const OrderListTable = () => {
 
 
 
-    const handleDeliveryStatus = async (orderId, date) => {
-      if (!orderId || !date) {
-        console.error("Missing orderId or date for updating status.");
+    const handleDeliveryStatus = async (orderId, date, customerId) => {
+      if (!orderId || !date || !customerId) {
+        console.error("Missing orderId, date, or customerId for updating status.");
         return;
       }
-  
+    
       try {
+        const message = `Your product has been successfully delivered on ${date.split("T")[0]}.`;
+    
         const response = await axios.patch(`${URL}/orderdetails/${orderId}`, {
           status: "delivered",
           date,
         });
-  
+    
         if (response.status === 200) {
           setOrders((prevOrders) =>
             prevOrders.map((order) =>
@@ -76,12 +78,21 @@ const OrderListTable = () => {
                 : order
             )
           );
+    
+          // Store the message in the database and trigger push notification
+          await axios.post(`${URL}/fcm/send-notification`, {
+            customerId,
+            message,
+          });
+    
+          console.log(message);
         }
       } catch (error) {
         console.error("Error updating status:", error);
         alert("Failed to update delivery status. Please try again.");
       }
     };
+    
     return (
       <div>
         <OverlayScrollbarsComponent>
@@ -131,22 +142,23 @@ const OrderListTable = () => {
                       ))}
                     </td>
 
-                    <td>{order.routeprice}</td>
+                    <td>{order.totalPrice}</td>
                     <td>{order.plan?.planType}</td>
                     <td>{order.selectedPlanDetails.dates[0].status}</td>
                     <td>
-  <button
-    className={`btn btn-sm ${
-      order.selectedPlanDetails.dates[0].status === "delivered"
-        ? "btn-success"
-        : "btn-primary"
-    }`}
-    onClick={() =>
-      handleDeliveryStatus(order._id, order.selectedPlanDetails.dates[0].date)
-    }
-  >
-    Delivered
-  </button>
+                    <button
+  className={`btn btn-sm ${
+    order.selectedPlanDetails.dates[0].status === "delivered"
+      ? "btn-success"
+      : "btn-primary"
+  }`}
+  onClick={() =>
+    handleDeliveryStatus(order._id, order.selectedPlanDetails.dates[0].date, order.customer._id)
+  }
+>
+  Delivered
+</button>
+
 </td>
 
                   </tr>
