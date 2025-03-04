@@ -3,7 +3,7 @@ import Footer from '../components/footer/Footer'
 import OrderHeader from '../components/header/OrderHeader'
 import HeaderBtn from '../components/header/HeaderBtn'
 import OrderListTable from '../components/tables/OrderListTable'
-
+import TodayTask from '../components/crm/Deadlines'
 const OrderMainContent = () => {
   return (
     <div className="main-content">
@@ -13,7 +13,9 @@ const OrderMainContent = () => {
                    <OrderHeader/>
                     <div className="panel-body">
                         {/* <HeaderBtn/> */}
-                        <OrderListTable/>
+                        <OrderListTable/><br/>
+                        <TodayTask/>
+
                     </div>
                 </div>
             </div>

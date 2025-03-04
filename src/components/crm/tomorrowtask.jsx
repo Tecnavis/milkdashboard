@@ -1,65 +1,28 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { URL } from '../../Helper/handle-api';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { URL } from "../../Helper/handle-api";
 
 const TomorrowTask = () => {
   const [routeSummary, setRouteSummary] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchTomorrowOrders = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(`${URL}/orderdetails`);
-        const orders = response.data;
+        setError(null);
+        const response = await axios.get(`${URL}/orderdetails/tomorrow-orders/routes`);
 
-        // Get tomorrow's date in YYYY-MM-DD format
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowDate = tomorrow.toISOString().split("T")[0];
-
-        // Filter orders where selectedPlanDetails.dates include tomorrow's date
-        const tomorrowOrders = orders.filter(order =>
-          order.selectedPlanDetails?.dates.some(dateEntry =>
-            dateEntry.date?.startsWith(tomorrowDate)
-          )
-        );
-
-        // Group orders by route and count quantities
-        const routeData = {};
-
-        tomorrowOrders.forEach(order => {
-          const routeNo = order.customer?.routeno || 'Unassigned';
-
-          if (!routeData[routeNo]) {
-            routeData[routeNo] = {
-              quantities: {},
-              totalLiters: 0
-            };
-          }
-
-          order.productItems.forEach(item => {
-            const productSize = item.product?.quantity; // e.g., "100ML"
-            const quantity = item.quantity; // Quantity ordered
-
-            if (productSize) {
-              // Add to the quantities count for this route
-              routeData[routeNo].quantities[productSize] =
-                (routeData[routeNo].quantities[productSize] || 0) + quantity;
-
-              // Calculate and add to total liters
-              const sizeInML = parseInt(productSize.match(/\d+/)[0]);
-              const totalML = sizeInML * quantity;
-              routeData[routeNo].totalLiters += totalML / 1000; // Convert ML to Liters
-            }
-          });
-        });
-
-        setRouteSummary(routeData);
-        setIsLoading(false);
+        if (response.data.success) {
+          setRouteSummary(response.data.data);
+        } else {
+          setError("Failed to fetch data.");
+        }
       } catch (error) {
         console.error("Error fetching orders:", error);
+        setError("Something went wrong. Please try again.");
+      } finally {
         setIsLoading(false);
       }
     };
@@ -70,7 +33,7 @@ const TomorrowTask = () => {
   const renderQuantitiesBadges = (quantities) => {
     return Object.entries(quantities).map(([size, count], index) => (
       <span key={index} className="badge bg-primary-subtle px-2 rounded me-2 mb-1">
-        {size}({count})
+        {size} ({count})
       </span>
     ));
   };
@@ -82,26 +45,26 @@ const TomorrowTask = () => {
           <b>Tomorrow's Delivery Summary</b>
         </div>
         <div className="panel-body p-0">
-          <div className="table-responsive">
-            <table className="table deadline-table table-hover">
-              <thead>
-                <tr>
-                  <th>Route No</th>
-                  <th>Product Quantities</th>
-                  <th>Total Volume</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
+          {isLoading ? (
+            <div className="text-center p-4">
+              <span className="spinner-border text-primary" role="status"></span>
+            </div>
+          ) : error ? (
+            <div className="alert alert-danger text-center">{error}</div>
+          ) : Object.keys(routeSummary).length === 0 ? (
+            <div className="text-center p-4">No deliveries scheduled for tomorrow</div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table deadline-table table-hover">
+                <thead>
                   <tr>
-                    <td colSpan="3" className="text-center">Loading...</td>
+                    <th>Route No</th>
+                    <th>Product Quantities</th>
+                    <th>Total Volume</th>
                   </tr>
-                ) : Object.keys(routeSummary).length === 0 ? (
-                  <tr>
-                    <td colSpan="3" className="text-center">No deliveries scheduled for tomorrow</td>
-                  </tr>
-                ) : (
-                  Object.entries(routeSummary).map(([routeNo, data], index) => (
+                </thead>
+                <tbody>
+                  {Object.entries(routeSummary).map(([routeNo, data], index) => (
                     <tr key={index}>
                       <td>{routeNo}</td>
                       <td>
@@ -111,11 +74,11 @@ const TomorrowTask = () => {
                       </td>
                       <td>{data.totalLiters.toFixed(1)} Liters</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>
