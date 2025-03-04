@@ -200,8 +200,20 @@ export const getAllRoutes = async () => {
 
 //delete route by id
 export const deleteRoute = async (id) => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this Route!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+});
+
+if (result.isConfirmed) {
     const response = await axios.delete(`${URL}/route/${id}`);
     return response.data;
+}
 }
 //get details by route name
 export const getDetailsByRouteName = async (routeName) => {
