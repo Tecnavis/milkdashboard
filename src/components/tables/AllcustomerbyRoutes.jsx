@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
+import { Table, Modal, Button, Form } from "react-bootstrap";
 import { FetchCustomer, URL } from "../../Helper/handle-api";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const AllCustomerTable = ({ searchTerm }) => {
   const [customers, setCustomers] = useState([]);
@@ -11,6 +12,7 @@ const AllCustomerTable = ({ searchTerm }) => {
   const [amount, setAmount] = useState("");
   const [isConfirming, setIsConfirming] = useState(false);
   const [paidAmountId, setPaidAmountId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -38,11 +40,16 @@ const AllCustomerTable = ({ searchTerm }) => {
     setAmount("");
     setIsConfirming(false);
     setPaidAmountId(null);
+    setShowModal(true);
   };
 
   const handleAddPayment = async () => {
     if (!amount || parseFloat(amount) <= 0) {
-      alert("Please enter a valid amount.");
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Please enter a valid amount.",
+    })
       return;
     }
 
@@ -52,21 +59,41 @@ const AllCustomerTable = ({ searchTerm }) => {
         amount: parseFloat(amount),
       });
 
-      alert("Payment added successfully!");
+    Swal.fire({
+      icon: "success",
+      title: "Success",
+      text: "Payment added successfully!",
+    })
       setPaidAmountId(response.data.paidAmount._id);
       setIsConfirming(true);
     } catch (error) {
-      alert("Error adding payment: " + error.response?.data?.message);
+    //   alert("Error adding payment: " + error.response?.data?.message);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Error adding payment: " + error.response?.data?.message,
+    })
     }
   };
 
   const handleConfirmPayment = async () => {
     if (!paidAmountId) {
-      alert("No payment to confirm.");
+    //   alert("No payment to confirm.");
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No payment to confirm.",
+    })
       return;
     }
 
-    const confirm = window.confirm("Are you sure you want to confirm this payment?");
+    // const confirm = window.confirm("Are you sure you want to confirm this payment?");
+    const { value: confirm } = await Swal.fire({
+      title: "Are you sure you want to confirm this payment?",
+      showCancelButton: true,
+      confirmButtonText: "Yes, confirm it!",
+      cancelButtonText: "No, cancel!",
+    })
     if (!confirm) return;
 
     try {
@@ -75,11 +102,22 @@ const AllCustomerTable = ({ searchTerm }) => {
         paidAmountId,
       });
 
-      alert("Payment confirmed successfully!");
+    //   alert("Payment confirmed successfully!");
+    Swal.fire({
+      icon: "success",
+      title: "Success",
+      text: "Payment confirmed successfully!",
+    })
       setIsConfirming(false);
       setPaidAmountId(null);
+      setShowModal(false);
     } catch (error) {
-      alert("Error confirming payment: " + error.response?.data?.message);
+    //   alert("Error confirming payment: " + error.response?.data?.message);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Error confirming payment: " + error.response?.data?.message,
+    })
     }
   };
 
@@ -112,12 +150,9 @@ const AllCustomerTable = ({ searchTerm }) => {
                       ))}
                     </td>
                     <td>
-                      <button 
-                        className="btn btn-sm btn-primary" 
-                        onClick={() => handlePaymentClick(data)}
-                      >
+                      <Button variant="primary" size="sm" onClick={() => handlePaymentClick(data)}>
                         Payment
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -126,28 +161,36 @@ const AllCustomerTable = ({ searchTerm }) => {
           </div>
         ))}
 
-      {/* Payment Modal (Simple Input Form) */}
-      {selectedCustomer && (
-        <div className="payment-modal">
-          <h4>Enter Payment Amount for {selectedCustomer.name}</h4>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount"
-            className="form-control"
-          />
-          <button className="btn btn-success mt-2" onClick={handleAddPayment}>
+      {/* Payment Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Payment for {selectedCustomer?.name}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Enter Payment Amount</Form.Label>
+            <Form.Control
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Enter amount"
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleAddPayment}>
             Add Payment
-          </button>
-
+          </Button>
           {isConfirming && (
-            <button className="btn btn-warning mt-2" onClick={handleConfirmPayment}>
+            <Button variant="warning" onClick={handleConfirmPayment}>
               Confirm Payment
-            </button>
+            </Button>
           )}
-        </div>
-      )}
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
