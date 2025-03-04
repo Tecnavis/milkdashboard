@@ -3,7 +3,7 @@ import { Table } from "react-bootstrap";
 import { FetchCustomer, deleteCustomer, URL } from "../../Helper/handle-api";
 import { Link } from "react-router-dom";
 
-const AllCustomerTable = () => {
+const AllCustomerTable = ({ searchTerm }) => {
   const [customers, setCustomers] = useState([]);
   const [groupedCustomers, setGroupedCustomers] = useState({});
 
@@ -29,11 +29,15 @@ const AllCustomerTable = () => {
     setGroupedCustomers(grouped);
   };
 
+  // Filter based on search term
+  const filteredRoutes = Object.keys(groupedCustomers).filter((routeNo) =>
+    routeNo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div style={{ overflowX: "auto" }}>
-      {Object.keys(groupedCustomers)
-        .sort((a, b) => (a === "No Route" ? 1 : b === "No Route" ? -1 : a.localeCompare(b))) // Ensure "No Route" appears last
-        .map((routeNo) => (
+      {filteredRoutes.length > 0 ? (
+        filteredRoutes.map((routeNo) => (
           <div key={routeNo}>
             <b>Route No: {routeNo}</b>
             <Table className="table table-dashed table-hover digi-dataTable all-product-table table-striped">
@@ -100,7 +104,10 @@ const AllCustomerTable = () => {
             </Table>
             <br />
           </div>
-        ))}
+        ))
+      ) : (
+        <p>No customers found for the entered route number.</p>
+      )}
     </div>
   );
 };
