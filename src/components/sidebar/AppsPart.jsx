@@ -67,11 +67,7 @@ const AppsPart = () => {
               All Customer
             </NavLink>
           </li>
-          <li className="sidebar-dropdown-item">
-            <NavLink to="/allCustomerByRoutes" className="sidebar-link" onClick={handleSubNavLinkClick}>
-              All Customer By Routes
-            </NavLink>
-          </li>
+          
             <li className="sidebar-dropdown-item">
               <NavLink to="/warehouse" className="sidebar-link" onClick={handleSubNavLinkClick}>
                 Warehouse
@@ -82,6 +78,15 @@ const AppsPart = () => {
                 All Employee
               </NavLink>
             </li>
+            <li className="sidebar-dropdown-item">
+            <NavLink to="/allCustomerByRoutes" className="sidebar-link" onClick={handleSubNavLinkClick}>
+              All Customer By Routes
+            </NavLink>
+          </li><li className="sidebar-dropdown-item">
+            <NavLink to="/customerpayment" className="sidebar-link" onClick={handleSubNavLinkClick}>
+              All Customer Payment
+            </NavLink>
+          </li>
             {/* <li className="sidebar-dropdown-item">
               <NavLink to="/addEmployee" className="sidebar-link" onClick={handleSubNavLinkClick}>
                 Add Employee

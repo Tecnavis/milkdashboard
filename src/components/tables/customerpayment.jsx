@@ -44,21 +44,35 @@ const AllCustomerTable = ({ searchTerm }) => {
               <thead>
                 <tr>
                   <th>Customer Id</th>
+                  <th>Proof Image</th>
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Address</th>
+                  <th>Location</th>
+                  <th>Route Name</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {groupedCustomers[routeNo].map((data) => (
                   <tr key={data._id}>
-                    <td style={{ textAlign: "center" }}>{data.customerId}</td>
+                    <td>{data.customerId}</td>
+                    <td>
+                      {data.image ? (
+                        <img
+                          src={`${URL}/images/${data.image}`}
+                          alt="Proof"
+                          style={{ width: "100px", height: "100px" }}
+                        />
+                      ) : null}
+                    </td>
                     <td>
                       <Link to="#">{data.name}</Link>
                     </td>
                     <td>
                       {data.phone}
+                      <br />
+                      {data.email}
                     </td>
                     <td>
                       {data.address.map((addr, index) => (
@@ -68,9 +82,19 @@ const AllCustomerTable = ({ searchTerm }) => {
                       ))}
                     </td>
                     <td>
+                      <a
+                        href={`https://www.google.com/maps?q=${encodeURIComponent(data.location)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Location
+                      </a>
+                    </td>
+                    <td>{data.routename}</td>
+                    <td>
                       <div className="btn-box">
-                        <button className="btn btn-sm btn-primary">
-                          Payment
+                        <button onClick={() => deleteCustomer(data._id)}>
+                          <i className="fa-light fa-trash"></i>
                         </button>
                       </div>
                     </td>
