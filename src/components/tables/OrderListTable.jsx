@@ -80,12 +80,7 @@ const OrderListTable = () => {
           );
     
           // Store the message in the database and trigger push notification
-          await axios.post(`${URL}/fcm/send-notification`, {
-            customerId,
-            message,
-          });
-    
-          console.log(message);
+         
         }
       } catch (error) {
         console.error("Error updating status:", error);

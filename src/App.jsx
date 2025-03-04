@@ -61,6 +61,7 @@ import ProductAssign from "./pages/productassign"
 //
 import StockList from "./pages/Stocklist"
 import Salesorders from "./pages/salesorders"
+import AllCustomerByRoutes from "./pages/AllcustomerByRoutes";
 function App() {
   
   return (
@@ -68,6 +69,7 @@ function App() {
       <Routes>
         <Route element={<Layout/>}>
           <Route path="/inventorydashboard" element={<Dashboard/>}/>
+          <Route path="/allCustomerByRoutes" element={<AllCustomerByRoutes/>}/>
           <Route path="/stocklist" element={<StockList/>}/>
           <Route path="/banner" element={<Banner/>}/>
           <Route path="/productassign" element={<ProductAssign/>}/>
