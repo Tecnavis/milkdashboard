@@ -10,6 +10,7 @@ import Invoices from '../components/crm/Invoices';
 import MyTasks from '../components/crm/MyTasks';
 import NoticeBoard from '../components/crm/NoticeBoard';
 import Deadlines from '../components/crm/Deadlines';
+import Tomorrowtask from '../components/crm/tomorrowtask';
 
 const CrmDashboardMainContent = () => {
   return (
@@ -17,6 +18,8 @@ const CrmDashboardMainContent = () => {
         <DashboardBreadcrumb title={'CRM Dashboard'}/>
         <CrmDashboardCards/>
         <div className="row">
+        <Deadlines/>
+        <Tomorrowtask/>
             <BalanceOverview/>
             <RecentProjects/>
             <UpcomingProjects/>
@@ -25,8 +28,8 @@ const CrmDashboardMainContent = () => {
               <Invoices/>
             </div>
             <MyTasks/>
-            {/* <NoticeBoard/>
-            <Deadlines/> */}
+            {/* <NoticeBoard/> */}
+            
         </div>
 
         <Footer/>

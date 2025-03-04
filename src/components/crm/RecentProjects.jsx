@@ -16,7 +16,6 @@ const RecentProjects = () => {
    fetchRoutes1().then((res) => setAllRoutes(res.routes || []));
   }, []);
 
-  console.log("Orders Response:", allRoutes);
   // Count orders for each route
   const routeOrderCount = allOrders.reduce((acc, order) => {
     const routeName = order.customer?.routeno;
