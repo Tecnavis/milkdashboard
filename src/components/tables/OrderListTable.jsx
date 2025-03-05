@@ -25,11 +25,15 @@ const OrderListTable = () => {
 
     // Filter orders for today's date based on plan type
     const filteredOrders = orders.map(order => {
-        if (order.selectedPlanDetails?.dates) {
+        // Added null checks for order.plan and order.selectedPlanDetails
+        if (order && order.selectedPlanDetails?.dates && order.plan) {
             const todayPlan = order.selectedPlanDetails.dates.find(d => d.date.split('T')[0] === today);
 
-            // Check for both "monthly" and "custom" plans
-            if ((order.plan.planType === 'monthly' || order.plan.planType === 'custom' || order.plan.planType === 'daily'|| order.plan.planType === 'weekly'||order.plan.planType === 'alternative') && todayPlan) {
+            // More robust plan type checking with optional chaining
+            const planType = order.plan.planType?.toLowerCase();
+            const allowedPlanTypes = ['monthly', 'custom', 'daily', 'weekly', 'alternative', 'none'];
+
+            if (allowedPlanTypes.includes(planType) && todayPlan) {
                 return { ...order, selectedPlanDetails: { ...order.selectedPlanDetails, dates: [todayPlan] } };
             }
         }
@@ -42,9 +46,6 @@ const OrderListTable = () => {
     const currentData = filteredOrders.slice(indexOfFirstData, indexOfLastData);
 
     const paginate = pageNumber => setCurrentPage(pageNumber);
-
-
-
 
     const handleDeliveryStatus = async (orderId, date, customerId) => {
       if (!orderId || !date || !customerId) {
@@ -78,9 +79,6 @@ const OrderListTable = () => {
                 : order
             )
           );
-    
-          // Store the message in the database and trigger push notification
-         
         }
       } catch (error) {
         console.error("Error updating status:", error);
@@ -110,8 +108,8 @@ const OrderListTable = () => {
                 currentData.map((order, index) => (
                   <tr key={order._id}>
                     <td>{index + 1}</td>
-                    <td>{order.customer?.name|| "N/A"}</td>
-                    <td>{order.customer?.routeno|| "N/A"}</td>
+                    <td>{order.customer?.name || "N/A"}</td>
+                    <td>{order.customer?.routeno || "N/A"}</td>
                     <td>
                       {order.address?.streetAddress}
                       <br />
@@ -123,9 +121,9 @@ const OrderListTable = () => {
                     <td>
                       {order.productItems?.map((item) => (
                         <div key={item._id}>
-                          {item.product?.category|| "N/A"} ({item.quantity|| "N/A"})<br />
+                          {item.product?.category || "N/A"} ({item.quantity || "N/A"})<br />
                           <img
-                            src={`${URL}/images/${item.product?.coverimage|| ""}`}
+                            src={`${URL}/images/${item.product?.coverimage || ""}`}
                             alt={item.product?.category}
                             style={{
                               width: "50px",
@@ -137,30 +135,32 @@ const OrderListTable = () => {
                       ))}
                     </td>
 
-                    <td>{order.totalPrice||" "}</td>
-                    <td>{order.plan?.planType|| "N/A"}</td>
+                    <td>{order.totalPrice || " "}</td>
+                    <td>{order.plan?.planType || "N/A"}</td>
                     <td>{order.selectedPlanDetails.dates[0].status}</td>
                     <td>
-                    <button
-  className={`btn btn-sm ${
-    order.selectedPlanDetails.dates[0].status === "delivered"
-      ? "btn-success"
-      : "btn-primary"
-  }`}
-  onClick={() =>
-    handleDeliveryStatus(order._id, order.selectedPlanDetails.dates[0].date, order.customer._id)
-  }
->
-  Delivered
-</button>
-
-</td>
-
+                      <button
+                        className={`btn btn-sm ${
+                          order.selectedPlanDetails.dates[0].status === "delivered"
+                            ? "btn-success"
+                            : "btn-primary"
+                        }`}
+                        onClick={() =>
+                          handleDeliveryStatus(
+                            order._id, 
+                            order.selectedPlanDetails.dates[0].date, 
+                            order.customer._id
+                          )
+                        }
+                      >
+                        Delivered
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center">
+                  <td colSpan="9" className="text-center">
                     No orders found for today.
                   </td>
                 </tr>
