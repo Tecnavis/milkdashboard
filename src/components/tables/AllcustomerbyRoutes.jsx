@@ -13,6 +13,8 @@ const AllCustomerTable = ({ searchTerm }) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const [paidAmountId, setPaidAmountId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [paymentHistory, setPaymentHistory] = useState([]);
+const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -121,6 +123,23 @@ const AllCustomerTable = ({ searchTerm }) => {
     }
   };
 
+//payment history
+
+
+const handlePaymentHistoryClick = async (customerId) => {
+  try {
+    const response = await axios.get(`${URL}/customer/paid-amounts/${customerId}`);
+    setPaymentHistory(response.data.paidAmounts);
+    setShowHistoryModal(true);
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Failed to fetch payment history.",
+    });
+  }
+};
+
   return (
     <div style={{ overflowX: "auto" }}>
       {Object.keys(groupedCustomers)
@@ -150,9 +169,12 @@ const AllCustomerTable = ({ searchTerm }) => {
                       ))}
                     </td>
                     <td>
-                      <Button variant="primary" size="sm" onClick={() => handlePaymentClick(data)}>
-                        Payment
+                      <Button variant="primary" size="sm" onClick={() => handlePaymentClick(data)} style={{ marginRight: "5px" }}>
+                        Do Payment
                       </Button>
+                      <Button variant="success" size="sm" onClick={() => handlePaymentHistoryClick(data.customerId)}>
+  Payment History
+</Button>
                     </td>
                   </tr>
                 ))}
@@ -191,6 +213,47 @@ const AllCustomerTable = ({ searchTerm }) => {
           )}
         </Modal.Footer>
       </Modal>
+
+
+      <Modal show={showHistoryModal} onHide={() => setShowHistoryModal(false)} centered>
+  <Modal.Header closeButton>
+    <Modal.Title>Payment History for {selectedCustomer?.name}</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {paymentHistory.length > 0 ? (
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paymentHistory.map((payment) => (
+            <tr key={payment._id}>
+              <td>{new Date(payment.date).toLocaleDateString()}</td>
+              <td>{payment.amount}</td>
+              <td>
+                <span className={payment.isGet ? "text-success" : "text-danger"}>
+                  {payment.isGet ? "Paid" : "Unpaid"}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    ) : (
+      <p>No payment history available.</p>
+    )}
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowHistoryModal(false)}>
+      Close
+    </Button>
+  </Modal.Footer>
+</Modal>
+
     </div>
   );
 };
