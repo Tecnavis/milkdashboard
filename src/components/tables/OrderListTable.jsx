@@ -110,8 +110,8 @@ const OrderListTable = () => {
                 currentData.map((order, index) => (
                   <tr key={order._id}>
                     <td>{index + 1}</td>
-                    <td>{order.customer?.name}</td>
-                    <td>{order.customer?.routeno}</td>
+                    <td>{order.customer?.name|| "N/A"}</td>
+                    <td>{order.customer?.routeno|| "N/A"}</td>
                     <td>
                       {order.address?.streetAddress}
                       <br />
@@ -123,9 +123,9 @@ const OrderListTable = () => {
                     <td>
                       {order.productItems?.map((item) => (
                         <div key={item._id}>
-                          {item.product?.category} ({item.quantity})<br />
+                          {item.product?.category|| "N/A"} ({item.quantity|| "N/A"})<br />
                           <img
-                            src={`${URL}/images/${item.product?.coverimage}`}
+                            src={`${URL}/images/${item.product?.coverimage|| ""}`}
                             alt={item.product?.category}
                             style={{
                               width: "50px",
@@ -137,8 +137,8 @@ const OrderListTable = () => {
                       ))}
                     </td>
 
-                    <td>{order.totalPrice}</td>
-                    <td>{order.plan?.planType}</td>
+                    <td>{order.totalPrice||" "}</td>
+                    <td>{order.plan?.planType|| "N/A"}</td>
                     <td>{order.selectedPlanDetails.dates[0].status}</td>
                     <td>
                     <button
