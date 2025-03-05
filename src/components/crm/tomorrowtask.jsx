@@ -59,21 +59,27 @@ const TomorrowTask = () => {
                 <thead>
                   <tr>
                     <th>Route No</th>
+                    <th>Category</th>
                     <th>Product Quantities</th>
                     <th>Total Volume</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(routeSummary).map(([routeNo, data], index) => (
-                    <tr key={index}>
-                      <td>{routeNo}</td>
-                      <td>
-                        <div className="d-flex flex-wrap">
-                          {renderQuantitiesBadges(data.quantities)}
-                        </div>
-                      </td>
-                      <td>{data.totalLiters.toFixed(1)} Liters</td>
-                    </tr>
+                  {Object.entries(routeSummary).map(([routeNo, categories], index) => (
+                    Object.entries(categories).map(([category, data], catIndex) => (
+                      <tr key={`${index}-${catIndex}`}>
+                        {catIndex === 0 && (
+                          <td rowSpan={Object.keys(categories).length} style={{ fontWeight: "bold" }}>{routeNo}</td>
+                        )}
+                        <td style={{ textAlign:"center"}}>{category}</td>
+                        <td>
+                          <div className="d-flex flex-wrap">
+                            {renderQuantitiesBadges(data.quantities)}
+                          </div>
+                        </td>
+                        <td>{data.totalLiters.toFixed(1)} Liters</td>
+                      </tr>
+                    ))
                   ))}
                 </tbody>
               </table>
