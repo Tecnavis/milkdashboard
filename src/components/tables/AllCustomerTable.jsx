@@ -74,10 +74,21 @@ const AllCustomerTable = () => {
         )
       );
       setShowModal(false);
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Customer updated successfully.",
+      });
     } catch (error) {
       console.error("Failed to update customer:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: error.response?.data?.message || "An error occurred while updating the customer.",
+      });
     }
   };
+  
 // Handle the confirmation button click
 const handleConfirm = async (customerId) => {
   try {
