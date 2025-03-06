@@ -63,6 +63,7 @@ import StockList from "./pages/Stocklist"
 import Salesorders from "./pages/salesorders"
 import AllCustomerByRoutes from "./pages/AllcustomerByRoutes";
 import Customerpayment from "./pages/customerpayment";
+import CustomerBottlestock from "./pages/customerbottlestock";
 function App() {
   
   return (
@@ -71,6 +72,7 @@ function App() {
         <Route element={<Layout/>}>
           <Route path="/inventorydashboard" element={<Dashboard/>}/>
           <Route path="/customerpayment" element={<Customerpayment/>}/>
+          <Route path="/customerbottlestock" element={<CustomerBottlestock/>}/>
           <Route path="/allCustomerByRoutes" element={<AllCustomerByRoutes/>}/>
           <Route path="/stocklist" element={<StockList/>}/>
           <Route path="/banner" element={<Banner/>}/>

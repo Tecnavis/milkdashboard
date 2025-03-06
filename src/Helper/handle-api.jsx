@@ -59,6 +59,11 @@ export const FetchCustomer = async () => {
     return response.data;
 };
 
+export const BottleSummary = async () => {
+  const response = await axios.get(`${URL}/orderdetails/bottles-summary/allcustomer`);
+  return response.data;
+}
+
 export const FetchCustomerById = async (id) => {
     const response = await axios.get(`${URL}/customer/${id}`);
     return response.data;
