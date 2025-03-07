@@ -20,16 +20,11 @@ const OrderListTable = () => {
         getOrders();
     }, []);
 
-    // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0];
 
-    // Filter orders for today's date based on plan type
     const filteredOrders = orders.map(order => {
-        // Added null checks for order.plan and order.selectedPlanDetails
         if (order && order.selectedPlanDetails?.dates && order.plan) {
             const todayPlan = order.selectedPlanDetails.dates.find(d => d.date.split('T')[0] === today);
-
-            // More robust plan type checking with optional chaining
             const planType = order.plan.planType?.toLowerCase();
             const allowedPlanTypes = ['monthly', 'custom', 'daily', 'weekly', 'alternative', 'none'];
 
@@ -40,146 +35,143 @@ const OrderListTable = () => {
         return null;
     }).filter(order => order !== null);
 
-    // Pagination logic
-    const indexOfLastData = currentPage * dataPerPage;
-    const indexOfFirstData = indexOfLastData - dataPerPage;
-    const currentData = filteredOrders.slice(indexOfFirstData, indexOfLastData);
+    // Grouping orders by routeno
+    const ordersByRoute = filteredOrders.reduce((acc, order) => {
+        const routeNo = order.customer?.routeno || "Unassigned";
+        if (!acc[routeNo]) acc[routeNo] = [];
+        acc[routeNo].push(order);
+        return acc;
+    }, {});
 
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
     const handleDeliveryStatus = async (orderId, date, customerId) => {
-      if (!orderId || !date || !customerId) {
-        console.error("Missing orderId, date, or customerId for updating status.");
-        return;
-      }
-    
-      try {
-        const message = `Your product has been successfully delivered on ${date.split("T")[0]}.`;
-    
-        const response = await axios.patch(`${URL}/orderdetails/${orderId}`, {
-          status: "delivered",
-          date,
-        });
-    
-        if (response.status === 200) {
-          setOrders((prevOrders) =>
-            prevOrders.map((order) =>
-              order._id === orderId
-                ? {
-                    ...order,
-                    selectedPlanDetails: {
-                      ...order.selectedPlanDetails,
-                      dates: (order.selectedPlanDetails?.dates || []).map((dateObj) =>
-                        dateObj.date === date
-                          ? { ...dateObj, status: "delivered" }
-                          : dateObj
-                      ),
-                    },
-                  }
-                : order
-            )
-          );
+        if (!orderId || !date || !customerId) {
+            console.error("Missing orderId, date, or customerId for updating status.");
+            return;
         }
-      } catch (error) {
-        console.error("Error updating status:", error);
-        alert("Failed to update delivery status. Please try again.");
-      }
-    };
-    
-    return (
-      <div>
-        <OverlayScrollbarsComponent>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Customer Name</th>
-                <th>Customer index</th>
-                <th>Route</th>
-                <th>Address</th>
-                <th>Product</th>
-                <th>Total Price</th>
-                <th>Plan Type</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentData.length > 0 ? (
-                currentData.map((order, index) => (
-                  <tr key={order._id}>
-                    <td>{index + 1}</td>
-                    <td>{order.customer?.name || "N/A"}</td>
-                    <td>{order.customer?.customerindex || "N/A"}</td>
-                    <td>{order.customer?.routeno || "N/A"}</td>
-                    <td>
-                      {order.address?.streetAddress}
-                      <br />
-                      {order.address?.postcode}
-                      <br />
-                      {order.address?.apartment}
-                      <br />
-                    </td>
-                    <td>
-                      {order.productItems?.map((item) => (
-                        <div key={item._id}>
-                          {item.product?.category || "N/A"} ({item.quantity || "N/A"})<br />
-                          <img
-                            src={`${URL}/images/${item.product?.coverimage || ""}`}
-                            alt={item.product?.category}
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              objectFit: "cover",
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </td>
 
-                    <td>{order.totalPrice || " "}</td>
-                    <td>{order.plan?.planType || "N/A"}</td>
-                    <td>{order.selectedPlanDetails.dates[0].status}</td>
-                    <td>
-                      <button
-                        className={`btn btn-sm ${
-                          order.selectedPlanDetails.dates[0].status === "delivered"
-                            ? "btn-success"
-                            : "btn-primary"
-                        }`}
-                        onClick={() =>
-                          handleDeliveryStatus(
-                            order._id, 
-                            order.selectedPlanDetails.dates[0].date, 
-                            order.customer._id
-                          )
-                        }
-                      >
-                        Delivered
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="9" className="text-center">
-                    No orders found for today.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </OverlayScrollbarsComponent>
-        {/* Pagination */}
-        {filteredOrders.length > dataPerPage && (
-          <PaginationSection
-            currentPage={currentPage}
-            dataPerPage={dataPerPage}
-            totalData={filteredOrders.length}
-            paginate={paginate}
-          />
-        )}
-      </div>
+        try {
+            const response = await axios.patch(`${URL}/orderdetails/${orderId}`, {
+                status: "delivered",
+                date,
+            });
+
+            if (response.status === 200) {
+                setOrders((prevOrders) =>
+                    prevOrders.map((order) =>
+                        order._id === orderId
+                            ? {
+                                  ...order,
+                                  selectedPlanDetails: {
+                                      ...order.selectedPlanDetails,
+                                      dates: (order.selectedPlanDetails?.dates || []).map((dateObj) =>
+                                          dateObj.date === date
+                                              ? { ...dateObj, status: "delivered" }
+                                              : dateObj
+                                      ),
+                                  },
+                              }
+                            : order
+                    )
+                );
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
+            alert("Failed to update delivery status. Please try again.");
+        }
+    };
+
+    return (
+        <div>
+            <OverlayScrollbarsComponent>
+                {Object.keys(ordersByRoute).map((routeNo, index) => (
+                    <div key={index} style={{ marginBottom: "30px" }}>
+                        <h4>Route No: {routeNo}</h4>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Customer Name</th>
+                                    <th>Customer Index</th>
+                                    <th>Address</th>
+                                    <th>Product</th>
+                                    <th>Total Price</th>
+                                    <th>Plan Type</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {ordersByRoute[routeNo].map((order, idx) => (
+                                    <tr key={order._id}>
+                                        <td>{idx + 1}</td>
+                                        <td>{order.customer?.name || "N/A"}</td>
+                                        <td>{order.customer?.customerindex || "N/A"}</td>
+                                        <td>
+                                            {order.address?.streetAddress}
+                                            <br />
+                                            {order.address?.postcode}
+                                            <br />
+                                            {order.address?.apartment}
+                                            <br />
+                                        </td>
+                                        <td>
+                                            {order.productItems?.map((item) => (
+                                                <div key={item._id}>
+                                                    {item.product?.category || "N/A"} ({item.quantity || "N/A"})<br />
+                                                    <img
+                                                        src={`${URL}/images/${item.product?.coverimage || ""}`}
+                                                        alt={item.product?.category}
+                                                        style={{
+                                                            width: "50px",
+                                                            height: "50px",
+                                                            objectFit: "cover",
+                                                        }}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </td>
+
+                                        <td>{order.totalPrice || " "}</td>
+                                        <td>{order.plan?.planType || "N/A"}</td>
+                                        <td>{order.selectedPlanDetails.dates[0].status}</td>
+                                        <td>
+                                            <button
+                                                className={`btn btn-sm ${
+                                                    order.selectedPlanDetails.dates[0].status === "delivered"
+                                                        ? "btn-success"
+                                                        : "btn-primary"
+                                                }`}
+                                                onClick={() =>
+                                                    handleDeliveryStatus(
+                                                        order._id,
+                                                        order.selectedPlanDetails.dates[0].date,
+                                                        order.customer._id
+                                                    )
+                                                }
+                                            >
+                                                Delivered
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </div>
+                ))}
+            </OverlayScrollbarsComponent>
+
+            {/* Pagination */}
+            {filteredOrders.length > dataPerPage && (
+                <PaginationSection
+                    currentPage={currentPage}
+                    dataPerPage={dataPerPage}
+                    totalData={filteredOrders.length}
+                    paginate={paginate}
+                />
+            )}
+        </div>
     );
 };
 
