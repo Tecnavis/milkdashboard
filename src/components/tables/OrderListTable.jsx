@@ -36,12 +36,16 @@ const OrderListTable = () => {
     }).filter(order => order !== null);
 
     // Grouping orders by routeno
-    const ordersByRoute = filteredOrders.reduce((acc, order) => {
-        const routeNo = order.customer?.routeno || "Unassigned";
-        if (!acc[routeNo]) acc[routeNo] = [];
-        acc[routeNo].push(order);
-        return acc;
-    }, {});
+ // Grouping and sorting orders by routeno
+const ordersByRoute = filteredOrders.reduce((acc, order) => {
+  const routeNo = order.customer?.routeno || "Unassigned";
+  if (!acc[routeNo]) acc[routeNo] = [];
+  acc[routeNo].push(order);
+  // Sort by customerindex in ascending order
+  acc[routeNo].sort((a, b) => (a.customer?.customerindex || 0) - (b.customer?.customerindex || 0));
+  return acc;
+}, {});
+
 
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
@@ -87,7 +91,7 @@ const OrderListTable = () => {
             <OverlayScrollbarsComponent>
                 {Object.keys(ordersByRoute).map((routeNo, index) => (
                     <div key={index} style={{ marginBottom: "30px" }}>
-                        <h4>Route No: {routeNo}</h4>
+                        <b>Route No: {routeNo}</b>
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
