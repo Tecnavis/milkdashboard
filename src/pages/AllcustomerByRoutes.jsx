@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Footer from '../components/footer/Footer';
-import AllCustomerTable from '../components/tables/AllcustomerbyRoutes';
+import AllCustomerTable from '../components/tables/customerpayment';
 import { Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 

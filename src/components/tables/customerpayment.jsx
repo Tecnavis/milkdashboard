@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
+import { Table, Modal, Button, Form } from "react-bootstrap";
 import { FetchCustomer, deleteCustomer, URL } from "../../Helper/handle-api";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AllCustomerTable = ({ searchTerm }) => {
   const [customers, setCustomers] = useState([]);
   const [groupedCustomers, setGroupedCustomers] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [customerIndex, setCustomerIndex] = useState("");
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -29,6 +33,42 @@ const AllCustomerTable = ({ searchTerm }) => {
     setGroupedCustomers(grouped);
   };
 
+  const handleUpdateClick = (customer) => {
+    setSelectedCustomer(customer);
+    setCustomerIndex(customer.customerindex || ""); // Pre-fill if available
+    setShowModal(true);
+  };
+
+  const handleUpdateCustomerIndex = async () => {
+    if (!selectedCustomer) return;
+
+    try {
+      const response = await fetch(`${URL}/customer/update-customer-index/${selectedCustomer.customerId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customerindex: customerIndex }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        Swal.fire("Success!", result.message, "success");
+        setShowModal(false);
+        setCustomers((prevCustomers) =>
+          prevCustomers.map((cust) =>
+            cust.customerId === selectedCustomer.customerId
+              ? { ...cust, customerindex: customerIndex }
+              : cust
+          )
+        );
+      } else {
+        alert(result.message);
+      }
+    } catch (error) {
+      console.error("Error updating customer index:", error);
+      Swal.fire("Error!", "Failed to update customer index.", "error");
+    }
+  };
+
   // Filter based on search term
   const filteredRoutes = Object.keys(groupedCustomers).filter((routeNo) =>
     routeNo.toLowerCase().includes(searchTerm.toLowerCase())
@@ -44,6 +84,7 @@ const AllCustomerTable = ({ searchTerm }) => {
               <thead>
                 <tr>
                   <th>Customer Id</th>
+                  <th>Customerindex</th>
                   <th>Proof Image</th>
                   <th>Name</th>
                   <th>Phone</th>
@@ -57,6 +98,7 @@ const AllCustomerTable = ({ searchTerm }) => {
                 {groupedCustomers[routeNo].map((data) => (
                   <tr key={data._id}>
                     <td>{data.customerId}</td>
+                    <td>{data.customerindex ||"N/A"}</td>
                     <td>
                       {data.image ? (
                         <img
@@ -93,6 +135,9 @@ const AllCustomerTable = ({ searchTerm }) => {
                     <td>{data.routename}</td>
                     <td>
                       <div className="btn-box">
+                        <button className="btn btn-primary" onClick={() => handleUpdateClick(data)}>
+                          Update Index
+                        </button>
                         <button onClick={() => deleteCustomer(data._id)}>
                           <i className="fa-light fa-trash"></i>
                         </button>
@@ -108,6 +153,33 @@ const AllCustomerTable = ({ searchTerm }) => {
       ) : (
         <p>No customers found for the entered route number.</p>
       )}
+
+      {/* Modal for Updating Customer Index */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Update Customer Index</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Customer Index</Form.Label>
+              <Form.Control
+                type="text"
+                value={customerIndex}
+                onChange={(e) => setCustomerIndex(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleUpdateCustomerIndex}>
+            Update
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

@@ -94,6 +94,7 @@ const OrderListTable = () => {
               <tr>
                 <th>#</th>
                 <th>Customer Name</th>
+                <th>Customer index</th>
                 <th>Route</th>
                 <th>Address</th>
                 <th>Product</th>
@@ -109,6 +110,7 @@ const OrderListTable = () => {
                   <tr key={order._id}>
                     <td>{index + 1}</td>
                     <td>{order.customer?.name || "N/A"}</td>
+                    <td>{order.customer?.customerindex || "N/A"}</td>
                     <td>{order.customer?.routeno || "N/A"}</td>
                     <td>
                       {order.address?.streetAddress}

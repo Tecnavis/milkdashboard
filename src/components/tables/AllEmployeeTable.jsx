@@ -274,7 +274,7 @@ const AllEmployeeTable = () => {
               </td>
               <td>
                 <div className="avatar">
-                  <img src={`${URL}/images/${data.image}`} alt="User" />
+                  <img src={`${URL}/images/${data.image}`} alt="User" style={{ width: "40px", height: "40px" }} />
                 </div>
               </td>
               <td>{data.name}</td>
