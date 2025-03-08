@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Modal, Button, Form } from "react-bootstrap";
-import { BottleSummary } from "../../Helper/handle-api";
+import { BottleSummary, updateReturnedBottles } from "../../Helper/handle-api"; 
 import { Link } from "react-router-dom";
 
 const AllCustomerTable = () => {
@@ -8,19 +8,47 @@ const AllCustomerTable = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [returnBottles, setReturnBottles] = useState(0);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchCustomers = async () => {
-      const response = await BottleSummary();
-      setCustomers(response?.customers || []);
-    };
     fetchCustomers();
   }, []);
+
+  const fetchCustomers = async () => {
+    const response = await BottleSummary();
+    setCustomers(response?.customers || []);
+  };
 
   const handleReturnBottleClick = (customer) => {
     setSelectedCustomer(customer);
     setReturnBottles(0);
+    setError(""); 
     setShowModal(true);
+  };
+
+  const handleSave = async () => {
+    if (!selectedCustomer) return;
+
+    const { pendingBottles, customer } = selectedCustomer;
+
+    // Validate input
+    if (returnBottles <= 0 || returnBottles > pendingBottles) {
+      setError("Please enter a valid number of bottles to return.");
+      return;
+    }
+
+    // API Call
+    try {
+      const response = await updateReturnedBottles(customer._id, returnBottles);
+      if (response.success) {
+        fetchCustomers(); // Refresh the list
+        setShowModal(false);
+      } else {
+        setError(response.message || "Failed to update returned bottles.");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -53,6 +81,7 @@ const AllCustomerTable = () => {
                   variant="primary"
                   size="sm"
                   onClick={() => handleReturnBottleClick(data)}
+                  disabled={data?.pendingBottles === 0} // Disable if no pending bottles
                 >
                   Return Bottle
                 </Button>
@@ -74,15 +103,20 @@ const AllCustomerTable = () => {
               type="number"
               placeholder="Enter count"
               value={returnBottles}
-              onChange={(e) => setReturnBottles(e.target.value)}
+              onChange={(e) => setReturnBottles(Number(e.target.value))}
+              min={1}
+              max={selectedCustomer?.pendingBottles}
             />
+            {error && <p className="text-danger">{error}</p>}
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancel
           </Button>
-          <Button variant="success">Save</Button>
+          <Button variant="success" onClick={handleSave}>
+            Save
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

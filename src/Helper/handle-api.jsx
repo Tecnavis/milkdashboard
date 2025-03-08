@@ -63,6 +63,14 @@ export const BottleSummary = async () => {
   const response = await axios.get(`${URL}/orderdetails/bottles-summary/allcustomer`);
   return response.data;
 }
+export const updateReturnedBottles = async (customerId, returnedBottles) => {
+  const response = await fetch(`${URL}/orderdetails/orders/${customerId}/returned-bottles`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ returnedBottles }),
+  });
+  return response.json();
+};
 
 export const FetchCustomerById = async (id) => {
     const response = await axios.get(`${URL}/customer/${id}`);
