@@ -37,12 +37,26 @@ const TomorrowTask = () => {
       </span>
     ));
   };
-
+  const calculateTotalLitersPerRoute = () => {
+    const totals = {};
+    Object.entries(routeSummary).forEach(([routeNo, categories]) => {
+      totals[routeNo] = Object.values(categories).reduce((sum, category) => sum + category.totalLiters, 0);
+    });
+    return totals;
+  };
+  
+  const totalLitersPerRoute = calculateTotalLitersPerRoute();
+  const calculateOverallTotalVolume = () => {
+    return Object.values(totalLitersPerRoute).reduce((sum, liters) => sum + liters, 0).toFixed(1);
+  };
+  
+  const overallTotalVolume = calculateOverallTotalVolume();
+  
   return (
     <div className="col-xl-12 col-lg-6">
       <div className="panel">
         <div className="panel-header">
-          <b>Tomorrow's Delivery Summary</b>
+        <b>Tomorrow's Delivery Summary (Total Order Litter: {overallTotalVolume} Liters)</b>
         </div>
         <div className="panel-body p-0">
           {isLoading ? (
@@ -62,6 +76,7 @@ const TomorrowTask = () => {
                     <th>Category</th>
                     <th>Product Quantities</th>
                     <th>Total Volume</th>
+                    <th>Total Route Volume</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -78,7 +93,8 @@ const TomorrowTask = () => {
                           </div>
                         </td>
                         <td>{data.totalLiters.toFixed(1)} Liters</td>
-                      </tr>
+                        <td>{catIndex === 0 ? `${totalLitersPerRoute[routeNo].toFixed(1)} Liters` : ""}</td>
+                        </tr>
                     ))
                   ))}
                 </tbody>
