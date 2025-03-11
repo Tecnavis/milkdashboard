@@ -98,6 +98,7 @@ const UpcomingProjects = () => {
                               <img
                                 src={`${URL}/images/${item.product?.coverimage}`}
                                 alt={item.product?.category}
+                                style={{height:"45px", width:"45px"}}
                               />
                             </div>
                           ))}
