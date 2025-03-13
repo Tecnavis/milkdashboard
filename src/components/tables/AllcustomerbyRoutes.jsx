@@ -45,25 +45,28 @@ const AllCustomerTable = ({ searchTerm }) => {
     setShowModal(true);
   };
 
+  const [paymentDate, setPaymentDate] = useState("");
+
   const handleAddPayment = async () => {
-    if (!amount || parseFloat(amount) <= 0) {
+    if (!amount || parseFloat(amount) <= 0 || !paymentDate) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Please enter a valid amount.",
+        text: "Please enter a valid amount and select a date.",
       });
       return;
     }
-
+  
     try {
       const response = await axios.post(
         `${URL}/customer/add-paid-amount/customer`,
         {
           customerId: selectedCustomer.customerId,
           amount: parseFloat(amount),
+          date: paymentDate,  // Send the selected date
         }
       );
-
+  
       Swal.fire({
         icon: "success",
         title: "Success",
@@ -292,6 +295,14 @@ const AllCustomerTable = ({ searchTerm }) => {
               placeholder="Enter amount"
             />
           </Form.Group>
+          <Form.Group>
+      <Form.Label>Select Payment Date</Form.Label>
+      <Form.Control
+        type="date"
+        value={paymentDate}
+        onChange={(e) => setPaymentDate(e.target.value)}
+      />
+    </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -314,7 +325,7 @@ const AllCustomerTable = ({ searchTerm }) => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>
+          <Modal.Title style={{color:"white"}}>
             Payment History for {selectedCustomer?.name}
           </Modal.Title>
         </Modal.Header>
