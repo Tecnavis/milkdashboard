@@ -15,6 +15,13 @@ const AllCustomerTable = ({ searchTerm }) => {
   const [showModal, setShowModal] = useState(false);
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [paymentDate, setPaymentDate] = useState("");
+  
+  // State for edit payment modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingPayment, setEditingPayment] = useState(null);
+  const [editAmount, setEditAmount] = useState("");
+  const [editDate, setEditDate] = useState("");
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -45,8 +52,6 @@ const AllCustomerTable = ({ searchTerm }) => {
     setShowModal(true);
   };
 
-  const [paymentDate, setPaymentDate] = useState("");
-
   const handleAddPayment = async () => {
     if (!amount || parseFloat(amount) <= 0 || !paymentDate) {
       Swal.fire({
@@ -63,7 +68,7 @@ const AllCustomerTable = ({ searchTerm }) => {
         {
           customerId: selectedCustomer.customerId,
           amount: parseFloat(amount),
-          date: paymentDate,  // Send the selected date
+          date: paymentDate,
         }
       );
   
@@ -218,6 +223,67 @@ const AllCustomerTable = ({ searchTerm }) => {
     }
   };
 
+  // New function to handle edit button click
+  const handleEditClick = (payment) => {
+    setEditingPayment(payment);
+    setEditAmount(payment.amount.toString());
+    // Format date for the date input (YYYY-MM-DD)
+    const dateObj = new Date(payment.date);
+    const formattedDate = dateObj.toISOString().split('T')[0];
+    setEditDate(formattedDate);
+    setShowEditModal(true);
+  };
+
+  // New function to save edited payment
+  const handleSaveEdit = async () => {
+    if (!editAmount || parseFloat(editAmount) <= 0 || !editDate) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Please enter a valid amount and select a date.",
+      });
+      return;
+    }
+
+    try {
+      const response = await axios.patch(
+        `${URL}/customer/update-payment`,
+        {
+          customerId: selectedCustomer.customerId,
+          paidAmountId: editingPayment._id,
+          amount: parseFloat(editAmount),
+          date: editDate
+        }
+      );
+
+      if (response.data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Payment details updated successfully!",
+        });
+        
+        // Close the edit modal
+        setShowEditModal(false);
+        
+        // Refresh payment history
+        const historyResponse = await axios.get(
+          `${URL}/customer/paid-amounts/${selectedCustomer.customerId}`
+        );
+        setPaymentHistory(historyResponse.data.paidAmounts);
+      } else {
+        throw new Error(response.data.message || "Failed to update payment");
+      }
+    } catch (error) {
+      console.error("Error updating payment:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `Error updating payment: ${error.response?.data?.message || error.message}`,
+      });
+    }
+  };
+
   return (
     <div style={{ overflowX: "auto" }}>
       {Object.keys(groupedCustomers)
@@ -296,13 +362,13 @@ const AllCustomerTable = ({ searchTerm }) => {
             />
           </Form.Group>
           <Form.Group>
-      <Form.Label>Select Payment Date</Form.Label>
-      <Form.Control
-        type="date"
-        value={paymentDate}
-        onChange={(e) => setPaymentDate(e.target.value)}
-      />
-    </Form.Group>
+            <Form.Label>Select Payment Date</Form.Label>
+            <Form.Control
+              type="date"
+              value={paymentDate}
+              onChange={(e) => setPaymentDate(e.target.value)}
+            />
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>
@@ -319,6 +385,7 @@ const AllCustomerTable = ({ searchTerm }) => {
         </Modal.Footer>
       </Modal>
 
+      {/* Payment History Modal */}
       <Modal
         show={showHistoryModal}
         onHide={() => setShowHistoryModal(false)}
@@ -337,6 +404,7 @@ const AllCustomerTable = ({ searchTerm }) => {
                   <th>Date</th>
                   <th>Amount</th>
                   <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -358,10 +426,19 @@ const AllCustomerTable = ({ searchTerm }) => {
                               handleHistoryPaymentConfirmation(payment._id)
                             }
                           >
-                            Confirm This payment
+                            Confirm 
                           </Button>
                         </>
                       )}
+                    </td>
+                    <td>
+                      <Button
+                        size="sm"
+                        onClick={() => handleEditClick(payment)}
+                      >
+                        <i className="fa fa-edit"></i>
+                        
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -377,6 +454,44 @@ const AllCustomerTable = ({ searchTerm }) => {
             onClick={() => setShowHistoryModal(false)}
           >
             Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Edit Payment Modal */}
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Payment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-3">
+            <Form.Label>Edit Amount</Form.Label>
+            <Form.Control
+              type="number"
+              value={editAmount}
+              onChange={(e) => setEditAmount(e.target.value)}
+              placeholder="Enter amount"
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Edit Date</Form.Label>
+            <Form.Control
+              type="date"
+              value={editDate}
+              onChange={(e) => setEditDate(e.target.value)}
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSaveEdit}>
+            Save Changes
           </Button>
         </Modal.Footer>
       </Modal>
