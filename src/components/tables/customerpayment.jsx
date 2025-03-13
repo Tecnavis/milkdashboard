@@ -22,54 +22,47 @@ const AllCustomerTable = ({ searchTerm }) => {
 
   const groupCustomersByRoute = (customerList) => {
     const grouped = customerList.reduce((acc, customer) => {
-      const routeKey = customer.routeno || "No Route"; // Handle empty route number
-      if (!acc[routeKey]) {
-        acc[routeKey] = [];
-      }
+      const routeKey = customer.routeno || "No Route";
+      if (!acc[routeKey]) acc[routeKey] = [];
       acc[routeKey].push(customer);
       return acc;
     }, {});
-
     setGroupedCustomers(grouped);
   };
 
-  const handleUpdateClick = (customer) => {
-    setSelectedCustomer(customer);
-    setCustomerIndex(customer.customerindex || ""); // Pre-fill if available
-    setShowModal(true);
-  };
-
-  const handleUpdateCustomerIndex = async () => {
-    if (!selectedCustomer) return;
-
+  const updateCustomerIndexes = async (updatedCustomers) => {
     try {
-      const response = await fetch(`${URL}/customer/update-customer-index/${selectedCustomer.customerId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerindex: customerIndex }),
-      });
-
-      const result = await response.json();
-      if (response.ok) {
-        Swal.fire("Success!", result.message, "success");
-        setShowModal(false);
-        setCustomers((prevCustomers) =>
-          prevCustomers.map((cust) =>
-            cust.customerId === selectedCustomer.customerId
-              ? { ...cust, customerindex: customerIndex }
-              : cust
-          )
-        );
-      } else {
-        alert(result.message);
-      }
+      await Promise.all(
+        updatedCustomers.map((customer, index) =>
+          fetch(`${URL}/customer/update-customer-index/${customer.customerId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ customerindex: index + 1 }),
+          })
+        )
+      );
+      Swal.fire("Success!", "Customer index updated successfully.", "success");
     } catch (error) {
       console.error("Error updating customer index:", error);
       Swal.fire("Error!", "Failed to update customer index.", "error");
     }
   };
 
-  // Filter based on search term
+  const swapCustomers = (routeNo, index1, index2) => {
+    const updatedCustomers = [...groupedCustomers[routeNo]];
+    [updatedCustomers[index1], updatedCustomers[index2]] = [
+      updatedCustomers[index2],
+      updatedCustomers[index1],
+    ];
+
+    updatedCustomers.forEach((customer, index) => {
+      customer.customerindex = index + 1;
+    });
+
+    setGroupedCustomers({ ...groupedCustomers, [routeNo]: updatedCustomers });
+    updateCustomerIndexes(updatedCustomers);
+  };
+
   const filteredRoutes = Object.keys(groupedCustomers).filter((routeNo) =>
     routeNo.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -85,9 +78,7 @@ const AllCustomerTable = ({ searchTerm }) => {
                 <tr>
                   <th>Customer Id</th>
                   <th>Customerindex</th>
-                  <th>Proof Image</th>
                   <th>Name</th>
-                  <th>Phone</th>
                   <th>Address</th>
                   <th>Location</th>
                   <th>Route Name</th>
@@ -95,37 +86,25 @@ const AllCustomerTable = ({ searchTerm }) => {
                 </tr>
               </thead>
               <tbody>
-                {groupedCustomers[routeNo].map((data) => (
+                {groupedCustomers[routeNo].map((data, index) => (
                   <tr key={data._id}>
                     <td>{data.customerId}</td>
-                    <td>{data.customerindex ||"N/A"}</td>
-                    <td>
-                      {data.image ? (
-                        <img
-                          src={`${URL}/images/${data.image}`}
-                          alt="Proof"
-                          style={{ width: "100px", height: "100px" }}
-                        />
-                      ) : null}
-                    </td>
+                    <td>{data.customerindex || "N/A"}</td>
                     <td>
                       <Link to="#">{data.name}</Link>
                     </td>
                     <td>
-                      {data.phone}
-                      <br />
-                      {data.email}
-                    </td>
-                    <td>
-                      {data.address.map((addr, index) => (
-                        <div key={index}>
+                      {data.address.map((addr, i) => (
+                        <div key={i}>
                           {addr.streetAddress}, {addr.apartment}, {addr.postcode}
                         </div>
                       ))}
                     </td>
                     <td>
                       <a
-                        href={`https://www.google.com/maps?q=${encodeURIComponent(data.location)}`}
+                        href={`https://www.google.com/maps?q=${encodeURIComponent(
+                          data.location
+                        )}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -135,11 +114,25 @@ const AllCustomerTable = ({ searchTerm }) => {
                     <td>{data.routename}</td>
                     <td>
                       <div className="btn-box">
-                        <button className="btn btn-primary" onClick={() => handleUpdateClick(data)}>
+                        {/* <button className="btn btn-primary" onClick={() => setShowModal(true)}>
                           Update Index
-                        </button>
+                        </button> */}
                         <button onClick={() => deleteCustomer(data._id)}>
                           <i className="fa-light fa-trash"></i>
+                        </button>
+                        <button
+                          className="btn btn-secondary"
+                          disabled={index === 0}
+                          onClick={() => swapCustomers(routeNo, index, index - 1)}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          className="btn btn-secondary"
+                          disabled={index === groupedCustomers[routeNo].length - 1}
+                          onClick={() => swapCustomers(routeNo, index, index + 1)}
+                        >
+                          ↓
                         </button>
                       </div>
                     </td>
@@ -175,7 +168,7 @@ const AllCustomerTable = ({ searchTerm }) => {
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleUpdateCustomerIndex}>
+          <Button variant="primary" onClick={() => updateCustomerIndexes([{ ...selectedCustomer, customerindex }])}>
             Update
           </Button>
         </Modal.Footer>
