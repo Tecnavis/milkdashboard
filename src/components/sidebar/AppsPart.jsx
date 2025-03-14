@@ -156,11 +156,11 @@ const AppsPart = () => {
               </NavLink>
             </li>
 
-            <li className="sidebar-dropdown-item">
+            {/* <li className="sidebar-dropdown-item">
               <NavLink to="/allreview" className="sidebar-link" onClick={handleSubNavLinkClick}>
                 All Reviews
               </NavLink>
-            </li>
+            </li> */}
 
           </ul>
         </li>
@@ -191,7 +191,7 @@ const AppsPart = () => {
             </li>
             <li className="sidebar-dropdown-item">
               <NavLink to="/stocklist" className="sidebar-link" onClick={handleSubNavLinkClick}>
-               Route Assign
+               Route Assign for Delivery Boy
               </NavLink>
             </li>
             
@@ -202,11 +202,11 @@ const AppsPart = () => {
                Order product
               </NavLink>
             </li>
-            <li className="sidebar-dropdown-item">
+            {/* <li className="sidebar-dropdown-item">
               <NavLink to="/taskmanagement" className="sidebar-link" onClick={handleSubNavLinkClick}>
                Task Management
               </NavLink>
-            </li>
+            </li> */}
           </ul>
         </li>
         {/* <li className="sidebar-dropdown-item">
@@ -254,6 +254,14 @@ const AppsPart = () => {
               <i className="fa-light fa-calendar"></i>
             </span>{' '}
             <span className="sidebar-txt">Calendar</span>
+          </NavLink>
+        </li>
+        <li className="sidebar-dropdown-item">
+          <NavLink to="/taskmanagement" className="sidebar-link">
+            <span className="nav-icon">
+              <i className="fa-light fa-tasks"></i>
+            </span>{' '}
+            <span className="sidebar-txt">Task Management</span>
           </NavLink>
         </li>
         {/* <li className="sidebar-dropdown-item">

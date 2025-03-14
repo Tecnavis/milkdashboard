@@ -11,7 +11,7 @@ import ProductTags from '../components/add-new-product/ProductTags'
 const AddNewProduct = () => {
   return (
     <div className="main-content">
-        <AddNewBreadcrumb link={"/allProduct"} title={'Add New Course'}/>
+        <AddNewBreadcrumb link={"/allProduct"} title={'Add New Product'}/>
         <div className="row g-4">
             <div className="col-xxl-9 col-lg-8">
                 {/* <NewProductTitle/> */}
