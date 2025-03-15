@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Modal, Button, Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { BottleSummary, URL } from "../../Helper/handle-api"; 
+import { FetchCustomer, URL } from "../../Helper/handle-api"; 
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -17,8 +17,8 @@ const AllCustomerTable = () => {
   }, []);
 
   const fetchCustomers = async () => {
-    const response = await BottleSummary();
-    setCustomers(response?.customers || []);
+    const response = await FetchCustomer();
+    setCustomers(response);
   };
 
   const handleApplyLeaveClick = (customer) => {
@@ -29,17 +29,22 @@ const AllCustomerTable = () => {
   
   const handleSubmitLeave = async () => {
     if (!selectedCustomer || leaveDates.length === 0) {
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Please select leave dates.",
-    })
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Please select leave dates.",
+      })
       return;
     }
 
+    // Format dates properly to account for timezone issues
     const requestData = {
       customerId: selectedCustomer._id,
-      dates: leaveDates.map(date => date.toISOString().split("T")[0]) // Format as YYYY-MM-DD
+      dates: leaveDates.map(date => {
+        // Create a new date with the year, month, and day to avoid timezone issues
+        const d = new Date(date);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      })
     };
 
     try {
@@ -68,11 +73,11 @@ const AllCustomerTable = () => {
       }
     } catch (error) {
       console.error("Error applying leave:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Error applying leave. Please try again.",
-    })
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error applying leave. Please try again.",
+      })
     }
   };
 
@@ -84,9 +89,6 @@ const AllCustomerTable = () => {
             <th>Name</th>
             <th>Route No</th>
             <th>Phone</th>
-            <th>Delivered Bottles</th>
-            <th>Returned Bottles</th>
-            <th>Pending Bottles</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -94,18 +96,15 @@ const AllCustomerTable = () => {
           {customers.map((data) => (
             <tr key={data._id}>
               <td>
-                <Link to="#">{data?.customer?.name}</Link>
+                <Link to="#">{data?.name}</Link>
               </td>
-              <td>{data?.customer?.routeno}</td>
-              <td>{data?.customer?.phone}</td>
-              <td>{data?.bottles || 0}</td>
-              <td>{data?.returnedBottles || 0}</td>
-              <td>{data?.pendingBottles || 0}</td>
+              <td>{data?.routeno}</td>
+              <td>{data?.phone}</td>
               <td>
                 <Button
                   variant="primary"
                   size="sm"
-                  onClick={() => handleApplyLeaveClick(data.customer)}
+                  onClick={() => handleApplyLeaveClick(data)}
                 >
                   Apply Leave
                 </Button>
@@ -121,16 +120,33 @@ const AllCustomerTable = () => {
           <Modal.Title style={{color:"white"}}>Apply Leave for {selectedCustomer?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form >
+          <Form>
             <Form.Group>
               <Form.Label>Select Leave Dates</Form.Label>
               <DatePicker
-  selected={null} // Since `react-datepicker` doesn’t allow an array for `selected`
-  onChange={(date) => setLeaveDates([...leaveDates, date])}
-  inline
-  multiple
-/>
-
+                selected={null}
+                onChange={(date) => setLeaveDates([...leaveDates, date])}
+                inline
+                multiple
+              />
+              <div className="mt-3">
+                <strong>Selected Dates:</strong>
+                <ul>
+                  {leaveDates.map((date, index) => (
+                    <li key={index}>
+                      {date.toLocaleDateString()}
+                      <Button 
+                        variant="danger" 
+                        size="sm" 
+                        className="ms-2"
+                        onClick={() => setLeaveDates(leaveDates.filter((_, i) => i !== index))}
+                      >
+                        Remove
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </Form.Group>
           </Form>
         </Modal.Body>
