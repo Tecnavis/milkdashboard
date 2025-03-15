@@ -116,12 +116,12 @@ const AllCustomerTable = () => {
       </Table>
 
       {/* Leave Application Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered size="sm">
         <Modal.Header closeButton>
-          <Modal.Title>Apply Leave for {selectedCustomer?.name}</Modal.Title>
+          <Modal.Title style={{color:"white"}}>Apply Leave for {selectedCustomer?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form >
             <Form.Group>
               <Form.Label>Select Leave Dates</Form.Label>
               <DatePicker
