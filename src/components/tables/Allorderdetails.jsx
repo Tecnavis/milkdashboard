@@ -122,7 +122,6 @@ const [selectedCustomerId, setSelectedCustomerId] = useState(null);
       }
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update delivery status. Please try again.");
     }
   };
   //delete order
@@ -202,7 +201,46 @@ const [selectedCustomerId, setSelectedCustomerId] = useState(null);
       Swal.fire("Error", "Failed to stop the plan. Please try again.", "error");
     }
   };
+//cancel order
+const handleCancelStatus = async (orderId, date) => {
+  if (!orderId || !date) {
+    console.error("Missing orderId or date for canceling.");
+    return;
+  }
 
+  try {
+    const response = await axios.patch(
+      `${URL}/orderdetails/cancel/${orderId}`,
+      { date }
+    );
+
+    if (response.status === 200) {
+      setAllOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId
+            ? {
+                ...order,
+                selectedPlanDetails: {
+                  ...order.selectedPlanDetails,
+                  dates: (order.selectedPlanDetails?.dates || []).map(
+                    (dateObj) =>
+                      dateObj.date === date
+                        ? { ...dateObj, status: "cancel" }
+                        : dateObj
+                  ),
+                },
+              }
+            : order
+        )
+      );
+
+      Swal.fire("Success", "Order canceled successfully", "success");
+    }
+  } catch (error) {
+    console.error("Error canceling order:", error);
+    Swal.fire("Error", "Failed to cancel the order. Please try again.", "error");
+  }
+};
   return (
     <div className="main-content">
       <div className="panel">
@@ -453,6 +491,21 @@ const [selectedCustomerId, setSelectedCustomerId] = useState(null);
                             Delivered
                           </button>
                         )}
+                      </div>
+                      <div className="d-flex align-items-center">
+                        {dateObj.status !== "cancel" && (
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() =>
+                              handleCancelStatus(
+                                selectedOrderId,
+                                dateObj.date
+                              )
+                            }
+                          >
+                            Cancel
+                          </button>
+                        )}  
                       </div>
                     </li>
                   ))}
