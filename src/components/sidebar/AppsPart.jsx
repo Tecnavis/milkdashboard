@@ -93,6 +93,11 @@ const AppsPart = () => {
                Customer Bottle Stock
             </NavLink>
           </li>
+          <li className="sidebar-dropdown-item">
+            <NavLink to="/leaveapply" className="sidebar-link" onClick={handleSubNavLinkClick}>
+               Customer Leave Apply
+            </NavLink>
+          </li>
             {/* <li className="sidebar-dropdown-item">
               <NavLink to="/addEmployee" className="sidebar-link" onClick={handleSubNavLinkClick}>
                 Add Employee
