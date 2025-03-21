@@ -11,7 +11,8 @@ import {
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const AllCustomerTable = () => {
+const AllCustomerTable = ({ searchQuery }) => {
+
   const [customers, setCustomers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -20,17 +21,7 @@ const AllCustomerTable = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       const response = await FetchCustomer();
-      
-      // Sort customers by _id (assuming _id contains timestamp information like MongoDB ObjectId)
-      // This will put newest customers at the top assuming _id is timestamp-based
-      const sortedCustomers = [...response].sort((a, b) => {
-        // If you have a createdAt field, use that instead
-        // return new Date(b.createdAt) - new Date(a.createdAt);
-        
-        // Sorting by _id (MongoDB ObjectId contains creation timestamp)
-        return b._id > a._id ? 1 : -1;
-      });
-      
+      const sortedCustomers = [...response].sort((a, b) => (b._id > a._id ? 1 : -1));
       setCustomers(sortedCustomers);
     };
     fetchCustomers();
@@ -128,6 +119,11 @@ const handleConfirm = async (customerId) => {
     });
   }
 };
+ // Filter customers based on search query
+ const filteredCustomers = customers.filter((customer) => 
+  customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  customer.phone.includes(searchQuery) // Allows partial phone number match
+);
   return (
     <>
     <div style={{ overflowX: "auto" }}>
@@ -147,7 +143,7 @@ const handleConfirm = async (customerId) => {
           </tr>
         </thead>
         <tbody>
-          {customers.map((data) => (
+          {filteredCustomers.map((data) => (
             <tr key={data._id}>
               <td>{data.customerId}</td>
               <td>
