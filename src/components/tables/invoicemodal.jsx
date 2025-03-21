@@ -7,7 +7,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
-  
+
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // Current month
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Current year
 
@@ -17,7 +17,9 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
 
       try {
         setLoading(true);
-        const response = await axios.get(`${URL}/orderdetails/invoices/${customerId}`);
+        const response = await axios.get(
+          `${URL}/orderdetails/invoices/${customerId}`
+        );
         setInvoiceData(response.data);
         setError(null);
       } catch (err) {
@@ -64,29 +66,66 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
           </tr>
         </thead>
         <tbody>
-          ${invoiceData.flatMap((invoice, planIndex) =>
-            invoice.orderItems?.map((orderItem, index) => 
-              orderItem.products.map((p, pIndex) => `
+          ${invoiceData
+            .flatMap((invoice, planIndex) =>
+              invoice.orderItems?.map((orderItem, index) =>
+                orderItem.products
+                  .map(
+                    (p, pIndex) => `
                 <tr>
-                  ${pIndex === 0 ? `<td rowspan="${orderItem.products.length}">${index + 1}</td>` : ""}
-                  ${pIndex === 0 ? `<td rowspan="${orderItem.products.length}">${new Date(orderItem.date).toLocaleDateString()}</td>` : ""}
-                  ${pIndex === 0 ? `<td rowspan="${orderItem.products.length}">${orderItem.status}</td>` : ""}
+                  ${
+                    pIndex === 0
+                      ? `<td rowspan="${orderItem.products.length}">${
+                          index + 1
+                        }</td>`
+                      : ""
+                  }
+                  ${
+                    pIndex === 0
+                      ? `<td rowspan="${orderItem.products.length}">${new Date(
+                          orderItem.date
+                        ).toLocaleDateString()}</td>`
+                      : ""
+                  }
+                  ${
+                    pIndex === 0
+                      ? `<td rowspan="${orderItem.products.length}">${orderItem.status}</td>`
+                      : ""
+                  }
                   <td>${p.product}</td>
                   <td>${p.quantity}</td>
                   <td>₹${p.routePrice}</td>
-                  ${pIndex === 0 ? `<td rowspan="${orderItem.products.length}">₹${orderItem.products.reduce((acc, p) => acc + p.quantity * p.routePrice, 0)}</td>` : ""}
+                  ${
+                    pIndex === 0
+                      ? `<td rowspan="${
+                          orderItem.products.length
+                        }">₹${orderItem.products.reduce(
+                          (acc, p) => acc + p.quantity * p.routePrice,
+                          0
+                        )}</td>`
+                      : ""
+                  }
                 </tr>
-              `).join('')
+              `
+                  )
+                  .join("")
+              )
             )
-          ).join('')}
+            .join("")}
         </tbody>
       </table>
-      <p><strong>Total:</strong> ₹${invoiceData.reduce((total, inv) => total + inv.total, 0)}</p>
+      <p><strong>Total:</strong> ₹${invoiceData.reduce(
+        (total, inv) => total + inv.total,
+        0
+      )}</p>
     </body>
     </html>`;
 
     try {
-      const response = await axios.post(`${URL}/orderdetails/send-invoice`, { email, invoiceHtml });
+      const response = await axios.post(`${URL}/orderdetails/send-invoice`, {
+        email,
+        invoiceHtml,
+      });
       if (response.status === 200) {
         alert("Invoice sent successfully!");
       } else {
@@ -100,21 +139,62 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
     }
   };
 
-
+//filter invoice monthly
   const filteredInvoices = invoiceData.filter((inv) =>
     inv.orderItems.some((orderItem) => {
       const orderDate = new Date(orderItem.date);
-      return orderDate.getMonth() === selectedMonth && orderDate.getFullYear() === selectedYear;
+      return (
+        orderDate.getMonth() === selectedMonth &&
+        orderDate.getFullYear() === selectedYear
+      );
     })
   );
-  
+
   // Calculate Monthly Total
-  const monthlyTotal = filteredInvoices.reduce(
-    (total, inv) => total + inv.total,
-    0
-  );
-  
-  
+  const monthlyTotal = filteredInvoices.reduce((total, inv) => {
+    return (
+      total +
+      inv.orderItems.reduce((orderTotal, order) => {
+        const orderDate = new Date(order.date);
+        if (
+          order.status === "delivered" &&
+          orderDate.getMonth() === selectedMonth &&
+          orderDate.getFullYear() === selectedYear
+        ) {
+          return (
+            orderTotal + order.products.reduce((sum, p) => sum + p.subtotal, 0)
+          );
+        }
+        return orderTotal;
+      }, 0)
+    );
+  }, 0);
+
+// Calculate Monthly Paid Amount
+const uniquePayments = new Set();
+
+const monthlyPaidAmount = invoiceData.reduce((total, inv) => {
+  console.log("Customer Payments: ", inv.customer.paidAmounts); // Debugging log
+
+  inv.customer.paidAmounts?.forEach((payment) => {
+    const paymentDate = new Date(payment.date);
+    const uniqueKey = `${paymentDate.toISOString()}-${payment.amount}`;
+
+    if (
+      paymentDate.getMonth() === selectedMonth &&
+      paymentDate.getFullYear() === selectedYear &&
+      !uniquePayments.has(uniqueKey)
+    ) {
+      uniquePayments.add(uniqueKey);
+      console.log("Valid Payment:", payment.amount); // Debugging log
+      total += payment.amount;
+    }
+  });
+
+  return total;
+}, 0);
+
+
   const handleMonthChange = (e) => {
     const selected = parseInt(e.target.value, 10);
     setSelectedMonth(selected);
@@ -143,14 +223,20 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
   return (
     <Modal show={show} onHide={onHide} size="xl" centered>
       <Modal.Header closeButton>
-        <Modal.Title style={{ textAlign: "center" ,color:"white"}}>Invoice Details</Modal.Title>
+        <Modal.Title style={{ textAlign: "center", color: "white" }}>
+          Invoice Details
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="d-flex justify-content-between align-items-center mb-3">
           <button className="btn btn-secondary" onClick={handlePreviousMonth}>
             Previous
           </button>
-          <select value={selectedMonth} onChange={handleMonthChange} className="form-select w-auto">
+          <select
+            value={selectedMonth}
+            onChange={handleMonthChange}
+            className="form-select w-auto"
+          >
             {Array.from({ length: 12 }, (_, i) => (
               <option key={i} value={i}>
                 {new Date(0, i).toLocaleString("default", { month: "long" })}
@@ -161,29 +247,68 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
             Next
           </button>
         </div>
-          <div className="d-flex">
-          
-            {/* Customer Details */}
+        <div className="d-flex">
+          {/* Customer Details */}
 
-            <div className=" p-3 flex-grow-1" style={{display:'flex', flexDirection:'column',textAlign:'left'}}>
-              <h5 className="fw-bold">Customer Details</h5>
-              <p><strong>Name:</strong> {invoiceData[0]?.customer?.name || "N/A"}</p>
-              {/* <p><strong>Address:</strong> {invoiceData[0]?.customer?.address || "N/A"}</p> */}
-              <p><strong>Email:</strong> {invoiceData[0]?.customer?.email || "N/A"}</p>
-              <p><strong>Phone:</strong> {invoiceData[0]?.customer?.phone || "N/A"}</p>
-            </div>
-<div className="" style={{display:'flex', flexDirection:'column',textAlign:'center',justifyContent:'center'}}>
-  <b>PALKKARAN</b>
-</div>
-            {/* Invoice Details */}
-            <div className=" p-3 flex-grow-1" style={{display:'flex', flexDirection:'column',textAlign:'right'}}>
-              <h5 className="fw-bold">Invoice Details</h5>
-              <p><strong>Invoice No:</strong> {invoiceData[0]?.customer?.customerId || "N/A"}</p>
-              <p><strong>Payment Type:</strong> {invoiceData[0]?.invoiceDetails?.paymentType || "N/A"}</p>
-              <p><strong>Payment Status:</strong> {invoiceData[0]?.invoiceDetails?.paymentStatus || "N/A"}</p>
-              <p><strong>Total:</strong> ₹{invoiceData.reduce((total, inv) => total + inv.total, 0)}</p>
-            </div>
+          <div
+            className=" p-3 flex-grow-1"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "left",
+            }}
+          >
+            <h5 className="fw-bold">Customer Details</h5>
+            <p>
+              <strong>Name:</strong> {invoiceData[0]?.customer?.name || "N/A"}
+            </p>
+            {/* <p><strong>Address:</strong> {invoiceData[0]?.customer?.address || "N/A"}</p> */}
+            <p>
+              <strong>Email:</strong> {invoiceData[0]?.customer?.email || "N/A"}
+            </p>
+            <p>
+              <strong>Phone:</strong> {invoiceData[0]?.customer?.phone || "N/A"}
+            </p>
           </div>
+          <div
+            className=""
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "center",
+              justifyContent: "center",
+            }}
+          >
+            <b>PALKKARAN</b>
+          </div>
+          {/* Invoice Details */}
+          <div
+            className=" p-3 flex-grow-1"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "right",
+            }}
+          >
+            <h5 className="fw-bold">Invoice Details</h5>
+            <p>
+              <strong>Invoice No:</strong>{" "}
+              {invoiceData[0]?.customer?.customerId || "N/A"}
+            </p>
+            <p>
+              <strong>Payment Type:</strong>{" "}
+              {invoiceData[0]?.invoiceDetails?.paymentType || "N/A"}
+            </p>
+            <p>
+              <strong>Payment Status:</strong>{" "}
+              {invoiceData[0]?.invoiceDetails?.paymentStatus || "N/A"}
+            </p>
+            <p>
+              <strong>Total:</strong> ₹
+              {invoiceData.reduce((total, inv) => total + inv.total, 0)}
+            </p>
+          </div>
+        </div>
       </Modal.Body>
       <Modal.Body>
         {loading ? (
@@ -205,47 +330,103 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                 </tr>
               </thead>
               <tbody>
-                {invoiceData.flatMap((invoice, planIndex) =>
-                  invoice.orderItems?.map((orderItem, index) =>
-                    orderItem.products.map((p, pIndex) => (
-                      <tr key={`${planIndex}-${index}-${pIndex}`}>
-                        {pIndex === 0 && <td rowSpan={orderItem.products.length}>{index + 1}</td>}
-                        {pIndex === 0 && <td rowSpan={orderItem.products.length}>{new Date(orderItem.date).toLocaleDateString()}</td>}
-                        {pIndex === 0 && <td rowSpan={orderItem.products.length}>{orderItem.status}</td>}
-                        <td style={{textAlign:'center'}}>{p.product}</td>
-                        <td style={{textAlign:'center'}}>{p.quantity}</td>
-                        <td style={{textAlign:'center'}}>₹{p.routePrice}</td>
-                        {pIndex === 0 && <td rowSpan={orderItem.products.length}>₹{orderItem.products.reduce((acc, p) => acc + p.quantity * p.routePrice, 0)}</td>}
-                      </tr>
-                    ))
-                  )
+                {filteredInvoices.flatMap((invoice, planIndex) =>
+                  invoice.orderItems
+                    .filter((orderItem) => {
+                      const orderDate = new Date(orderItem.date);
+                      return (
+                        orderDate.getMonth() === selectedMonth &&
+                        orderDate.getFullYear() === selectedYear
+                      );
+                    })
+                    .map((orderItem, index) =>
+                      orderItem.products.map((p, pIndex) => (
+                        <tr key={`${planIndex}-${index}-${pIndex}`}>
+                          {pIndex === 0 && (
+                            <td rowSpan={orderItem.products.length}>
+                              {index + 1}
+                            </td>
+                          )}
+                          {pIndex === 0 && (
+                            <td rowSpan={orderItem.products.length}>
+                              {new Date(orderItem.date).toLocaleDateString()}
+                            </td>
+                          )}
+                          {pIndex === 0 && (
+                            <td rowSpan={orderItem.products.length}>
+                              {orderItem.status}
+                            </td>
+                          )}
+                          <td style={{ textAlign: "center" }}>{p.product}</td>
+                          <td style={{ textAlign: "center" }}>{p.quantity}</td>
+                          <td style={{ textAlign: "center" }}>
+                            ₹{p.routePrice}
+                          </td>
+                          {pIndex === 0 && (
+                            <td rowSpan={orderItem.products.length}>
+                              ₹
+                              {orderItem.products.reduce(
+                                (acc, p) => acc + p.quantity * p.routePrice,
+                                0
+                              )}
+                            </td>
+                          )}
+                        </tr>
+                      ))
+                    )
                 )}
               </tbody>
             </table>
-            <br/>
+            <br />
             <div className="text-end">
               {/* //  {data?.customer?.paidAmounts?.reduce((sum, payment) => sum + payment.amount, 0)} */}
               <div className="text-end">
-  <p><strong>Monthly Total: </strong> ₹{monthlyTotal}</p>
-</div>
-
-
-
-              <p><strong>Your Total Bill: ₹{invoiceData.reduce((total, inv) => total + inv.total, 0)}</strong></p>
-            <p><strong> Paid Amount : ₹{invoiceData[0]?.customer?.paidAmounts?.reduce((sum, payment) => sum + payment.amount, 0)}</strong></p>
-            <p>
-  <strong>
-   Total Balance Amount : ₹
-    {invoiceData.reduce((total, inv) => total + inv.total, 0) - 
-     invoiceData[0]?.customer?.paidAmounts?.reduce((sum, payment) => sum + payment.amount, 0)}
-  </strong>
+                <p>
+                  <strong>Monthly Total: </strong> ₹{monthlyTotal}
+                </p>
+                <p>
+  <strong>Monthly Paid Amount:</strong> ₹{monthlyPaidAmount}
 </p>
+
+
+              </div>
+<hr/>
+              <p>
+                <strong>
+                  Your Total Bill: ₹
+                  {invoiceData.reduce((total, inv) => total + inv.total, 0)}
+                </strong>
+              </p>
+              <p>
+                <strong>
+                  {" "}
+                  Paid Amount : ₹
+                  {invoiceData[0]?.customer?.paidAmounts?.reduce(
+                    (sum, payment) => sum + payment.amount,
+                    0
+                  )}
+                </strong>
+              </p>
+              <p>
+                <strong>
+                  Total Balance Amount : ₹
+                  {invoiceData.reduce((total, inv) => total + inv.total, 0) -
+                    invoiceData[0]?.customer?.paidAmounts?.reduce(
+                      (sum, payment) => sum + payment.amount,
+                      0
+                    )}
+                </strong>
+              </p>
             </div>
           </div>
         )}
       </Modal.Body>
       <Modal.Footer>
-        <button className="btn btn-primary" onClick={sendInvoice} disabled={sending}>
+        <button
+          className="btn btn-primary"
+          onClick={sendInvoice}
+          disabled={sending}
+        >
           {sending ? "Sending..." : "Send Invoice"}
         </button>
       </Modal.Footer>
