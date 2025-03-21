@@ -35,111 +35,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
     }
   }, [customerId, show, URL, selectedMonth, selectedYear]);
 
-  const sendInvoice = async () => {
-    if (!invoiceData.length) return;
-    setSending(true);
-
-    const email = invoiceData[0]?.customer?.email;
-    const invoiceHtml = `<html>
-    <head>
-      <style>
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background: #007bff; color: #fff; }
-      </style>
-    </head>
-    <body>
-      <h2>Invoice Details</h2>
-      <p>Customer: ${invoiceData[0]?.customer?.name || "N/A"}</p>
-      <p>Email: ${email || "N/A"}</p>
-      <table>
-        <thead>
-          <tr>
-            <th>No.</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Product</th>
-            <th>Qty.</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${invoiceData
-            .flatMap((invoice, planIndex) =>
-              invoice.orderItems?.map((orderItem, index) =>
-                orderItem.products
-                  .map(
-                    (p, pIndex) => `
-                <tr>
-                  ${
-                    pIndex === 0
-                      ? `<td rowspan="${orderItem.products.length}">${
-                          index + 1
-                        }</td>`
-                      : ""
-                  }
-                  ${
-                    pIndex === 0
-                      ? `<td rowspan="${orderItem.products.length}">${new Date(
-                          orderItem.date
-                        ).toLocaleDateString()}</td>`
-                      : ""
-                  }
-                  ${
-                    pIndex === 0
-                      ? `<td rowspan="${orderItem.products.length}">${orderItem.status}</td>`
-                      : ""
-                  }
-                  <td>${p.product}</td>
-                  <td>${p.quantity}</td>
-                  <td>₹${p.routePrice}</td>
-                  ${
-                    pIndex === 0
-                      ? `<td rowspan="${
-                          orderItem.products.length
-                        }">₹${orderItem.products.reduce(
-                          (acc, p) => acc + p.quantity * p.routePrice,
-                          0
-                        )}</td>`
-                      : ""
-                  }
-                </tr>
-              `
-                  )
-                  .join("")
-              )
-            )
-            .join("")}
-        </tbody>
-      </table>
-      <p><strong>Total:</strong> ₹${invoiceData.reduce(
-        (total, inv) => total + inv.total,
-        0
-      )}</p>
-    </body>
-    </html>`;
-
-    try {
-      const response = await axios.post(`${URL}/orderdetails/send-invoice`, {
-        email,
-        invoiceHtml,
-      });
-      if (response.status === 200) {
-        alert("Invoice sent successfully!");
-      } else {
-        alert("Failed to send invoice");
-      }
-    } catch (error) {
-      console.error("Error sending invoice:", error);
-      alert("Error sending invoice");
-    } finally {
-      setSending(false);
-    }
-  };
-
-//filter invoice monthly
+  //filter invoice monthly
   const filteredInvoices = invoiceData.filter((inv) =>
     inv.orderItems.some((orderItem) => {
       const orderDate = new Date(orderItem.date);
@@ -170,30 +66,29 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
     );
   }, 0);
 
-// Calculate Monthly Paid Amount
-const uniquePayments = new Set();
+  // Calculate Monthly Paid Amount
+  const uniquePayments = new Set();
 
-const monthlyPaidAmount = invoiceData.reduce((total, inv) => {
-  console.log("Customer Payments: ", inv.customer.paidAmounts); // Debugging log
+  const monthlyPaidAmount = invoiceData.reduce((total, inv) => {
+    console.log("Customer Payments: ", inv.customer.paidAmounts); // Debugging log
 
-  inv.customer.paidAmounts?.forEach((payment) => {
-    const paymentDate = new Date(payment.date);
-    const uniqueKey = `${paymentDate.toISOString()}-${payment.amount}`;
+    inv.customer.paidAmounts?.forEach((payment) => {
+      const paymentDate = new Date(payment.date);
+      const uniqueKey = `${paymentDate.toISOString()}-${payment.amount}`;
 
-    if (
-      paymentDate.getMonth() === selectedMonth &&
-      paymentDate.getFullYear() === selectedYear &&
-      !uniquePayments.has(uniqueKey)
-    ) {
-      uniquePayments.add(uniqueKey);
-      console.log("Valid Payment:", payment.amount); // Debugging log
-      total += payment.amount;
-    }
-  });
+      if (
+        paymentDate.getMonth() === selectedMonth &&
+        paymentDate.getFullYear() === selectedYear &&
+        !uniquePayments.has(uniqueKey)
+      ) {
+        uniquePayments.add(uniqueKey);
+        console.log("Valid Payment:", payment.amount); // Debugging log
+        total += payment.amount;
+      }
+    });
 
-  return total;
-}, 0);
-
+    return total;
+  }, 0);
 
   const handleMonthChange = (e) => {
     const selected = parseInt(e.target.value, 10);
@@ -218,6 +113,96 @@ const monthlyPaidAmount = invoiceData.reduce((total, inv) => {
     }
   };
 
+  // **Function to Generate Email Template**
+  const generateInvoiceHtml = () => {
+    return `
+  <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #007bff; color: #fff; }
+      </style>
+    </head>
+    <body>
+      <h2>Invoice Details for ${new Date(
+        selectedYear,
+        selectedMonth
+      ).toLocaleString("default", { month: "long", year: "numeric" })}</h2>
+      <p>Customer: ${invoiceData[0]?.customer?.name || "N/A"}</p>
+      <p>Email: ${invoiceData[0]?.customer?.email || "N/A"}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Product</th>
+            <th>Qty.</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filteredInvoices
+            .flatMap((invoice, index) =>
+              invoice.orderItems
+                .filter((orderItem) => {
+                  const orderDate = new Date(orderItem.date);
+                  return (
+                    orderDate.getMonth() === selectedMonth &&
+                    orderDate.getFullYear() === selectedYear
+                  );
+                })
+                .flatMap((orderItem, orderIndex) =>
+                  orderItem.products.map(
+                    (product, pIndex) => `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td>${new Date(orderItem.date).toLocaleDateString()}</td>
+                      <td>${orderItem.status}</td>
+                      <td>${product.product}</td>
+                      <td>${product.quantity}</td>
+                      <td>₹${product.routePrice}</td>
+                      <td>₹${product.subtotal}</td>
+                    </tr>`
+                  )
+                )
+            )
+            .join("")}
+        </tbody>
+      </table>
+      <p><strong>Monthly Total:</strong> ₹${monthlyTotal}</p>
+      <p><strong>Monthly Paid Amount:</strong> ₹${monthlyPaidAmount}</p>
+    </body>
+  </html>`;
+  };
+
+  const sendInvoice = async () => {
+    if (!filteredInvoices.length) return;
+    setSending(true);
+
+    const email = invoiceData[0]?.customer?.email;
+    const invoiceHtml = generateInvoiceHtml();
+
+    try {
+      const response = await axios.post(`${URL}/orderdetails/send-invoice`, {
+        email,
+        invoiceHtml,
+      });
+      if (response.status === 200) {
+        alert("Invoice sent successfully!");
+      } else {
+        alert("Failed to send invoice");
+      }
+    } catch (error) {
+      console.error("Error sending invoice:", error);
+      alert("Error sending invoice");
+    } finally {
+      setSending(false);
+    }
+  };
   if (!show) return null;
 
   return (
@@ -385,12 +370,10 @@ const monthlyPaidAmount = invoiceData.reduce((total, inv) => {
                   <strong>Monthly Total: </strong> ₹{monthlyTotal}
                 </p>
                 <p>
-  <strong>Monthly Paid Amount:</strong> ₹{monthlyPaidAmount}
-</p>
-
-
+                  <strong>Monthly Paid Amount:</strong> ₹{monthlyPaidAmount}
+                </p>
               </div>
-<hr/>
+              <hr />
               <p>
                 <strong>
                   Your Total Bill: ₹
