@@ -7,6 +7,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
+  
 
   useEffect(() => {
     const fetchInvoiceData = async () => {
@@ -167,9 +168,42 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
             </table>
             <br/>
             <div className="text-end">
-              <p><strong>Total: ₹{invoiceData.reduce((total, inv) => total + inv.total, 0)}</strong></p>
-            <p><strong>Paid Amount : ₹{invoiceData.reduce((total, inv) => total + inv.paidAmount, 0)}</strong></p>
-            <p><strong>Balance Amount : ₹{invoiceData.reduce((total, inv) => total +inv.total - inv.paidAmount, 0)}</strong></p>
+              {/* //  {data?.customer?.paidAmounts?.reduce((sum, payment) => sum + payment.amount, 0)} */}
+              <p><strong>Monthly Total: ₹{invoiceData.reduce((total, inv) => {
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+
+  // Sum only the order items from the current month
+  const monthlyTotal = inv.orderItems
+    .filter(order => {
+      const orderDate = new Date(order.date);
+      return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
+    })
+    .reduce((sum, order) => sum + order.products.reduce((pSum, p) => pSum + p.subtotal, 0), 0);
+
+  return total + monthlyTotal;
+}, 0)}</strong></p>
+<p><strong>Monthly Paid Amount: ₹{
+  invoiceData[0]?.customer?.paidAmounts
+    ?.filter(payment => {
+      const paymentDate = new Date(payment.date);
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      return paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear;
+    })
+    .reduce((sum, payment) => sum + payment.amount, 0) || 0
+}</strong></p>
+
+
+              <p><strong>Complete Total: ₹{invoiceData.reduce((total, inv) => total + inv.total, 0)}</strong></p>
+            <p><strong>Complete Paid Amount : ₹{invoiceData[0]?.customer?.paidAmounts?.reduce((sum, payment) => sum + payment.amount, 0)}</strong></p>
+            <p>
+  <strong>
+   Total Balance Amount : ₹
+    {invoiceData.reduce((total, inv) => total + inv.total, 0) - 
+     invoiceData[0]?.customer?.paidAmounts?.reduce((sum, payment) => sum + payment.amount, 0)}
+  </strong>
+</p>
             </div>
           </div>
         )}
