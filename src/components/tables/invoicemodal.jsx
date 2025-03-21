@@ -8,6 +8,8 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
   
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()); // Current month
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Current year
 
   useEffect(() => {
     const fetchInvoiceData = async () => {
@@ -29,7 +31,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
     if (show) {
       fetchInvoiceData();
     }
-  }, [customerId, show, URL]);
+  }, [customerId, show, URL, selectedMonth, selectedYear]);
 
   const sendInvoice = async () => {
     if (!invoiceData.length) return;
@@ -98,6 +100,44 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
     }
   };
 
+
+  const filteredInvoices = invoiceData.filter((inv) =>
+    inv.orderItems.some((orderItem) => {
+      const orderDate = new Date(orderItem.date);
+      return orderDate.getMonth() === selectedMonth && orderDate.getFullYear() === selectedYear;
+    })
+  );
+  
+  // Calculate Monthly Total
+  const monthlyTotal = filteredInvoices.reduce(
+    (total, inv) => total + inv.total,
+    0
+  );
+  
+  
+  const handleMonthChange = (e) => {
+    const selected = parseInt(e.target.value, 10);
+    setSelectedMonth(selected);
+  };
+
+  const handlePreviousMonth = () => {
+    if (selectedMonth === 0) {
+      setSelectedMonth(11);
+      setSelectedYear((prevYear) => prevYear - 1);
+    } else {
+      setSelectedMonth((prevMonth) => prevMonth - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (selectedMonth === 11) {
+      setSelectedMonth(0);
+      setSelectedYear((prevYear) => prevYear + 1);
+    } else {
+      setSelectedMonth((prevMonth) => prevMonth + 1);
+    }
+  };
+
   if (!show) return null;
 
   return (
@@ -106,7 +146,23 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
         <Modal.Title style={{ textAlign: "center" ,color:"white"}}>Invoice Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+          <button className="btn btn-secondary" onClick={handlePreviousMonth}>
+            Previous
+          </button>
+          <select value={selectedMonth} onChange={handleMonthChange} className="form-select w-auto">
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i} value={i}>
+                {new Date(0, i).toLocaleString("default", { month: "long" })}
+              </option>
+            ))}
+          </select>
+          <button className="btn btn-secondary" onClick={handleNextMonth}>
+            Next
+          </button>
+        </div>
           <div className="d-flex">
+          
             {/* Customer Details */}
 
             <div className=" p-3 flex-grow-1" style={{display:'flex', flexDirection:'column',textAlign:'left'}}>
@@ -169,34 +225,14 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
             <br/>
             <div className="text-end">
               {/* //  {data?.customer?.paidAmounts?.reduce((sum, payment) => sum + payment.amount, 0)} */}
-              <p><strong>Monthly Total: ₹{invoiceData.reduce((total, inv) => {
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-
-  // Sum only the order items from the current month
-  const monthlyTotal = inv.orderItems
-    .filter(order => {
-      const orderDate = new Date(order.date);
-      return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
-    })
-    .reduce((sum, order) => sum + order.products.reduce((pSum, p) => pSum + p.subtotal, 0), 0);
-
-  return total + monthlyTotal;
-}, 0)}</strong></p>
-<p><strong>Monthly Paid Amount: ₹{
-  invoiceData[0]?.customer?.paidAmounts
-    ?.filter(payment => {
-      const paymentDate = new Date(payment.date);
-      const currentMonth = new Date().getMonth();
-      const currentYear = new Date().getFullYear();
-      return paymentDate.getMonth() === currentMonth && paymentDate.getFullYear() === currentYear;
-    })
-    .reduce((sum, payment) => sum + payment.amount, 0) || 0
-}</strong></p>
+              <div className="text-end">
+  <p><strong>Monthly Total: </strong> ₹{monthlyTotal}</p>
+</div>
 
 
-              <p><strong>Complete Total: ₹{invoiceData.reduce((total, inv) => total + inv.total, 0)}</strong></p>
-            <p><strong>Complete Paid Amount : ₹{invoiceData[0]?.customer?.paidAmounts?.reduce((sum, payment) => sum + payment.amount, 0)}</strong></p>
+
+              <p><strong>Your Total Bill: ₹{invoiceData.reduce((total, inv) => total + inv.total, 0)}</strong></p>
+            <p><strong> Paid Amount : ₹{invoiceData[0]?.customer?.paidAmounts?.reduce((sum, payment) => sum + payment.amount, 0)}</strong></p>
             <p>
   <strong>
    Total Balance Amount : ₹

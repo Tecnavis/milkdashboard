@@ -98,7 +98,7 @@ const Header = () => {
               }`}
             >
               <div className="header-right-btns d-flex justify-content-end align-items-center p-0">
-                <form className="header-form">
+                {/* <form className="header-form">
                   <input
                     type="search"
                     name="search"
@@ -108,10 +108,10 @@ const Header = () => {
                   <button type="submit">
                     <i className="fa-solid fa-magnifying-glass"></i>
                   </button>
-                </form>
+                </form> */}
                 <div className="header-right-btns d-flex justify-content-end align-items-center p-0">
                   <HeaderChat />
-                  <HeaderNotification />
+                  {/* <HeaderNotification /> */}
                   <Calculator />
                   <button
                     className="header-btn fullscreen-btn"
