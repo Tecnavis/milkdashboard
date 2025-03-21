@@ -6,25 +6,28 @@ import { fetchProducts, URL } from "../../Helper/handle-api";
 import EditProductModal from "./editproductmodal";
 import axios from "axios";
 import Swal from "sweetalert2";
-const AllProductTable = () => {
+const AllProductTable = ({ searchQuery }) => {
   const [products, setProducts] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  // Pagination logic
-  const indexOfLastData = currentPage * dataPerPage;
-  const indexOfFirstData = indexOfLastData - dataPerPage;
-  const currentData = products.slice(indexOfFirstData, indexOfLastData);
+  
 
-  const paginate = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+
+  // Pagination logic
+  // const indexOfLastData = currentPage * dataPerPage;
+  // const indexOfFirstData = indexOfLastData - dataPerPage;
+  // const currentData = products.slice(indexOfFirstData, indexOfLastData);
+
+  // const paginate = (pageNumber) => {
+  //   setCurrentPage(pageNumber);
+  // };
 
   // Calculate total number of pages
-  const totalPages = Math.ceil(products.length / dataPerPage);
-  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+  // const totalPages = Math.ceil(products.length / dataPerPage);
+  // const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   // All product list
 
@@ -36,12 +39,17 @@ const AllProductTable = () => {
     fetchProduct();
   }, []);
 
+  
   // Handle size selection and set stock count for each size
   useEffect(() => {
     setCurrentPage(1);
   }, [products]);
 
- 
+  // Filter products based on search query
+  const filteredProducts = products.filter((product) =>
+    product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.title.toLowerCase().includes(searchQuery.toLowerCase())
+);
 
 
   // Handle product edit icon click
@@ -82,6 +90,15 @@ const AllProductTable = () => {
         }
       }
     });
+  };
+  const indexOfLastData = currentPage * dataPerPage;
+  const indexOfFirstData = indexOfLastData - dataPerPage;
+  const currentData = filteredProducts.slice(indexOfFirstData, indexOfLastData);
+  const totalPages = Math.ceil(filteredProducts.length / dataPerPage);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  const paginate = (pageNumber) => {
+      setCurrentPage(pageNumber);
   };
   
   return (
