@@ -20,9 +20,21 @@ const AllCustomerTable = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       const response = await FetchCustomer();
-      setCustomers(response);
+      
+      // Sort customers by _id (assuming _id contains timestamp information like MongoDB ObjectId)
+      // This will put newest customers at the top assuming _id is timestamp-based
+      const sortedCustomers = [...response].sort((a, b) => {
+        // If you have a createdAt field, use that instead
+        // return new Date(b.createdAt) - new Date(a.createdAt);
+        
+        // Sorting by _id (MongoDB ObjectId contains creation timestamp)
+        return b._id > a._id ? 1 : -1;
+      });
+      
+      setCustomers(sortedCustomers);
     };
     fetchCustomers();
+
 
     const fetchAllRoutes = async () => {
       const response = await fetchRoutes();

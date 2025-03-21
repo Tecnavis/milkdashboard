@@ -48,7 +48,15 @@ const [selectedCustomerId, setSelectedCustomerId] = useState(null);
             apartment: "N/A",
           },
         }));
-        setAllOrders(validatedOrders);
+        const sortedOrders = validatedOrders.sort((a, b) => {
+          // First try to sort by createdAt if available
+          if (a.createdAt && b.createdAt) {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          }
+          // Fall back to sorting by _id (MongoDB ObjectIds contain a timestamp)
+          return b._id > a._id ? 1 : -1;
+        });
+        setAllOrders(sortedOrders);
         setError(null);
       } catch (error) {
         console.error("Error fetching orders:", error);
