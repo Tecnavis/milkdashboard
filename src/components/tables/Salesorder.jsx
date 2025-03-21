@@ -238,6 +238,7 @@ const Salesorders = () => {
           text: "Order created successfully!",
         });
       }
+      setOrderConfirmed(false);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -368,11 +369,24 @@ const Salesorders = () => {
 
 
       {/* Order Button */}
-      {orderConfirmed && (
-        <Button variant="success" onClick={handleOrder}>
-          Order Now
-        </Button>
-      )}
+     {/* Order Now Popup Modal */}
+<Modal show={orderConfirmed} onHide={() => setOrderConfirmed(false)} centered>
+  <Modal.Header closeButton>
+    <Modal.Title>Confirm Your Order</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <p>Are you sure you want to place this order?</p>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setOrderConfirmed(false)}>
+      Cancel
+    </Button>
+    <Button variant="success" onClick={handleOrder}>
+      Order Now
+    </Button>
+  </Modal.Footer>
+</Modal>
+
     </>
   );
 };
