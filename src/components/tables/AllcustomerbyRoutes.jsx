@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Table, Modal, Button, Form } from "react-bootstrap";
 import { FetchCustomer, URL } from "../../Helper/handle-api";
@@ -16,12 +17,13 @@ const AllCustomerTable = ({ searchTerm }) => {
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [paymentDate, setPaymentDate] = useState("");
-  
+
   // State for edit payment modal
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
   const [editAmount, setEditAmount] = useState("");
   const [editDate, setEditDate] = useState("");
+
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -61,7 +63,7 @@ const AllCustomerTable = ({ searchTerm }) => {
       });
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `${URL}/customer/add-paid-amount/customer`,
@@ -71,7 +73,7 @@ const AllCustomerTable = ({ searchTerm }) => {
           date: paymentDate,
         }
       );
-  
+
       Swal.fire({
         icon: "success",
         title: "Success",
@@ -229,7 +231,7 @@ const AllCustomerTable = ({ searchTerm }) => {
     setEditAmount(payment.amount.toString());
     // Format date for the date input (YYYY-MM-DD)
     const dateObj = new Date(payment.date);
-    const formattedDate = dateObj.toISOString().split('T')[0];
+    const formattedDate = dateObj.toISOString().split("T")[0];
     setEditDate(formattedDate);
     setShowEditModal(true);
   };
@@ -246,15 +248,12 @@ const AllCustomerTable = ({ searchTerm }) => {
     }
 
     try {
-      const response = await axios.patch(
-        `${URL}/customer/update-payment`,
-        {
-          customerId: selectedCustomer.customerId,
-          paidAmountId: editingPayment._id,
-          amount: parseFloat(editAmount),
-          date: editDate
-        }
-      );
+      const response = await axios.patch(`${URL}/customer/update-payment`, {
+        customerId: selectedCustomer.customerId,
+        paidAmountId: editingPayment._id,
+        amount: parseFloat(editAmount),
+        date: editDate,
+      });
 
       if (response.data.success) {
         Swal.fire({
@@ -262,10 +261,10 @@ const AllCustomerTable = ({ searchTerm }) => {
           title: "Success",
           text: "Payment details updated successfully!",
         });
-        
+
         // Close the edit modal
         setShowEditModal(false);
-        
+
         // Refresh payment history
         const historyResponse = await axios.get(
           `${URL}/customer/paid-amounts/${selectedCustomer.customerId}`
@@ -279,10 +278,20 @@ const AllCustomerTable = ({ searchTerm }) => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: `Error updating payment: ${error.response?.data?.message || error.message}`,
+        text: `Error updating payment: ${
+          error.response?.data?.message || error.message
+        }`,
       });
     }
   };
+
+  const totalReceived = paymentHistory
+    .filter((entry) => entry.isGet)
+    .reduce((sum, entry) => sum + entry.amount, 0);
+
+  const totalNotReceived = paymentHistory
+    .filter((entry) => !entry.isGet)
+    .reduce((sum, entry) => sum + entry.amount, 0);
 
   return (
     <div style={{ overflowX: "auto" }}>
@@ -342,7 +351,7 @@ const AllCustomerTable = ({ searchTerm }) => {
                 ))}
               </tbody>
             </Table>
-            <br/>
+            <br />
           </div>
         ))}
 
@@ -392,7 +401,7 @@ const AllCustomerTable = ({ searchTerm }) => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title style={{color:"white"}}>
+          <Modal.Title style={{ color: "white" }}>
             Payment History for {selectedCustomer?.name}
           </Modal.Title>
         </Modal.Header>
@@ -409,44 +418,53 @@ const AllCustomerTable = ({ searchTerm }) => {
               </thead>
               <tbody>
                 {paymentHistory.map((payment) => (
-                  <tr key={payment._id}>
-                    <td>{new Date(payment.date).toLocaleDateString()}</td>
-                    <td>{payment.amount}</td>
-                    <td>
-                      {payment.isGet ? (
-                        <span className="text-success">Paid</span>
-                      ) : (
-                        <>
-                          <span className="text-danger">Unpaid</span>
-                          <Button
-                            variant="warning"
-                            size="sm"
-                            className="ms-2"
-                            onClick={() =>
-                              handleHistoryPaymentConfirmation(payment._id)
-                            }
-                          >
-                            Confirm 
-                          </Button>
-                        </>
-                      )}
-                    </td>
-                    <td>
-                      <Button
-                        size="sm"
-                        onClick={() => handleEditClick(payment)}
-                      >
-                        <i className="fa fa-edit"></i>
-                        
-                      </Button>
-                    </td>
-                  </tr>
+                  <>
+                    <tr key={payment._id}>
+                      <td>{new Date(payment.date).toLocaleDateString()}</td>
+                      <td>{payment.amount}</td>
+                      <td>
+                        {payment.isGet ? (
+                          <span className="text-success">Paid</span>
+                        ) : (
+                          <>
+                            <span className="text-danger">Unpaid</span>
+                            <Button
+                              variant="warning"
+                              size="sm"
+                              className="ms-2"
+                              onClick={() =>
+                                handleHistoryPaymentConfirmation(payment._id)
+                              }
+                            >
+                              Confirm
+                            </Button>
+                          </>
+                        )}
+                      </td>
+                      <td>
+                        <Button
+                          size="sm"
+                          onClick={() => handleEditClick(payment)}
+                        >
+                          <i className="fa fa-edit"></i>
+                        </Button>
+                      </td>
+                    </tr>
+                  </>
                 ))}
               </tbody>
             </Table>
           ) : (
             <p>No payment history available.</p>
           )}
+          <ul style={{ display: "flex", justifyContent: "center", gap: 16 }}>
+            <li>
+              Paid Amount: <span>{totalReceived}</span>
+            </li>
+            <li>
+              Unpaid Amount: <span>{totalNotReceived}</span>
+            </li>
+          </ul>
         </Modal.Body>
         <Modal.Footer>
           <Button

@@ -84,7 +84,7 @@ const OrderListTable = () => {
 
       if (response.status === 200) {
         setOrders((prevOrders) =>
-          prevOrders.map((order) =>
+          prevOrders?.map((order) =>
             order._id === orderId
               ? {
                   ...order,
@@ -122,13 +122,13 @@ const OrderListTable = () => {
 
       if (response.status === 200) {
         setOrders((prevOrders) =>
-          prevOrders.map((order) =>
+          prevOrders?.map((order) =>
             order._id === orderId
               ? {
                   ...order,
                   selectedPlanDetails: {
                     ...order.selectedPlanDetails,
-                    dates: (order.selectedPlanDetails?.dates || []).map(
+                    dates: (order.selectedPlanDetails?.dates || [])?.map(
                       (dateObj) =>
                         dateObj.date === date
                           ? { ...dateObj, status: "cancel" }
@@ -148,7 +148,7 @@ const OrderListTable = () => {
   return (
     <div>
       <OverlayScrollbarsComponent>
-        {Object.keys(ordersByRoute).map((routeNo, index) => (
+        {Object.keys(ordersByRoute)?.map((routeNo, index) => (
           <div key={index} style={{ marginBottom: "30px" }}>
             <b>Route No: {routeNo}</b>
             <Table striped bordered hover>
@@ -166,7 +166,7 @@ const OrderListTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {ordersByRoute[routeNo].map((order, idx) => (
+                {ordersByRoute[routeNo]?.map((order, idx) => (
                   <tr key={order._id}>
                     <td>{idx + 1}</td>
                     <td>{order.customer?.name || "N/A"}</td>

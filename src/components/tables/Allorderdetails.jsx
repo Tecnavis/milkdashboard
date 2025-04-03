@@ -77,6 +77,10 @@ const [selectedCustomerId, setSelectedCustomerId] = useState(null);
     setCurrentPage(pageNumber);
   };
 
+  useEffect(() => {
+
+  }, [])
+
   const totalPages = Math.ceil(allOrders.length / dataPerPage);
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 

@@ -3,17 +3,23 @@ import { Modal, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { URL } from '../../Helper/handle-api';
 
-const ChangePlanModal = ({ show, onHide, orderId, url }) => {
+const ChangePlanModal = ({ show, onHide, orderId }) => {
   const [planType, setPlanType] = useState('');
   const [customDates, setCustomDates] = useState(['', '']);
   const [weeklyDays, setWeeklyDays] = useState([]);
   const [alternativeStart, setAlternativeStart] = useState('');
   const [alternativeInterval, setAlternativeInterval] = useState(2);
+  const [startDate, setStartDate] = useState('');
 
   const handlePlanChange = async () => {
     let payload = { orderId, newPlanType: planType };
 
     switch (planType) {
+      case 'daily':
+      case 'monthly':
+      case 'introductory':  // Added Introductory Plan
+        payload.startDate = startDate;
+        break;
       case 'custom':
         payload.customDates = customDates.filter(date => date);
         break;
@@ -27,7 +33,7 @@ const ChangePlanModal = ({ show, onHide, orderId, url }) => {
     }
 
     try {
-      const response = await axios.put(`${URL}/orderdetails/changeplan`, payload);
+      await axios.put(`${URL}/orderdetails/changeplan`, payload);
       onHide();
     } catch (error) {
       console.error('Plan change failed:', error);
@@ -36,54 +42,63 @@ const ChangePlanModal = ({ show, onHide, orderId, url }) => {
 
   const renderPlanSpecificFields = () => {
     switch (planType) {
+      case 'daily':
+      case 'monthly':
+      case 'introductory':  // Added Start Date for Introductory Plan
+        return (
+          <Form.Group>
+            <Form.Label>Start Date</Form.Label>
+            <Form.Control
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </Form.Group>
+        );
       case 'custom':
         return (
-          <div>
-            <Form.Group>
-              <Form.Label>Custom Dates</Form.Label>
-              {customDates.map((date, index) => (
-                <Form.Control
-                  key={index}
-                  type="date"
-                  value={date}
-                  onChange={(e) => {
-                    const newDates = [...customDates];
-                    newDates[index] = e.target.value;
-                    setCustomDates(newDates);
-                  }}
-                />
-              ))}
-              <Button variant="link" onClick={() => setCustomDates([...customDates, ''])}>
-                Add Date
-              </Button>
-            </Form.Group>
-          </div>
+          <Form.Group>
+            <Form.Label>Custom Dates</Form.Label>
+            {customDates.map((date, index) => (
+              <Form.Control
+                key={index}
+                type="date"
+                value={date}
+                onChange={(e) => {
+                  const newDates = [...customDates];
+                  newDates[index] = e.target.value;
+                  setCustomDates(newDates);
+                }}
+              />
+            ))}
+            <Button variant="link" onClick={() => setCustomDates([...customDates, ''])}>
+              Add Date
+            </Button>
+          </Form.Group>
         );
       case 'weekly':
         return (
-          <div>
-            <Form.Group>
-              <Form.Label>Select Weekly Days</Form.Label>
-              {[0, 1, 2, 3, 4, 5, 6].map(day => (
-                <Form.Check
-                  key={day}
-                  type="checkbox"
-                  label={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][day]}
-                  checked={weeklyDays.includes(day)}
-                  onChange={(e) => {
-                    const newDays = e.target.checked 
-                      ? [...weeklyDays, day]
-                      : weeklyDays.filter(d => d !== day);
-                    setWeeklyDays(newDays);
-                  }}
-                />
-              ))}
-            </Form.Group>
-          </div>
+          <Form.Group>
+            <Form.Label>Select Weekly Days</Form.Label>
+            {[0, 1, 2, 3, 4, 5, 6].map(day => (
+              <Form.Check
+                key={day}
+                type="checkbox"
+                label={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][day]}
+                checked={weeklyDays.includes(day)}
+                onChange={(e) => {
+                  const newDays = e.target.checked 
+                    ? [...weeklyDays, day]
+                    : weeklyDays.filter(d => d !== day);
+                  setWeeklyDays(newDays);
+                }}
+              />
+            ))}
+          </Form.Group>
         );
       case 'alternative':
         return (
-          <div>
+          <>
             <Form.Group>
               <Form.Label>Start Date</Form.Label>
               <Form.Control
@@ -101,7 +116,7 @@ const ChangePlanModal = ({ show, onHide, orderId, url }) => {
                 min={1}
               />
             </Form.Group>
-          </div>
+          </>
         );
       default:
         return null;
@@ -125,6 +140,7 @@ const ChangePlanModal = ({ show, onHide, orderId, url }) => {
               <option value="">Select Plan</option>
               <option value="daily">Daily Plan</option>
               <option value="monthly">Monthly Plan</option>
+              <option value="introductory">Introductory Plan</option> {/* New Plan */}
               <option value="custom">Custom Plan</option>
               <option value="weekly">Weekly Plan</option>
               <option value="alternative">Alternative Plan</option>

@@ -18,6 +18,8 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
       return prev;
     });
   };
+
+  
   
 
   const handleSubmit = async () => {
@@ -69,6 +71,7 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
               </th>
               <th>Product</th>
               <th>Category</th>
+              <th>Title</th>
               <th>Price</th>
             </tr>
           </thead>
@@ -89,6 +92,7 @@ const ProductSelectionModal = ({ isOpen, onClose, route, allProducts }) => {
                 </td>
                 <td>{product.productId}</td>
                 <td>{product.category}</td>
+                <td>{product.title}</td>
                 <td>
                   <input
                     type="number"

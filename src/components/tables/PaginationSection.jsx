@@ -14,7 +14,7 @@ const PaginationSection = ({currentPage,totalPages,paginate,pageNumbers}) => {
             >
                 <i className="fa-light fa-angle-left"></i>
             </Link>
-            {pageNumbers.map((number, index) => (
+            {pageNumbers?.map((number, index) => (
             <span key={index}>
                 <Link 
                 className={`btn btn-primary ${currentPage === number ? 'current' : ''}`}

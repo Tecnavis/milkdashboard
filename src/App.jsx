@@ -60,12 +60,14 @@ import Banner from "./components/tables/banner"
 import ProductAssign from "./pages/productassign"
 //
 import StockList from "./pages/Stocklist"
-import Salesorders from "./pages/salesorders"
+import Salesorders from "./pages/Salesorders"
 import AllCustomerByRoutes from "./pages/AllcustomerByRoutes";
 import Customerpayment from "./pages/customerpayment";
+import CustomerpaymentAmount  from "./pages/customeramount";
 import CustomerBottlestock from "./pages/customerbottlestock";
 import Customerleaveapply from "./pages/customerleaveapply"
 import RoutebasedIncome from "./pages/routebasedincome"
+
 function App() {
   
   return (
@@ -75,6 +77,7 @@ function App() {
           <Route path="/inventorydashboard" element={<Dashboard/>}/>
           <Route path="/routebasedincome" element={<RoutebasedIncome/>}/>
           <Route path="/customerpayment" element={<Customerpayment/>}/>
+          <Route path="/customeramount" element={<CustomerpaymentAmount/>}/>
           <Route path="/leaveapply" element={<Customerleaveapply/>}/>
           <Route path="/customerbottlestock" element={<CustomerBottlestock/>}/>
           <Route path="/allCustomerByRoutes" element={<AllCustomerByRoutes/>}/>
