@@ -9,6 +9,7 @@ const AppsPart = () => {
     toggleHrmDropdown, 
     toggleAccountsDropdown,
     toggleEcommerceDropdown, 
+    toggleRewardDropdown,
     toggleMainDropdown, 
     toggleSubDropdown,
     layoutPosition, 
@@ -24,7 +25,8 @@ const AppsPart = () => {
     isHrmDropdownOpen, 
     isAccountsDropdownOpen,
     isEcommerceDropdownOpen, 
-    isSubDropdownOpen 
+    isSubDropdownOpen, 
+    isRewardDropdownOpen
   } = state;
   
   const handleSubNavLinkClick = () => {
@@ -219,6 +221,54 @@ const AppsPart = () => {
             </li> */}
           </ul>
         </li>
+
+        <li className="sidebar-dropdown-item" >
+          <Link
+            role="button"
+            className={`sidebar-link has-sub ${  isRewardDropdownOpen ? 'show' : ''}`}
+            onClick={toggleRewardDropdown}
+          >
+            <span className="nav-icon">
+              <i className="fa-light fa-user-headset"></i>
+            </span>{' '}
+            <span className="sidebar-txt">Rewards</span>
+          </Link>
+          <ul
+            className={`sidebar-dropdown-menu ${
+              isRewardDropdownOpen   && isSubDropdownOpen ? 'd-block' : ''
+            }`}
+            id="crmDropdown"
+           
+          >
+            
+            <li className="sidebar-dropdown-item">
+              <NavLink to="/rewarditem" className="sidebar-link" onClick={handleSubNavLinkClick}>
+                Reward Items
+              </NavLink>
+            </li>
+            <li className="sidebar-dropdown-item">
+              <NavLink to="/rewardredeam" className="sidebar-link" onClick={handleSubNavLinkClick}>
+                 Reward redeam
+              </NavLink>
+            </li>
+            
+           
+            
+
+            {/* <li className="sidebar-dropdown-item">
+              <NavLink to="/taskmanagement" className="sidebar-link" onClick={handleSubNavLinkClick}>
+               Task Management
+              </NavLink>
+            </li> */}
+          </ul>
+        </li>
+
+
+
+
+
+
+
         {/* <li className="sidebar-dropdown-item">
           <Link
             role="button"

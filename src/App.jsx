@@ -67,6 +67,9 @@ import CustomerpaymentAmount  from "./pages/customeramount";
 import CustomerBottlestock from "./pages/customerbottlestock";
 import Customerleaveapply from "./pages/customerleaveapply"
 import RoutebasedIncome from "./pages/routebasedincome"
+import Rewarditem from "./components/reward/Rewarditem"
+import Rewardredeams from "./components/reward/Rewardredeams"
+import Readeam from "./components/reward/Readeam"
 
 function App() {
   
@@ -92,6 +95,8 @@ function App() {
           <Route path="/routeProduct" element={<Return/>}/>
           <Route path="/warehouse" element={<Company/>}/>
           <Route path="/allorders" element={<AllOrderDetails/>}/>
+          <Route path="/rewarditem" element={<Rewarditem />}/>    
+          <Route path="/rewardredeam" element={<Rewardredeams />}/>    
           <Route path="/task" element={<Task/>}/>
           <Route path="/leads" element={<Leads/>}/>
           <Route path="/purchaseditem" element={<Customer/>}/>

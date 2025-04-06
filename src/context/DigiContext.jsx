@@ -136,6 +136,8 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isRewardDropdownOpen: false,
+
     });
     setComponentState({
       advance: false,
@@ -482,6 +484,7 @@ const DigiContextProvider = ({ children }) => {
     isAccountsDropdownOpen: false,
     isEcommerceDropdownOpen: false,
     isSubDropdownOpen: false,
+    isRewardDropdownOpen: false,
   };
   const [state, setState] = useState(initialState);
 
@@ -550,6 +553,7 @@ const DigiContextProvider = ({ children }) => {
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isRewardDropdownOpen: false,
       isSubDropdownOpen: !prevState.isAccountsDropdownOpen,
     }));
     setComponentState({
@@ -563,6 +567,20 @@ const DigiContextProvider = ({ children }) => {
       additional: false,
     });
   }
+
+    // Modify togglRewardDropdown function
+    const toggleRewardDropdown = () => {
+      setState((prevState) => ({
+        ...prevState,
+        isRewardDropdownOpen: !prevState.isEcommerceDropdownOpen,
+        isCrmDropdownOpen: false,
+        isHrmDropdownOpen: false,
+        isAccountsDropdownOpen: false,
+        isEcommerceDropdownOpen: false,
+        isSubDropdownOpen: !prevState.isEcommerceDropdownOpen,
+      }));
+    }
+
   // Modify toggleEcommerceDropdown function
   const toggleEcommerceDropdown = () => {
     setState((prevState) => ({
@@ -571,6 +589,7 @@ const DigiContextProvider = ({ children }) => {
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
+      isRewardDropdownOpen: false,
       isSubDropdownOpen: !prevState.isEcommerceDropdownOpen,
     }));
     setComponentState({
@@ -621,6 +640,7 @@ const DigiContextProvider = ({ children }) => {
           isAccountsDropdownOpen: false,
           isEcommerceDropdownOpen: false,
           isSubDropdownOpen: false,
+          isRewardDropdownOpen: false,
         }));
         setComponentState({
           advance: false,
@@ -646,6 +666,7 @@ const DigiContextProvider = ({ children }) => {
       state.isHrmDropdownOpen ||
       state.isAccountsDropdownOpen ||
       state.isEcommerceDropdownOpen ||
+      state.isRewardDropdownOpen ||
       dropdownOpen.apps
     ) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -659,6 +680,7 @@ const DigiContextProvider = ({ children }) => {
     state.isAccountsDropdownOpen,
     state.isHrmDropdownOpen,
     state.isEcommerceDropdownOpen,
+    state.isRewardDropdownOpen,
     dropdownOpen.apps,
   ]);
 
@@ -717,6 +739,8 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isRewardDropdownOpen: false,
+      isRewardDropdownOpen: false,
     });
     setPagesState({
       authentication: false,
@@ -740,6 +764,7 @@ const DigiContextProvider = ({ children }) => {
       isAccountsDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isRewardDropdownOpen: false,
     });
     setPagesState({
       authentication: false,
@@ -787,6 +812,7 @@ const DigiContextProvider = ({ children }) => {
           isAccountsDropdownOpen: false,
           isEcommerceDropdownOpen: false,
           isSubDropdownOpen: false,
+          isRewardDropdownOpen: false,
         }));
         setComponentState({
           advance: false,
@@ -886,6 +912,7 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isRewardDropdownOpen: false,
     });
     setComponentState({
       advance: false,
@@ -906,6 +933,8 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isRewardDropdownOpen: false,
+
     });
     setComponentState({
       advance: false,
@@ -925,6 +954,8 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isRewardDropdownOpen: false,
+
     });
     setComponentState({
       advance: false,
@@ -944,6 +975,8 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isRewardDropdownOpen: false,
+
     });
     setComponentState({
       advance: false,
@@ -966,6 +999,7 @@ const DigiContextProvider = ({ children }) => {
           isAccountsDropdownOpen: false,
           isEcommerceDropdownOpen: false,
           isSubDropdownOpen: false,
+          isRewardDropdownOpen: false,
         }));
         setComponentState({
           advance: false,
@@ -1949,6 +1983,7 @@ const DigiContextProvider = ({ children }) => {
         toggleHrmDropdown,
         toggleAccountsDropdown,
         toggleEcommerceDropdown,
+        toggleRewardDropdown,
         handleNavLinkClick,
         tableFilterBtnOpen,
         handleTableFilterBtn,
