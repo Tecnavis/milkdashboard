@@ -159,7 +159,7 @@ export default function Rewardredeams() {
               currentItems.map((item) => (
                 <tr key={item._id} className="border-t">
                   <td className="p-2">{item.name}</td>
-                  <td className="p-2">{item.points || "0"}</td>
+                  <td className="p-2">{item.point || "0"}</td>
                   <td className="p-2">
                     <button className="view-button px-2 py-1 bg-blue-500 text-white rounded"  onClick={() => handlePassRoutesName(item)}>
                       View

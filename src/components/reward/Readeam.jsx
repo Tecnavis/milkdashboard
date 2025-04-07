@@ -1,39 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import './Readeam.css';
+import React, { useEffect, useState } from "react";
+import "./Readeam.css";
 import axios from "axios";
 import { URL } from "../../Helper/handle-api";
+import { format } from "date-fns";
+
 
 export default function Readeam({ routeName, setRoutsnamePass }) {
+  const [reward, setReward] = useState([]);
+  const [history, setHistory] = useState([]);
 
-    const [reward, setReward] = useState([]);
-
-
-    const fetchReward = async () => {
-       
-        try {
-            const response = await axios.get(`${URL}/rewarditem/${routeName.routeno}`);
-            setReward(response?.data || []);
-          } catch (error) {
-            console.error("Error fetching customers:", error);
-          }
+  const fetchReward = async () => {
+    try {
+      const response = await axios.get(
+        `${URL}/rewarditem/${routeName.routeno}`
+      );
+      setReward(response?.data || []);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
     }
+  };
 
-    useEffect(() => {
+  const handleReadeam = async (id, rewardItem) => {
+    try {
+      await axios.post(`${URL}/rewards/${id}/readeem/${rewardItem}`);
       fetchReward();
-    }, [])
-   
+    } catch (error) {
+      console.error("Error rewards:", error);
+    }
+  };
+
+  const fetchRewardsHistory = async () => {
+    try {
+      const id = routeName._id;
+      const response = await axios.get(`${URL}/rewards/history/${id}`);
+      setHistory(response?.data || []);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReward();
+    fetchRewardsHistory();
+  }, []);
+
   return (
     <>
       <header className="rewards-header">
         <div className="header-content">
-            <span onClick={() => setRoutsnamePass(false)} style={{cursor: 'pointer'}}>X</span>
+          <span
+            onClick={() => setRoutsnamePass(false)}
+            style={{ cursor: "pointer" }}
+          >
+            X
+          </span>
           <div className="welcome-message">
             <h1>Welcome</h1>
             <h2>{routeName.name}</h2>
           </div>
           <div className="points-display">
             <div className="points-badge">
-              <span className="points-value">{100}</span>
+              <span className="points-value">{routeName.point}</span>
               <span className="points-label">Points Available</span>
             </div>
           </div>
@@ -57,8 +84,16 @@ export default function Readeam({ routeName, setRoutsnamePass }) {
               <h3 className="product-name">{item.title}</h3>
               <div className="product-points">
                 <span className="points">{item.points}</span>
+                <span className="stock">{item.stock}</span>
               </div>
-              <button className="redeem-button">Redeem Now</button>
+              {routeName.point >= item.points && (
+                <button
+                  className="redeem-button"
+                  onClick={() => handleReadeam(routeName._id, item._id)}
+                >
+                  Redeem Now
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -76,11 +111,31 @@ export default function Readeam({ routeName, setRoutsnamePass }) {
                 <th>Points</th>
               </tr>
             </thead>
-            <tbody></tbody>
-          </table>
+            {
+              history.length !== 0
+              ?
+            
+            history.map((his) => {
+              return (
+                <tbody key={his._id}>
+                  <td>{his.rewardItem.title}</td>
+                  <td>{format(new Date(his.createdAt), "dd MMM yyyy")}</td>
+
+                  <td>{his.rewardItem.points}</td>
+                </tbody>
+              );
+            })
+            :
+            (
+
           <div className="no-history">
             <p>No previous redemptions</p>
           </div>
+
+            )
+            
+            }
+          </table>
         </div>
       </div>
     </>

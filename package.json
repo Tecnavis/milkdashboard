@@ -23,6 +23,7 @@
     "aos": "^2.3.4",
     "axios": "^1.7.9",
     "browser-image-compression": "^2.0.2",
+    "date-fns": "^2.29.3",
     "dropzone": "^6.0.0-beta.2",
     "firebase": "^11.4.0",
     "font-awesome": "^4.7.0",
