@@ -4,16 +4,16 @@ import SalesordersHeader from '../components/header/SalesorderHeader';
 import SalesorderTable from '../components/tables/Salesorder';
 
 const Salesorders = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <div className="main-content">
       <div className="row g-4">
         <div className="col-12">
           <div className="panel">
-            <SalesordersHeader setSearchTerm={setSearchTerm} />
+            <SalesordersHeader onSearch={setSearchQuery}/>
             <div className="panel-body">
-              <SalesorderTable searchTerm={searchTerm} />
+              <SalesorderTable searchQuery={searchQuery} />
             </div>
           </div>
         </div>

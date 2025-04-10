@@ -23,7 +23,6 @@ const AppsPart = () => {
     isMainDropdownOpen, 
     isCrmDropdownOpen, 
     isHrmDropdownOpen, 
-    isAccountsDropdownOpen,
     isEcommerceDropdownOpen, 
     isSubDropdownOpen, 
     isRewardDropdownOpen

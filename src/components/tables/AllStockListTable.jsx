@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { fetchAdmins, URL, fetchRoutes } from "../../Helper/handle-api";
 
-const AllEmployeeTable = () => {
+const AllEmployeeTable = ({ searchQuery }) => {
   const [admins, setAdmins] = useState([]);
   const [allRoutes, setAllRoutes] = useState([]);
   const [show, setShow] = useState(false);
@@ -26,7 +26,9 @@ const AllEmployeeTable = () => {
       try {
         const response = await fetchRoutes();
         // Make sure to handle both cases if response.routes exists or response is an array.
-        setAllRoutes(response?.routes || (Array.isArray(response) ? response : []));
+        setAllRoutes(
+          response?.routes || (Array.isArray(response) ? response : [])
+        );
       } catch (err) {
         console.error("Error fetching routes:", err);
       }
@@ -46,13 +48,16 @@ const AllEmployeeTable = () => {
     setError("");
 
     try {
-      const response = await fetch(`${URL}/admin/assign-route/${selectedAdmin._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ route }),
-      });
+      const response = await fetch(
+        `${URL}/admin/assign-route/${selectedAdmin._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ route }),
+        }
+      );
 
       const data = await response.json();
 
@@ -79,6 +84,17 @@ const AllEmployeeTable = () => {
     }
   };
 
+  // Filter customers based on search query
+  const filteredCustomers = admins.filter(
+    (admin) =>
+      admin.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      admin.phone?.includes(searchQuery) ||
+      admin.customerId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      admin.route?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      admin.role?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      admin.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <>
       <table className="table table-hover">
@@ -94,7 +110,7 @@ const AllEmployeeTable = () => {
           </tr>
         </thead>
         <tbody>
-          {admins.map((data) => (
+          {filteredCustomers.map((data) => (
             <tr key={data._id}>
               <td>
                 <img
@@ -144,7 +160,11 @@ const AllEmployeeTable = () => {
           {error && <p className="text-danger mt-2">{error}</p>}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="success" onClick={handleSaveRoute} disabled={loading}>
+          <Button
+            variant="success"
+            onClick={handleSaveRoute}
+            disabled={loading}
+          >
             {loading ? "Saving..." : "Save"}
           </Button>
           <Button variant="danger" onClick={() => setShow(false)}>

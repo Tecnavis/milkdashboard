@@ -32,6 +32,7 @@ const AllCustomer = () => {
             </div>
             <div className="panel-body">
               <AllCustomerTable searchTerm={searchTerm} />
+              
             </div>
           </div>
         </div>

@@ -47,8 +47,12 @@ const AllProductTable = ({ searchQuery }) => {
 
   // Filter products based on search query
   const filteredProducts = products.filter((product) =>
+    
     product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.title.toLowerCase().includes(searchQuery.toLowerCase())
+    product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.productId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.price.toString().includes(searchQuery)
+
 );
 
 

@@ -69,7 +69,7 @@ import Customerleaveapply from "./pages/customerleaveapply"
 import RoutebasedIncome from "./pages/routebasedincome"
 import Rewarditem from "./components/reward/Rewarditem"
 import Rewardredeams from "./components/reward/Rewardredeams"
-import Readeam from "./components/reward/Readeam"
+
 
 function App() {
   

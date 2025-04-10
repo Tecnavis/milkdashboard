@@ -26,7 +26,9 @@ const ScrollDataTableSection = () => {
 const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   const [currentOrderIdForPlanChange, setCurrentOrderIdForPlanChange] =
     useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
+    
   useEffect(() => {
     const loadOrders = async () => {
       try {
@@ -69,9 +71,27 @@ const [selectedCustomerId, setSelectedCustomerId] = useState(null);
     loadOrders();
   }, []);
 
+
+  const filteredOrders = allOrders.filter((order) => {
+    
+    const customerName = order.customer?.name?.toLowerCase() || '';
+    const productNames = order.productItems.map(item => item.product?.category?.toLowerCase() || '').join(' ');
+    const customerId = order.customer?.customerId?.toLowerCase() || '';
+  
+
+  
+    return (
+      customerName.includes(searchTerm.toLowerCase()) ||
+      productNames.includes(searchTerm.toLowerCase()) ||
+      customerId.includes(searchTerm.toLowerCase()) 
+    );
+  });
+
+  
   const indexOfLastData = currentPage * dataPerPage;
   const indexOfFirstData = indexOfLastData - dataPerPage;
-  const currentData = allOrders.slice(indexOfFirstData, indexOfLastData);
+  const currentData = filteredOrders.slice(indexOfFirstData, indexOfLastData);
+  
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -260,7 +280,10 @@ const handleCancelStatus = async (orderId, date) => {
           <div className="col-12">
             <div className="card">
               <div className="card-header">All Orders</div>
-              <DataTableFilter />
+              <DataTableFilter
+  searchTerm={searchTerm}
+  setSearchTerm={setSearchTerm}
+/>
 
               <div className="card-body">
                 <OverlayScrollbarsComponent

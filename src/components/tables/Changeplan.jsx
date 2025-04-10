@@ -24,6 +24,7 @@ const ChangePlanModal = ({ show, onHide, orderId }) => {
         payload.customDates = customDates.filter(date => date);
         break;
       case 'weekly':
+        payload.startDate = startDate;
         payload.weeklyDays = weeklyDays;
         break;
       case 'alternative':
@@ -76,26 +77,37 @@ const ChangePlanModal = ({ show, onHide, orderId }) => {
             </Button>
           </Form.Group>
         );
-      case 'weekly':
-        return (
-          <Form.Group>
-            <Form.Label>Select Weekly Days</Form.Label>
-            {[0, 1, 2, 3, 4, 5, 6].map(day => (
-              <Form.Check
-                key={day}
-                type="checkbox"
-                label={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][day]}
-                checked={weeklyDays.includes(day)}
-                onChange={(e) => {
-                  const newDays = e.target.checked 
-                    ? [...weeklyDays, day]
-                    : weeklyDays.filter(d => d !== day);
-                  setWeeklyDays(newDays);
-                }}
-              />
-            ))}
-          </Form.Group>
-        );
+        case 'weekly':
+          return (
+            <>
+              <Form.Group>
+                <Form.Label>Start Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Select Weekly Days</Form.Label>
+                {[0, 1, 2, 3, 4, 5, 6].map(day => (
+                  <Form.Check
+                    key={day}
+                    type="checkbox"
+                    label={['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][day]}
+                    checked={weeklyDays.includes(day)}
+                    onChange={(e) => {
+                      const newDays = e.target.checked 
+                        ? [...weeklyDays, day]
+                        : weeklyDays.filter(d => d !== day);
+                      setWeeklyDays(newDays);
+                    }}
+                  />
+                ))}
+              </Form.Group>
+            </>
+          );
+        
       case 'alternative':
         return (
           <>

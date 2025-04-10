@@ -4,7 +4,7 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import PaginationSection from "./PaginationSection";
 import { getAllRoutes, URL, deleteRoute, deleteRouteId } from "../../Helper/handle-api";
 
-const AudienceTable = () => {
+const AudienceTable = ({ searchQuery }) => {
   const { currentPage, currentData, paginate, totalPages, pageNumbers } = useContext(DigiContext);
 
   const [allRoutes, setAllRoutes] = useState([]);
@@ -20,6 +20,14 @@ const AudienceTable = () => {
     };
     fetchAllRoutes();
   }, []);
+
+
+   // Filter customers based on search query
+   const filteredCustomers = allRoutes.filter((customer) => 
+    customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) 
+  );
+  
+
 
   return (
     <>
@@ -38,7 +46,7 @@ const AudienceTable = () => {
             </tr>
           </thead>
           <tbody>
-            {allRoutes.map((route, routeIndex) =>
+            {filteredCustomers.map((route, routeIndex) =>
               route.products.map((product, productIndex) => (
                 <tr key={`${routeIndex}-${productIndex}`}>
                   {/* Merge Route Name Cell: Display only on the first product */}

@@ -4,7 +4,7 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { FetchCustomer, getDetailsByRouteName, createPlan, createOrder, URL } from "../../Helper/handle-api"; 
 import Swal from "sweetalert2";
 
-const Salesorders = ({searchTerm}) => {
+const Salesorders = ({ searchQuery }) => {
   const [allCustomer, setAllCustomer] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -249,9 +249,16 @@ const Salesorders = ({searchTerm}) => {
   };
   
   
-  const filteredCustomers = allCustomer.filter((customer) =>
-    customer.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+
+   // Filter customers based on search query
+ const filteredCustomers = allCustomer.filter((customer) => 
+  customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  customer.phone?.includes(searchQuery) ||
+  customer.customerId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  customer.routeno?.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
 
   return (
     <>

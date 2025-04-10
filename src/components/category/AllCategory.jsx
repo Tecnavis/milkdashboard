@@ -12,6 +12,15 @@ const AllCategory = () => {
         showCount: true,
         showAction: true,     
       });
+      const [searchQuery, setSearchQuery] = useState('');
+
+
+      const handleSearch = (e) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+        
+      };
+    
     
       const handleChange = (e) => {
         const { id } = e.target;
@@ -27,8 +36,12 @@ const AllCategory = () => {
                     <h5>All Categories</h5>
                     <div className="btn-box d-flex gap-2">
                         <div id="tableSearch">
-                            <Form.Control type='text' placeholder='Search...'/>
-                        </div>
+                        <Form.Control 
+              type='text' 
+              placeholder='Search ...' 
+              value={searchQuery} 
+              onChange={handleSearch} 
+            />                        </div>
                     </div>
                 </div>
                 <div className="panel-body">
@@ -40,7 +53,7 @@ const AllCategory = () => {
                             </div>
                         </div>
                     </div>
-                    <CategoryTable/>
+                    <CategoryTable  searchQuery={searchQuery} />
                 </div>
             </div>
         </div>

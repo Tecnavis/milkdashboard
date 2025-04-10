@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Table, Modal, Button, Form } from "react-bootstrap";
 import { FetchCustomer, URL } from "../../Helper/handle-api";
@@ -309,6 +308,7 @@ const AllCustomerTable = ({ searchTerm }) => {
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Address</th>
+                  <th>Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -328,6 +328,14 @@ const AllCustomerTable = ({ searchTerm }) => {
                         </div>
                       ))}
                     </td>
+                    <td>
+                      {data.paidAmounts.length === 0
+                        ? "No Payments"
+                        : data.paidAmounts.some((am) => !am.isGet)
+                        ? "Unpaid"
+                        : "Paid"}
+                    </td>
+
                     <td>
                       <Button
                         variant="primary"

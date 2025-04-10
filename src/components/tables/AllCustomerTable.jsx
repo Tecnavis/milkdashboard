@@ -121,9 +121,13 @@ const handleConfirm = async (customerId) => {
 };
  // Filter customers based on search query
  const filteredCustomers = customers.filter((customer) => 
-  customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  customer.phone.includes(searchQuery) // Allows partial phone number match
+  customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  customer.phone?.includes(searchQuery) ||
+  customer.customerId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  customer.routeno?.toLowerCase().includes(searchQuery.toLowerCase())
 );
+
+
   return (
     <>
     <div style={{ overflowX: "auto" }}>

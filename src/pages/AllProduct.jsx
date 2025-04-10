@@ -11,9 +11,10 @@ const AllProductMainContent = () => {
             <div className="row g-4">
                 <div className="col-12">
                     <div className="panel">
-                        <AllProductHeader setSearchQuery={setSearchQuery} />
+                        <AllProductHeader  onSearch={setSearchQuery} />
                         <div className="panel-body">
-                            <AllProductTable searchQuery={searchQuery} />
+                            <AllProductTable  searchQuery ={searchQuery} />
+                           
                         </div>
                     </div>
                 </div>

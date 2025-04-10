@@ -5,7 +5,7 @@ import PaginationSection from "./PaginationSection";
 import { fetchRoutes, fetchProducts } from "../../Helper/handle-api";
 import ProductSelectionModal from "./ProductSelectionModal"; // Import the modal component
 
-const CustomerTable = () => {
+const CustomerTable = ({searchQuery}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
   const [allRoutes, setAllRoutes] = useState([]);
@@ -34,6 +34,12 @@ const CustomerTable = () => {
     setIsModalOpen(true);
   };
 
+
+  const filteredRoute = allRoutes.filter((route) =>
+    route.name?.toLowerCase().includes(searchQuery.toLowerCase()) 
+  );
+  
+
   return (
     <>
       <OverlayScrollbarsComponent>
@@ -46,7 +52,7 @@ const CustomerTable = () => {
             </tr>
           </thead>
           <tbody>
-            {allRoutes.map((route, index) => (
+            {filteredRoute.map((route, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{route.name}</td>

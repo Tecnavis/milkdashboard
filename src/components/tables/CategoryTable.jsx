@@ -5,7 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2"; // Make sure to import SweetAlert2
 import { fetchMainCategory, URL } from "../../Helper/handle-api";
 
-const CategoryTable = () => {
+const CategoryTable = ({ searchQuery  }) => {
   const [category, setCategory] = useState([]);
   const [editingCategory, setEditingCategory] = useState(null);
   const [editedName, setEditedName] = useState("");
@@ -106,6 +106,12 @@ const CategoryTable = () => {
     });
   };
 
+
+  // Filter category based on search query
+ const filteredCategory = category.filter((category) => 
+  category.name?.toLowerCase().includes(searchQuery.toLowerCase()) 
+);
+
   return (
     <>
       <OverlayScrollbarsComponent>
@@ -124,7 +130,7 @@ const CategoryTable = () => {
             </tr>
           </thead>
           <tbody>
-            {category.map((data) => (
+            {filteredCategory.map((data) => (
               <tr key={data._id}>
                 <td>
                   <div className="table-category-card">

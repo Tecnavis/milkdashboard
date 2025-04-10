@@ -67,6 +67,17 @@ const AllCustomerTable = ({ searchTerm }) => {
     routeNo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+
+  // const filteredRoutes = customers.filter( customer => {
+  //   customer.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   customer.customerindex?.includes(searchTerm) ||
+  //   customer.customerId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //   customer.routeno?.toLowerCase().includes(searchTerm.toLowerCase())
+  // })
+
+  
+
+
   return (
     <div style={{ overflowX: "auto" }}>
       {filteredRoutes.length > 0 ? (

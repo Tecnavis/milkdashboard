@@ -35,6 +35,10 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
     }
   }, [customerId, show, URL, selectedMonth, selectedYear]);
 
+
+
+  
+  
   //filter invoice monthly
   const filteredInvoices = invoiceData.filter((inv) =>
     inv.orderItems.some((orderItem) => {
@@ -309,6 +313,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                   <th>Date</th>
                   <th>Status</th>
                   <th>Product</th>
+                  <th>ML</th>
                   <th>Qty</th>
                   <th>Price</th>
                   <th>Subtotal</th>
@@ -343,6 +348,7 @@ const InvoiceModal = ({ show, onHide, customerId, URL }) => {
                             </td>
                           )}
                           <td style={{ textAlign: "center" }}>{p.product}</td>
+                          <td style={{ textAlign: "center" }}>{p.ml}</td>
                           <td style={{ textAlign: "center" }}>{p.quantity}</td>
                           <td style={{ textAlign: "center" }}>
                             ₹{p.routePrice}

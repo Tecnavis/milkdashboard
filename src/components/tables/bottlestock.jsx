@@ -3,7 +3,7 @@ import { Table, Modal, Button, Form } from "react-bootstrap";
 import { BottleSummary, updateReturnedBottles } from "../../Helper/handle-api"; 
 import { Link } from "react-router-dom";
 
-const AllCustomerTable = () => {
+const AllCustomerTable = ({searchTerm}) => {
   const [customers, setCustomers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -51,6 +51,25 @@ const AllCustomerTable = () => {
     }
   };
 
+  const filteredCustomers = customers.filter((customer) => {
+    const name = customer.customer?.name || "";
+    const phone = customer.customer?.phone || "";
+    const customerId = customer.customer?.customerId || "";
+    const routeno = customer.customer?.routeno || "";
+    const query = searchTerm.toLowerCase();
+  
+    return (
+      name.toLowerCase().includes(query) ||
+      phone.includes(searchTerm) ||
+      customerId.toLowerCase().includes(query) ||
+      routeno.toLowerCase().includes(query)
+    );
+  });
+  
+
+
+  
+
   return (
     <div style={{ overflowX: "auto" }}>
       <Table className="table table-dashed table-hover table-striped">
@@ -66,7 +85,7 @@ const AllCustomerTable = () => {
           </tr>
         </thead>
         <tbody>
-          {customers.map((data) => (
+          {filteredCustomers.map((data) => (
             <tr key={data._id}>
               <td>
                 <Link to="#">{data?.customer?.name}</Link>
