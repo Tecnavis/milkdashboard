@@ -238,18 +238,18 @@
 
 
   .filter-category-button {
-  
     padding: 10px 20px;
-    background-color: #000;
-    color: white;
     border: none;
     cursor: pointer;
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
   }
-  
 
+  .filter-list-icon{
+    margin-right: 5px;
+  }
+  
 
   .category-dropdown-modal {
     top: 10rem;

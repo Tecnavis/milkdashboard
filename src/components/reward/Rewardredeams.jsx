@@ -3,6 +3,8 @@ import "./rewarditem.css";
 import axios from "axios";
 import { URL } from "../../Helper/handle-api";
 import Readeam from "./Readeam";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faListUl } from "@fortawesome/free-solid-svg-icons";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -35,19 +37,12 @@ export default function Rewardredeams() {
     }
   };
 
-
-
   const handlePassRoutesName = (route) => {
-     setRoutsnamePass(true)
-     setRouteName(route)
-  }
+    setRoutsnamePass(true);
+    setRouteName(route);
 
-  
-
-  useEffect(() => {
-    fetchCostomers();
-    fetchCategory();
-  }, []);
+    if (routsnamePass == false) fetchCostomers();
+  };
 
   useEffect(() => {
     let filtered = [...costemers];
@@ -69,8 +64,10 @@ export default function Rewardredeams() {
   const totalPages = Math.ceil(filteredCostemers.length / ITEMS_PER_PAGE);
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const currentItems = filteredCostemers.slice(indexOfFirstItem, indexOfLastItem);
-   
+  const currentItems = filteredCostemers.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
   const handlePageChange = (pageNum) => {
     if (pageNum >= 1 && pageNum <= totalPages) {
@@ -78,150 +75,142 @@ export default function Rewardredeams() {
     }
   };
 
+  useEffect(() => {
+    fetchCostomers();
+    fetchCategory();
+  }, []);
+
   return (
     <>
-       {
-
-!routsnamePass ?
-
-(
-
-    <div className="container mx-auto p-4">
-      {/* Filter and Search */}
-      <div className="filter-bar">
-        {/* Filter dropdown */}
-        <div className="relative">
-          <button
-            className="filter-category-button"
-            onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-          >
-            {selectedCategory === "all" ? "All Routes" : selectedCategory}
-          </button>
-
-          {showCategoryDropdown && (
-            <div className="category-dropdown-modal absolute mt-2 bg-white shadow-md rounded z-10 w-40">
-              <div
-                className={`category-option p-2 cursor-pointer ${
-                  selectedCategory === "all" ? "bg-gray-200" : ""
-                }`}
-                onClick={() => {
-                  setSelectedCategory("all");
-                  setShowCategoryDropdown(false);
-                }}
+      {!routsnamePass ? (
+        <div className="container mx-auto p-4">
+          <div className="filter-bar flex gap-4 flex-wrap items-center justify-between mb-4">
+            <div className="relative">
+              <button
+                className="filter-category-button border px-3 py-2 rounded  shadow"
+                onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
               >
-                All Routes
-              </div>
-              {categories.map((cat) => (
-                <div
-                  key={cat._id}
-                  className={`category-option p-2 cursor-pointer ${
-                    selectedCategory === cat.name ? "bg-gray-200" : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedCategory(cat.name);
-                    setShowCategoryDropdown(false);
-                  }}
-                >
-                  {cat.name}
+                <FontAwesomeIcon icon={faListUl} size="lg" color="gray" className="filter-list-icon" />
+                 {selectedCategory === "all" ? "All Routes" : selectedCategory}
+              </button>
+
+              {showCategoryDropdown && (
+                <div className="category-dropdown-modal absolute mt-2 bg-white shadow-md rounded z-10 w-40">
+                  <div
+                    className={`category-option p-2 cursor-pointer ${
+                      selectedCategory === "all" ? "bg-gray-200" : ""
+                    }`}
+                    onClick={() => {
+                      setSelectedCategory("all");
+                      setShowCategoryDropdown(false);
+                    }}
+                  >
+                    All Routes
+                  </div>
+                  {categories.map((cat) => (
+                    <div
+                      key={cat._id}
+                      className={`category-option p-2 cursor-pointer ${
+                        selectedCategory === cat.name ? "bg-gray-200" : ""
+                      }`}
+                      onClick={() => {
+                        setSelectedCategory(cat.name);
+                        setShowCategoryDropdown(false);
+                      }}
+                    >
+                      {cat.name}
+                    </div>
+                  ))}
                 </div>
+              )}
+            </div>
+
+            <input
+              type="text"
+              className="search-input border px-3 py-2 rounded"
+              placeholder="Search by name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div className="table-container overflow-x-auto">
+            <table className="data-table w-full border border-gray-200">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-2 text-left">Name</th>
+                  <th className="p-2 text-left">Points</th>
+                  <th className="p-2 text-left">View</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentItems.length > 0 ? (
+                  currentItems.map((item) => (
+                    <tr key={item._id} className="border-t">
+                      <td className="p-2">{item.name}</td>
+                      <td className="p-2">{item.point || "0"}</td>
+                      <td className="p-2">
+                        <button
+                          className="view-button px-2 py-1 bg-blue-500 text-white rounded"
+                          onClick={() => handlePassRoutesName(item)}
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="text-center py-4">
+                      No customers found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {totalPages > 1 && (
+            <div className="pagination mt-6 flex flex-wrap justify-center items-center gap-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+              >
+                Prev
+              </button>
+
+              {[...Array(totalPages).keys()].map((num) => (
+                <button
+                  key={num}
+                  onClick={() => handlePageChange(num + 1)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === num + 1
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-800"
+                  }`}
+                >
+                  {num + 1}
+                </button>
               ))}
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
             </div>
           )}
         </div>
-
-        {/* Search */}
-        <div>
-
-        <input
-          type="text"
-          className="search-input border px-3 py-2 rounded"
-          placeholder="Search by name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          />
-
-          </div>
-
-      </div>
-
-      {/* Table */}
-      <div className="table-container overflow-x-auto">
-        <table className="data-table w-full border border-gray-200">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-2 text-left">Name</th>
-              <th className="p-2 text-left">Points</th>
-              <th className="p-2 text-left">View</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems.length > 0 ? (
-              currentItems.map((item) => (
-                <tr key={item._id} className="border-t">
-                  <td className="p-2">{item.name}</td>
-                  <td className="p-2">{item.point || "0"}</td>
-                  <td className="p-2">
-                    <button className="view-button px-2 py-1 bg-blue-500 text-white rounded"  onClick={() => handlePassRoutesName(item)}>
-                      View
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" className="text-center py-4">
-                  No customers found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="pagination mt-6 flex flex-wrap justify-center items-center gap-2">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
-          >
-            Prev
-          </button>
-
-          {[...Array(totalPages).keys()].map((num) => (
-            <button
-              key={num}
-              onClick={() => handlePageChange(num + 1)}
-              className={`px-3 py-1 rounded ${
-                currentPage === num + 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-            >
-              {num + 1}
-            </button>
-          ))}
-
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
-            >
-            Next
-          </button>
-        </div>
+      ) : (
+        <Readeam
+          routeName={routeName}
+          setRoutsnamePass={setRoutsnamePass}
+          fetchCostomers={fetchCostomers}
+        />
       )}
-    </div>
-    )
-    :
-    ( 
-      <Readeam routeName = {routeName}  setRoutsnamePass = {setRoutsnamePass} />
-    )
-    }
     </>
   );
 }
-
-
-

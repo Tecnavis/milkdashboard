@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./rewarditem.css";
 import axios from "axios";
 import { URL } from "../../Helper/handle-api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faListUl } from "@fortawesome/free-solid-svg-icons";
 
 export default function Rewarditem() {
   const [rewards, setRewards] = useState([]);
@@ -138,6 +140,7 @@ export default function Rewarditem() {
           className="filter-category-button"
           onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
         >
+          <FontAwesomeIcon icon={faListUl} size="lg" color="gray" className="filter-list-icon" />
           {selectedCategory === "all"
             ? "All Categories"
             : categories.find((c) => c._id === selectedCategory)?.name ||
@@ -183,7 +186,11 @@ export default function Rewarditem() {
       </div>
 
       <div className="rewards-grid">
-        {filteredRewards.map((reward) => (
+        {
+
+filteredRewards.length !== 0 ? 
+        
+        filteredRewards.map((reward) => (
           <div className="reward-card" key={reward._id}>
             <div className="reward-image">
               <img src={`${URL}/images/${reward.image}`} alt={reward.title} />
@@ -210,7 +217,11 @@ export default function Rewarditem() {
               </div>
             </div>
           </div>
-        ))}
+        ))
+        :
+        <div style={{textAlign: "center"}}>No Rewards</div>
+        
+        }
       </div>
 
       {showCreateModal && (
