@@ -22,7 +22,7 @@ const OrderListTable = () => {
 
 
   // console.
-
+  
   const today = new Date().toISOString().split("T")[0];
 
   const filteredOrders = orders
@@ -162,6 +162,7 @@ const OrderListTable = () => {
                   <th>Customer Index</th>
                   <th>Address</th>
                   <th>Product</th>
+                  <th>ML</th>
                   <th>Total Price</th>
                   <th>Plan Type</th>
                   <th>Status</th>
@@ -198,6 +199,13 @@ const OrderListTable = () => {
                               objectFit: "cover",
                             }}
                           />
+                        </div>
+                      ))}
+                    </td>
+                    <td>
+                      {order.productItems?.map((item) => (
+                        <div key={item._id}>
+                           {item?.product?.quantity}
                         </div>
                       ))}
                     </td>
