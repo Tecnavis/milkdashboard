@@ -18,6 +18,8 @@ const Salesorders = ({ searchQuery }) => {
   const [startDate, setStartDate] = useState('');
   const [interval, setInterval] = useState(2);
   const [customDates, setCustomDates] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
+
   useEffect(() => {
     FetchCustomer().then((res) => setAllCustomer(res));
   }, []);
@@ -55,7 +57,14 @@ const Salesorders = ({ searchQuery }) => {
   
       // Add specific data based on plan type
       switch (selectedPlan) {
-        case "weekly":
+        case "daily":
+          planData.startDate = startDate;
+          break;
+      case "monthly":
+          planData.startDate = startDate;
+          break;
+      case "weekly":
+          planData.startDate = startDate;
           planData.weeklyDays = selectedDays;
           break;
         case "alternative":
@@ -116,13 +125,70 @@ const Salesorders = ({ searchQuery }) => {
     }
   };
   
-  
+
+
+  const handleAddDate = () => {
+    if (!selectedDate) return;
+
+    const isValid = !isNaN(new Date(selectedDate).getTime());
+    if (!isValid) return alert("Invalid date");
+
+    if (!customDates.includes(selectedDate)) {
+      const updatedDates = [...customDates, selectedDate].sort(
+        (a, b) => new Date(a) - new Date(b)
+      );
+      setCustomDates(updatedDates);
+    }
+    setSelectedDate("");
+  };
+
+
   
   const renderPlanOptions = () => {
     switch (selectedPlan) {
+
+      case 'daily':
+        return (
+          <div className="mt-3">
+               <Form.Group className="mb-3">
+              <Form.Label>Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </Form.Group>
+          </div>
+        );
+
+      case 'monthly':
+        return (
+          <div className="mt-3">
+               <Form.Group className="mb-3">
+              <Form.Label>Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </Form.Group>
+          </div>
+        );
+
       case 'weekly':
         return (
           <div className="mt-3">
+               <Form.Group className="mb-3">
+              <Form.Label>Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </Form.Group>
             <h6>Select Days</h6>
             {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day, index) => (
               <Form.Check
@@ -169,36 +235,40 @@ const Salesorders = ({ searchQuery }) => {
       case 'custom':
         return (
           <div className="mt-3">
-            <Form.Group className="mb-3">
-              <Form.Label>Select Dates</Form.Label>
+          <Form.Group className="mb-3">
+            <Form.Label>Select Dates</Form.Label>
+            <div className="d-flex">
               <Form.Control
                 type="date"
-                onChange={(e) => {
-                  const newDate = e.target.value;
-                  if (!customDates.includes(newDate)) {
-                    setCustomDates([...customDates, newDate]);
-                  }
-                }}
-                min={new Date().toISOString().split('T')[0]}
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                min={new Date().toISOString().split("T")[0]}
               />
-            </Form.Group>
-            <div className="selected-dates">
-              {customDates.map((date, index) => (
-                <div key={index} className="d-flex align-items-center mb-2">
-                  <span>{new Date(date).toLocaleDateString()}</span>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    className="ms-2"
-                    onClick={() => setCustomDates(customDates.filter((_, i) => i !== index))}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
+              <Button className="ms-2" onClick={handleAddDate}>
+                Add
+              </Button>
             </div>
+          </Form.Group>
+    
+          <div className="selected-dates">
+            {customDates.map((date, index) => (
+              <div key={index} className="d-flex align-items-center mb-2">
+                <span>{new Date(date).toLocaleDateString()}</span>
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  className="ms-2"
+                  onClick={() =>
+                    setCustomDates(customDates.filter((_, i) => i !== index))
+                  }
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
           </div>
-        );
+        </div>
+      );
 
       default:
         return null;
