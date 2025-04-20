@@ -44,7 +44,7 @@ const Salesorders = ({ searchQuery }) => {
   const handleContinueToPlans = async () => {
     setShowProductModal(false);
     setShowPlanModal(true);
-    setPlans(["daily", "custom", "weekly", "alternative", "monthly"]); // Plan types
+    setPlans(["daily", "custom", "weekly", "alternative", "monthly", "introductory"]); // Plan types
   };
 
   // Create plan and proceed to order
@@ -63,6 +63,9 @@ const Salesorders = ({ searchQuery }) => {
       case "monthly":
           planData.startDate = startDate;
           break;
+      case "introductory":
+           planData.startDate = startDate;
+           break;
       case "weekly":
           planData.startDate = startDate;
           planData.weeklyDays = selectedDays;
@@ -176,6 +179,21 @@ const Salesorders = ({ searchQuery }) => {
             </Form.Group>
           </div>
         );
+
+        case 'introductory':
+          return (
+            <div className="mt-3">
+                 <Form.Group className="mb-3">
+                <Form.Label>Start Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </Form.Group>
+            </div>
+          );
 
       case 'weekly':
         return (
