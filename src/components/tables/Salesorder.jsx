@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Table, Modal, Button, Form } from "react-bootstrap";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
-import { FetchCustomer, getDetailsByRouteName, createPlan, createOrder, URL } from "../../Helper/handle-api"; 
+import {
+  FetchCustomer,
+  getDetailsByRouteName,
+  createPlan,
+  createOrder,
+  URL,
+} from "../../Helper/handle-api";
 import Swal from "sweetalert2";
 
 const Salesorders = ({ searchQuery }) => {
@@ -13,9 +19,10 @@ const Salesorders = ({ searchQuery }) => {
   const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [orderConfirmed, setOrderConfirmed] = useState(false);
+  const [routeProducts, setRouteProducts] = useState([]);
 
   const [selectedDays, setSelectedDays] = useState([]);
-  const [startDate, setStartDate] = useState('');
+  const [startDate, setStartDate] = useState("");
   const [interval, setInterval] = useState(2);
   const [customDates, setCustomDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
@@ -30,7 +37,9 @@ const Salesorders = ({ searchQuery }) => {
     try {
       const route = await getDetailsByRouteName(customer.routeno);
       if (route && route.products.length > 0) {
-        setSelectedProducts(route.products);
+        // setSelectedProducts(route.products);
+        setRouteProducts(route.products);
+        setSelectedProducts([]);
       } else {
         setSelectedProducts([]);
       }
@@ -44,7 +53,14 @@ const Salesorders = ({ searchQuery }) => {
   const handleContinueToPlans = async () => {
     setShowProductModal(false);
     setShowPlanModal(true);
-    setPlans(["daily", "custom", "weekly", "alternative", "monthly", "introductory"]); // Plan types
+    setPlans([
+      "daily",
+      "custom",
+      "weekly",
+      "alternative",
+      "monthly",
+      "introductory",
+    ]); // Plan types
   };
 
   // Create plan and proceed to order
@@ -54,19 +70,19 @@ const Salesorders = ({ searchQuery }) => {
         customerId: selectedCustomer._id,
         planType: selectedPlan || "none", // Ensure it is never null
       };
-  
+
       // Add specific data based on plan type
       switch (selectedPlan) {
         case "daily":
           planData.startDate = startDate;
           break;
-      case "monthly":
+        case "monthly":
           planData.startDate = startDate;
           break;
-      case "introductory":
-           planData.startDate = startDate;
-           break;
-      case "weekly":
+        case "introductory":
+          planData.startDate = startDate;
+          break;
+        case "weekly":
           planData.startDate = startDate;
           planData.weeklyDays = selectedDays;
           break;
@@ -78,7 +94,7 @@ const Salesorders = ({ searchQuery }) => {
           planData.customDates = customDates;
           break;
       }
-  
+
       const response = await createPlan(planData);
       if (response.plan) {
         setSelectedPlan(response.plan);
@@ -98,18 +114,19 @@ const Salesorders = ({ searchQuery }) => {
       });
     }
   };
-  
+
   const handleSkipPlan = async () => {
     try {
       const planData = {
         customerId: selectedCustomer._id,
-        planType: "none"
+        planType: "none",
       };
-    
+
       // Send request to backend
       const response = await createPlan(planData);
-    
-      if (response.plan) { // Check for plan in response
+
+      if (response.plan) {
+        // Check for plan in response
         setSelectedPlan(response.plan);
         setShowPlanModal(false);
         setOrderConfirmed(true);
@@ -127,8 +144,6 @@ const Salesorders = ({ searchQuery }) => {
       });
     }
   };
-  
-
 
   const handleAddDate = () => {
     if (!selectedDate) return;
@@ -145,70 +160,75 @@ const Salesorders = ({ searchQuery }) => {
     setSelectedDate("");
   };
 
-
-  
   const renderPlanOptions = () => {
     switch (selectedPlan) {
-
-      case 'daily':
+      case "daily":
         return (
           <div className="mt-3">
-               <Form.Group className="mb-3">
+            <Form.Group className="mb-3">
               <Form.Label>Start Date</Form.Label>
               <Form.Control
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().split("T")[0]}
               />
             </Form.Group>
           </div>
         );
 
-      case 'monthly':
+      case "monthly":
         return (
           <div className="mt-3">
-               <Form.Group className="mb-3">
+            <Form.Group className="mb-3">
               <Form.Label>Start Date</Form.Label>
               <Form.Control
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().split("T")[0]}
               />
             </Form.Group>
           </div>
         );
 
-        case 'introductory':
-          return (
-            <div className="mt-3">
-                 <Form.Group className="mb-3">
-                <Form.Label>Start Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </Form.Group>
-            </div>
-          );
-
-      case 'weekly':
+      case "introductory":
         return (
           <div className="mt-3">
-               <Form.Group className="mb-3">
+            <Form.Group className="mb-3">
               <Form.Label>Start Date</Form.Label>
               <Form.Control
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().split("T")[0]}
+              />
+            </Form.Group>
+          </div>
+        );
+
+      case "weekly":
+        return (
+          <div className="mt-3">
+            <Form.Group className="mb-3">
+              <Form.Label>Start Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                min={new Date().toISOString().split("T")[0]}
               />
             </Form.Group>
             <h6>Select Days</h6>
-            {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day, index) => (
+            {[
+              "Sunday",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+            ].map((day, index) => (
               <Form.Check
                 key={day}
                 type="checkbox"
@@ -218,7 +238,7 @@ const Salesorders = ({ searchQuery }) => {
                   if (e.target.checked) {
                     setSelectedDays([...selectedDays, index]);
                   } else {
-                    setSelectedDays(selectedDays.filter(d => d !== index));
+                    setSelectedDays(selectedDays.filter((d) => d !== index));
                   }
                 }}
               />
@@ -226,7 +246,7 @@ const Salesorders = ({ searchQuery }) => {
           </div>
         );
 
-      case 'alternative':
+      case "alternative":
         return (
           <div className="mt-3">
             <Form.Group className="mb-3">
@@ -235,7 +255,7 @@ const Salesorders = ({ searchQuery }) => {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toISOString().split("T")[0]}
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -250,50 +270,48 @@ const Salesorders = ({ searchQuery }) => {
           </div>
         );
 
-      case 'custom':
+      case "custom":
         return (
           <div className="mt-3">
-          <Form.Group className="mb-3">
-            <Form.Label>Select Dates</Form.Label>
-            <div className="d-flex">
-              <Form.Control
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                min={new Date().toISOString().split("T")[0]}
-              />
-              <Button className="ms-2" onClick={handleAddDate}>
-                Add
-              </Button>
-            </div>
-          </Form.Group>
-    
-          <div className="selected-dates">
-            {customDates.map((date, index) => (
-              <div key={index} className="d-flex align-items-center mb-2">
-                <span>{new Date(date).toLocaleDateString()}</span>
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  className="ms-2"
-                  onClick={() =>
-                    setCustomDates(customDates.filter((_, i) => i !== index))
-                  }
-                >
-                  Remove
+            <Form.Group className="mb-3">
+              <Form.Label>Select Dates</Form.Label>
+              <div className="d-flex">
+                <Form.Control
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
+                />
+                <Button className="ms-2" onClick={handleAddDate}>
+                  Add
                 </Button>
               </div>
-            ))}
+            </Form.Group>
+
+            <div className="selected-dates">
+              {customDates.map((date, index) => (
+                <div key={index} className="d-flex align-items-center mb-2">
+                  <span>{new Date(date).toLocaleDateString()}</span>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    className="ms-2"
+                    onClick={() =>
+                      setCustomDates(customDates.filter((_, i) => i !== index))
+                    }
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      );
+        );
 
       default:
         return null;
     }
   };
-
-  
 
   // Confirm order
   const handleOrder = async () => {
@@ -303,12 +321,12 @@ const Salesorders = ({ searchQuery }) => {
         quantity: 1,
         routePrice: product.routePrice, // Include the routePrice
       }));
-  
+
       const totalRoutePrice = selectedProducts.reduce(
         (sum, product) => sum + (product.routePrice || 0),
         0
       );
-  
+
       const orderData = {
         customerId: selectedCustomer._id,
         productItems: productItemsWithPrices,
@@ -316,9 +334,9 @@ const Salesorders = ({ searchQuery }) => {
         paymentMethod: "Cash",
         routeprice: totalRoutePrice,
       };
-  
+
       const response = await createOrder(orderData);
-  
+
       if (response.order) {
         Swal.fire({
           icon: "success",
@@ -335,18 +353,15 @@ const Salesorders = ({ searchQuery }) => {
       });
     }
   };
-  
-  
 
-
-   // Filter customers based on search query
- const filteredCustomers = allCustomer.filter((customer) => 
-  customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  customer.phone?.includes(searchQuery) ||
-  customer.customerId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  customer.routeno?.toLowerCase().includes(searchQuery.toLowerCase())
-);
-
+  // Filter customers based on search query
+  const filteredCustomers = allCustomer.filter(
+    (customer) =>
+      customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.phone?.includes(searchQuery) ||
+      customer.customerId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customer.routeno?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <>
@@ -367,7 +382,9 @@ const Salesorders = ({ searchQuery }) => {
                 <td>{customer.name}</td>
                 <td>{customer.routeno}</td>
                 <td>
-                  <Button onClick={() => handleSelectProduct(customer)}>Select Products</Button>
+                  <Button onClick={() => handleSelectProduct(customer)}>
+                    Select Products
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -376,11 +393,15 @@ const Salesorders = ({ searchQuery }) => {
       </OverlayScrollbarsComponent>
 
       {/* Product Selection Modal */}
-<Modal show={showProductModal} onHide={() => setShowProductModal(false)} size="lg">
-  <Modal.Header closeButton>
-    <Modal.Title>Select Products</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
+      <Modal
+        show={showProductModal}
+        onHide={() => setShowProductModal(false)}
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Select Products</Modal.Title>
+        </Modal.Header>
+        {/* <Modal.Body>
     {selectedProducts.length > 0 ? (
       <Table striped bordered hover>
         <thead>
@@ -423,68 +444,130 @@ const Salesorders = ({ searchQuery }) => {
     ) : (
       <p>No products available</p>
     )}
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="secondary" onClick={() => setShowProductModal(false)}>Cancel</Button>
-    <Button variant="primary" onClick={handleContinueToPlans}>Continue</Button>
-  </Modal.Footer>
-</Modal>
+  </Modal.Body> */}
 
+        <Modal.Body>
+          {routeProducts.length > 0 ? (
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Select</th>
+                  <th>Image</th>
+                  <th>Product ID</th>
+                  <th>Product Name</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {routeProducts.map((product) => (
+                  <tr key={product._id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.some(
+                          (p) => p._id === product._id
+                        )}
+                        onChange={(e) =>
+                          setSelectedProducts(
+                            e.target.checked
+                              ? [...selectedProducts, product]
+                              : selectedProducts.filter(
+                                  (p) => p._id !== product._id
+                                )
+                          )
+                        }
+                      />
+                    </td>
+                    <td>
+                      <img
+                        src={`${URL}/images/${product.productId.coverimage}`}
+                        alt={product.productId.image}
+                        style={{ width: "50px", height: "50px" }}
+                      />
+                    </td>
+                    <td>{product.productId.productId}</td>
+                    <td>{product.productId.category}</td>
+                    <td>{product.productId.quantity}</td>
+                    <td>₹{product.routePrice}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <p>No products available</p>
+          )}
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowProductModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleContinueToPlans}>
+            Continue
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {/* Plan Selection Modal */}
       <Modal show={showPlanModal} onHide={() => setShowPlanModal(false)}>
-  <Modal.Header closeButton>
-    <Modal.Title>Select Plan</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <div className="d-flex flex-wrap">
-      {plans.map((plan) => (
-        <Button
-          key={plan}
-          variant={selectedPlan === plan ? "primary" : "outline-primary"}
-          className="m-2"
-          onClick={() => setSelectedPlan(plan)}
-        >
-          {plan.toUpperCase()}
-        </Button>
-      ))}
-    </div>
+        <Modal.Header closeButton>
+          <Modal.Title>Select Plan</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="d-flex flex-wrap">
+            {plans.map((plan) => (
+              <Button
+                key={plan}
+                variant={selectedPlan === plan ? "primary" : "outline-primary"}
+                className="m-2"
+                onClick={() => setSelectedPlan(plan)}
+              >
+                {plan.toUpperCase()}
+              </Button>
+            ))}
+          </div>
 
-    {selectedPlan && renderPlanOptions()}
+          {selectedPlan && renderPlanOptions()}
 
-    <div className="d-flex justify-content-between mt-4">
-  <Button variant="danger" onClick={handleSkipPlan}>
-    Skip Plan
-  </Button>
-  {selectedPlan && ( // Only show Continue if a plan is selected
-    <Button variant="success" onClick={handleCreatePlan}>
-      Continue
-    </Button>
-  )}
-</div>
-  </Modal.Body>
-</Modal>
-
+          <div className="d-flex justify-content-between mt-4">
+            <Button variant="danger" onClick={handleSkipPlan}>
+              Skip Plan
+            </Button>
+            {selectedPlan && ( // Only show Continue if a plan is selected
+              <Button variant="success" onClick={handleCreatePlan}>
+                Continue
+              </Button>
+            )}
+          </div>
+        </Modal.Body>
+      </Modal>
 
       {/* Order Button */}
-     {/* Order Now Popup Modal */}
-<Modal show={orderConfirmed} onHide={() => setOrderConfirmed(false)} centered>
-  <Modal.Header closeButton>
-    <Modal.Title>Confirm Your Order</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <p>Are you sure you want to place this order?</p>
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="secondary" onClick={() => setOrderConfirmed(false)}>
-      Cancel
-    </Button>
-    <Button variant="success" onClick={handleOrder}>
-      Order Now
-    </Button>
-  </Modal.Footer>
-</Modal>
-
+      {/* Order Now Popup Modal */}
+      <Modal
+        show={orderConfirmed}
+        onHide={() => setOrderConfirmed(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Your Order</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to place this order?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setOrderConfirmed(false)}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleOrder}>
+            Order Now
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
