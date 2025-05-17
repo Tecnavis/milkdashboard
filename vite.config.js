@@ -11,6 +11,6 @@ export default defineConfig({
    preview: {
     host: '0.0.0.0',
     port: 7865,
-    allowedHosts: ['milkdashboard.onrender.com'], 
+    allowedHosts: ['milkdashboard.onrender.com', 'admin.palkkaran.in'], 
   },
 })
