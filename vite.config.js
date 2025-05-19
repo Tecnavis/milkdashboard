@@ -8,9 +8,10 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 7865,
   },
-   preview: {
-    host: '0.0.0.0',
-    port: 7865,
-    allowedHosts: ['milkdashboard.onrender.com', 'admin.palkkaran.in'], 
-  },
+  preview: {
+  host: '0.0.0.0',
+  port: process.env.PORT ? parseInt(process.env.PORT) : 4173,
+  allowedHosts: ['milkdashboard.onrender.com', 'admin.palkkaran.in'],
+},
+
 })
