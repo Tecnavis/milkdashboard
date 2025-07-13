@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import { FetchCustomer } from "../../Helper/handle-api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const AllCustomerAmountTable = ({ searchTerm }) => {
   const [customers, setCustomers] = useState([]);
   const [groupedCustomers, setGroupedCustomers] = useState({});
+  const nvigate = useNavigate();
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -28,15 +29,30 @@ const AllCustomerAmountTable = ({ searchTerm }) => {
     setGroupedCustomers(grouped);
   };
 
+  const term = searchTerm.toLowerCase();
+  const filteredGrouped = {};
+  Object.entries(groupedCustomers).forEach(([routeNo, custList]) => {
+    const filtered = custList.filter((c) => {
+      return (
+        (c.customerId && c.customerId.toString().toLowerCase().includes(term)) ||
+        (c.name && c.name.toLowerCase().includes(term)) ||
+        (c.phone && c.phone.toLowerCase().includes(term)) ||
+        (c.address && c.address.some((a) =>
+          `${a.streetAddress} ${a.apartment} ${a.postcode}`.toLowerCase().includes(term)
+        ))
+      );
+    });
+    if (filtered.length > 0) {
+      filteredGrouped[routeNo] = filtered;
+    }
+  });
+
   return (
     <div style={{ overflowX: "auto" }}>
-      {Object.keys(groupedCustomers)
-        .filter((routeNo) =>
-          routeNo.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .map((routeNo) => {
-          // Calculate total for this route
-          const totalAmount = groupedCustomers[routeNo].reduce(
+      {Object.keys(filteredGrouped).length > 0 ? (
+        Object.entries(filteredGrouped).map(([routeNo, customers]) => {
+          // Total paid/unpaid for this route
+          const totalAmount = customers.reduce(
             (sum, customer) =>
               sum +
               customer.paidAmounts.reduce((subSum, entry) => subSum + entry.amount, 0),
@@ -45,7 +61,12 @@ const AllCustomerAmountTable = ({ searchTerm }) => {
 
           return (
             <div key={routeNo}>
-              <b>Route No: {routeNo}</b>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <b>Route No: {routeNo}</b>
+                <b style={{ textAlign: "right", fontWeight: "bold" }}>
+                  Total for Route {routeNo}: {totalAmount}
+                </b>
+              </div>
               <Table className="table table-dashed table-hover table-striped">
                 <thead>
                   <tr>
@@ -58,11 +79,11 @@ const AllCustomerAmountTable = ({ searchTerm }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {groupedCustomers[routeNo].map((data) => (
+                  {customers.map((data) => (
                     <tr key={data._id}>
-                      <td style={{ textAlign: "center" }}>{data.customerId}</td>
+                      <td onClick={() => nvigate(`/customeramount/${data?.customerId}`)} style={{ textAlign: "center", cursor: "pointer" }}>{data.customerId}</td>
                       <td>
-                        <Link to="#">{data.name}</Link>
+                        {data.name}
                       </td>
                       <td>{data.phone}</td>
                       <td>
@@ -87,14 +108,13 @@ const AllCustomerAmountTable = ({ searchTerm }) => {
                   ))}
                 </tbody>
               </Table>
-              {/* Show the total only once per route */}
-              <div style={{ textAlign: "right", fontWeight: "bold" }}>
-                Total for Route {routeNo}:  {totalAmount}
-              </div>
               <br />
             </div>
           );
-        })}
+        })
+      ) : (
+        <p>No customers found for the entered search term.</p>
+      )}
     </div>
   );
 };

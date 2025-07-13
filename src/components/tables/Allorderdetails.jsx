@@ -72,18 +72,20 @@ const [selectedCustomerId, setSelectedCustomerId] = useState(null);
   }, []);
 
 
-  const filteredOrders = allOrders.filter((order) => {
-    
+   const filteredOrders = allOrders.filter((order) => {
+    const term = searchTerm.toLowerCase();
     const customerName = order.customer?.name?.toLowerCase() || '';
-    const productNames = order.productItems.map(item => item.product?.category?.toLowerCase() || '').join(' ');
     const customerId = order.customer?.customerId?.toLowerCase() || '';
-  
+    const productNames = order.productItems.map(item =>
+      item.product?.category?.toLowerCase() || '').join(' ');
+    const productIds = order.productItems.map(item =>
+      item.product?.productId?.toLowerCase() || '').join(' ');
 
-  
     return (
-      customerName.includes(searchTerm.toLowerCase()) ||
-      productNames.includes(searchTerm.toLowerCase()) ||
-      customerId.includes(searchTerm.toLowerCase()) 
+      customerName.includes(term) ||
+      productNames.includes(term) ||
+      customerId.includes(term) ||
+      productIds.includes(term)
     );
   });
 

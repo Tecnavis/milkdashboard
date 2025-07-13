@@ -69,6 +69,7 @@ import Customerleaveapply from "./pages/customerleaveapply"
 import RoutebasedIncome from "./pages/routebasedincome"
 import Rewarditem from "./components/reward/Rewarditem"
 import Rewardredeams from "./components/reward/Rewardredeams"
+import CostemerCalender from "./pages/CostemerCalender"
 
 
 function App() {
@@ -81,6 +82,7 @@ function App() {
           <Route path="/routebasedincome" element={<RoutebasedIncome/>}/>
           <Route path="/customerpayment" element={<Customerpayment/>}/>
           <Route path="/customeramount" element={<CustomerpaymentAmount/>}/>
+          <Route path="/customeramount/:id" element={<CostemerCalender/>}/>
           <Route path="/leaveapply" element={<Customerleaveapply/>}/>
           <Route path="/customerbottlestock" element={<CustomerBottlestock/>}/>
           <Route path="/allCustomerByRoutes" element={<AllCustomerByRoutes/>}/>

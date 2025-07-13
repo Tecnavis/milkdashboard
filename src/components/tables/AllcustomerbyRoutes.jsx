@@ -17,12 +17,10 @@ const AllCustomerTable = ({ searchTerm }) => {
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [paymentDate, setPaymentDate] = useState("");
 
-  // State for edit payment modal
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
   const [editAmount, setEditAmount] = useState("");
   const [editDate, setEditDate] = useState("");
-
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -36,9 +34,7 @@ const AllCustomerTable = ({ searchTerm }) => {
   const groupCustomersByRoute = (customerList) => {
     const grouped = customerList.reduce((acc, customer) => {
       const routeKey = customer.routeno || "No Route";
-      if (!acc[routeKey]) {
-        acc[routeKey] = [];
-      }
+      if (!acc[routeKey]) acc[routeKey] = [];
       acc[routeKey].push(customer);
       return acc;
     }, {});
@@ -132,20 +128,15 @@ const AllCustomerTable = ({ searchTerm }) => {
 
   const handlePaymentHistoryClick = async (customerId) => {
     try {
-      // Find the full customer details
       const customer = customers.find((c) => c.customerId === customerId);
-
-      // Set the selected customer
       setSelectedCustomer(customer);
 
-      // Fetch payment history
       const response = await axios.get(
         `${URL}/customer/paid-amounts/${customerId}`
       );
       setPaymentHistory(response.data.paidAmounts);
       setShowHistoryModal(true);
     } catch (error) {
-      console.error("Error fetching payment history:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -155,7 +146,6 @@ const AllCustomerTable = ({ searchTerm }) => {
   };
 
   const handleHistoryPaymentConfirmation = async (paymentId) => {
-    // Add an extra check to ensure selectedCustomer exists
     if (!selectedCustomer) {
       Swal.fire({
         icon: "error",
@@ -171,71 +161,42 @@ const AllCustomerTable = ({ searchTerm }) => {
       confirmButtonText: "Yes, confirm it!",
       cancelButtonText: "No, cancel!",
     });
-
     if (!confirm) return;
 
     try {
-      console.log("Confirming payment with:", {
+      await axios.patch(`${URL}/customer/confirm-paid-amount/confirm`, {
         customerId: selectedCustomer.customerId,
         paidAmountId: paymentId,
       });
 
-      const response = await axios.patch(
-        `${URL}/customer/confirm-paid-amount/confirm`,
-        {
-          customerId: selectedCustomer.customerId,
-          paidAmountId: paymentId,
-        }
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Payment confirmed successfully!",
+      });
+
+      const historyResponse = await axios.get(
+        `${URL}/customer/paid-amounts/${selectedCustomer.customerId}`
       );
-
-      console.log("Confirmation response:", response.data);
-
-      // Check if response indicates success
-      if (response.data && (response.data.success || response.status === 200)) {
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: "Payment confirmed successfully!",
-        });
-
-        // Refresh payment history
-        const historyResponse = await axios.get(
-          `${URL}/customer/paid-amounts/${selectedCustomer.customerId}`
-        );
-        setPaymentHistory(historyResponse.data.paidAmounts);
-      } else {
-        // Handle case where response doesn't indicate success
-        throw new Error("Payment confirmation failed");
-      }
+      setPaymentHistory(historyResponse.data.paidAmounts);
     } catch (error) {
-      console.error("Full error object:", error);
-
-      // More detailed error handling
-      const errorMessage = error.response
-        ? error.response.data?.message || error.response.data || "Unknown error"
-        : error.message || "Network error";
-
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: `Error confirming payment: ${errorMessage}`,
-        footer: error.response ? `Status: ${error.response.status}` : "",
+        text: "Error confirming payment: " + error.response?.data?.message,
       });
     }
   };
 
-  // New function to handle edit button click
   const handleEditClick = (payment) => {
     setEditingPayment(payment);
     setEditAmount(payment.amount.toString());
-    // Format date for the date input (YYYY-MM-DD)
     const dateObj = new Date(payment.date);
     const formattedDate = dateObj.toISOString().split("T")[0];
     setEditDate(formattedDate);
     setShowEditModal(true);
   };
 
-  // New function to save edited payment
   const handleSaveEdit = async () => {
     if (!editAmount || parseFloat(editAmount) <= 0 || !editDate) {
       Swal.fire({
@@ -260,11 +221,8 @@ const AllCustomerTable = ({ searchTerm }) => {
           title: "Success",
           text: "Payment details updated successfully!",
         });
-
-        // Close the edit modal
         setShowEditModal(false);
 
-        // Refresh payment history
         const historyResponse = await axios.get(
           `${URL}/customer/paid-amounts/${selectedCustomer.customerId}`
         );
@@ -273,13 +231,10 @@ const AllCustomerTable = ({ searchTerm }) => {
         throw new Error(response.data.message || "Failed to update payment");
       }
     } catch (error) {
-      console.error("Error updating payment:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: `Error updating payment: ${
-          error.response?.data?.message || error.message
-        }`,
+        text: "Error updating payment: " + error.response?.data?.message,
       });
     }
   };
@@ -292,13 +247,41 @@ const AllCustomerTable = ({ searchTerm }) => {
     .filter((entry) => !entry.isGet)
     .reduce((sum, entry) => sum + entry.amount, 0);
 
+  // ✅ FULL FIELD FILTER
+  const term = searchTerm.toLowerCase();
+  const filteredGrouped = {};
+  Object.entries(groupedCustomers).forEach(([routeNo, custList]) => {
+    const filtered = custList.filter((c) => {
+      const status =
+        c.paidAmounts.length === 0
+          ? "No Payments"
+          : c.paidAmounts.some((am) => !am.isGet)
+          ? "Unpaid"
+          : "Paid";
+
+      return (
+        (c.customerId &&
+          c.customerId.toString().toLowerCase().includes(term)) ||
+        (c.name && c.name.toLowerCase().includes(term)) ||
+        (c.phone && c.phone.toLowerCase().includes(term)) ||
+        (c.address &&
+          c.address.some((a) =>
+            `${a.streetAddress} ${a.apartment} ${a.postcode}`
+              .toLowerCase()
+              .includes(term)
+          )) ||
+        status.toLowerCase().includes(term)
+      );
+    });
+    if (filtered.length > 0) {
+      filteredGrouped[routeNo] = filtered;
+    }
+  });
+
   return (
     <div style={{ overflowX: "auto" }}>
-      {Object.keys(groupedCustomers)
-        .filter((routeNo) =>
-          routeNo.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .map((routeNo) => (
+      {Object.keys(filteredGrouped).length > 0 ? (
+        Object.entries(filteredGrouped).map(([routeNo, custList]) => (
           <div key={routeNo}>
             <b>Route No: {routeNo}</b>
             <Table className="table table-dashed table-hover table-striped">
@@ -313,55 +296,59 @@ const AllCustomerTable = ({ searchTerm }) => {
                 </tr>
               </thead>
               <tbody>
-                {groupedCustomers[routeNo].map((data) => (
-                  <tr key={data._id}>
-                    <td style={{ textAlign: "center" }}>{data.customerId}</td>
-                    <td>
-                      <Link to="#">{data.name}</Link>
-                    </td>
-                    <td>{data.phone}</td>
-                    <td>
-                      {data.address.map((addr, index) => (
-                        <div key={index}>
-                          {addr.streetAddress}, {addr.apartment},{" "}
-                          {addr.postcode}
-                        </div>
-                      ))}
-                    </td>
-                    <td>
-                      {data.paidAmounts.length === 0
-                        ? "No Payments"
-                        : data.paidAmounts.some((am) => !am.isGet)
-                        ? "Unpaid"
-                        : "Paid"}
-                    </td>
-
-                    <td>
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => handlePaymentClick(data)}
-                        style={{ marginRight: "5px" }}
-                      >
-                        Do Payment
-                      </Button>
-                      <Button
-                        variant="success"
-                        size="sm"
-                        onClick={() =>
-                          handlePaymentHistoryClick(data.customerId)
-                        }
-                      >
-                        Payment History
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                {custList.map((data) => {
+                  const status =
+                    data.paidAmounts.length === 0
+                      ? "No Payments"
+                      : data.paidAmounts.some((am) => !am.isGet)
+                      ? "Unpaid"
+                      : "Paid";
+                  return (
+                    <tr key={data._id}>
+                      <td>{data.customerId}</td>
+                      <td>
+                        <Link to="#">{data.name}</Link>
+                      </td>
+                      <td>{data.phone}</td>
+                      <td>
+                        {data.address.map((addr, index) => (
+                          <div key={index}>
+                            {addr.streetAddress}, {addr.apartment},{" "}
+                            {addr.postcode}
+                          </div>
+                        ))}
+                      </td>
+                      <td>{status}</td>
+                      <td>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => handlePaymentClick(data)}
+                          style={{ marginRight: "5px" }}
+                        >
+                          Do Payment
+                        </Button>
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={() =>
+                            handlePaymentHistoryClick(data.customerId)
+                          }
+                        >
+                          Payment History
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </Table>
             <br />
           </div>
-        ))}
+        ))
+      ) : (
+        <p>No customers found for the entered search term.</p>
+      )}
 
       {/* Payment Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>

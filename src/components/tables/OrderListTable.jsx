@@ -5,7 +5,7 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import PaginationSection from "./PaginationSection";
 import axios from "axios";
 
-const OrderListTable = () => {
+const OrderListTable = ({ searchTerm }) => {
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
@@ -20,12 +20,9 @@ const OrderListTable = () => {
     getOrders();
   }, []);
 
-
-  // console.
-  
   const today = new Date().toISOString().split("T")[0];
 
-  const filteredOrders = orders
+  const todayOrders = orders
     .map((order) => {
       if (order && order.selectedPlanDetails?.dates && order.plan) {
         const todayPlan = order.selectedPlanDetails.dates.find(
@@ -55,13 +52,47 @@ const OrderListTable = () => {
     })
     .filter((order) => order !== null);
 
-  // Grouping orders by routeno
-  // Grouping and sorting orders by routeno
+  // ✅ ✅ ✅ Filter orders by searchTerm — include ML quantity
+  const filteredOrders = todayOrders.filter((order) => {
+    const term = searchTerm.toLowerCase();
+
+    const customerName = order.customer?.name?.toLowerCase() || "";
+    const customerIndex = order.customer?.customerindex?.toString() || "";
+    const address = [
+      order.address?.streetAddress,
+      order.address?.postcode,
+      order.address?.apartment,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    const planType = order.plan?.planType?.toLowerCase() || "";
+    const status = order.selectedPlanDetails?.dates[0]?.status?.toLowerCase() || "";
+
+    const productCategories = order.productItems
+      ?.map((item) => item.product?.category?.toLowerCase() || "")
+      .join(" ");
+
+    const productQuantities = order.productItems
+      ?.map((item) => item.product?.quantity?.toString() || "")
+      .join(" ");
+
+    return (
+      customerName.includes(term) ||
+      customerIndex.includes(term) ||
+      address.includes(term) ||
+      planType.includes(term) ||
+      status.includes(term) ||
+      productCategories.includes(term) ||
+      productQuantities.includes(term)
+    );
+  });
+
+  // Group by route
   const ordersByRoute = filteredOrders.reduce((acc, order) => {
     const routeNo = order.customer?.routeno || "Unassigned";
     if (!acc[routeNo]) acc[routeNo] = [];
     acc[routeNo].push(order);
-    // Sort by customerindex in ascending order
     acc[routeNo].sort(
       (a, b) =>
         (a.customer?.customerindex || 0) - (b.customer?.customerindex || 0)
@@ -73,9 +104,7 @@ const OrderListTable = () => {
 
   const handleDeliveryStatus = async (orderId, date, customerId) => {
     if (!orderId || !date || !customerId) {
-      console.error(
-        "Missing orderId, date, or customerId for updating status."
-      );
+      console.error("Missing orderId, date, or customerId.");
       return;
     }
 
@@ -93,11 +122,10 @@ const OrderListTable = () => {
                   ...order,
                   selectedPlanDetails: {
                     ...order.selectedPlanDetails,
-                    dates: (order.selectedPlanDetails?.dates || []).map(
-                      (dateObj) =>
-                        dateObj.date === date
-                          ? { ...dateObj, status: "delivered" }
-                          : dateObj
+                    dates: order.selectedPlanDetails?.dates?.map((dateObj) =>
+                      dateObj.date === date
+                        ? { ...dateObj, status: "delivered" }
+                        : dateObj
                     ),
                   },
                 }
@@ -107,13 +135,12 @@ const OrderListTable = () => {
       }
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update delivery status. Please try again.");
     }
   };
-  //cancel order
+
   const handleCancelOrder = async (orderId, date) => {
     if (!orderId || !date) {
-      console.error("Missing orderId or date for canceling.");
+      console.error("Missing orderId or date.");
       return;
     }
 
@@ -131,11 +158,10 @@ const OrderListTable = () => {
                   ...order,
                   selectedPlanDetails: {
                     ...order.selectedPlanDetails,
-                    dates: (order.selectedPlanDetails?.dates || [])?.map(
-                      (dateObj) =>
-                        dateObj.date === date
-                          ? { ...dateObj, status: "cancel" }
-                          : dateObj
+                    dates: order.selectedPlanDetails?.dates?.map((dateObj) =>
+                      dateObj.date === date
+                        ? { ...dateObj, status: "cancel" }
+                        : dateObj
                     ),
                   },
                 }
@@ -145,14 +171,14 @@ const OrderListTable = () => {
       }
     } catch (error) {
       console.error("Error canceling order:", error);
-      alert("Failed to cancel the order. Please try again.");
     }
   };
+
   return (
     <div>
       <OverlayScrollbarsComponent>
-        {Object.keys(ordersByRoute)?.map((routeNo, index) => (
-          <div key={index} style={{ marginBottom: "30px" }}>
+        {Object.keys(ordersByRoute)?.map((routeNo) => (
+          <div key={routeNo} style={{ marginBottom: "30px" }}>
             <b>Route No: {routeNo}</b>
             <Table striped bordered hover>
               <thead>
@@ -181,17 +207,14 @@ const OrderListTable = () => {
                       {order.address?.postcode}
                       <br />
                       {order.address?.apartment}
-                      <br />
                     </td>
                     <td>
                       {order.productItems?.map((item) => (
                         <div key={item._id}>
-                          {item.product?.category || "N/A"} (
-                          {item.quantity || "N/A"})<br />
+                          {item.product?.category} ({item.quantity})
+                          <br />
                           <img
-                            src={`${URL}/images/${
-                              item.product?.coverimage || ""
-                            }`}
+                            src={`${URL}/images/${item.product?.coverimage}`}
                             alt={item.product?.category}
                             style={{
                               width: "50px",
@@ -204,32 +227,29 @@ const OrderListTable = () => {
                     </td>
                     <td>
                       {order.productItems?.map((item) => (
-                        <div key={item._id}>
-                           {item?.product?.quantity}
-                        </div>
+                        <div key={item._id}>{item?.product?.quantity}</div>
                       ))}
                     </td>
-
-                    <td>{order.totalPrice || " "}</td>
+                    <td>{order.totalPrice}</td>
                     <td>{order.plan?.planType || "N/A"}</td>
                     <td
                       style={{
                         color:
-                          order.selectedPlanDetails.dates[0].status ===
+                          order.selectedPlanDetails?.dates[0]?.status ===
                           "delivered"
                             ? "green"
-                            : order.selectedPlanDetails.dates[0].status ===
+                            : order.selectedPlanDetails?.dates[0]?.status ===
                               "cancel"
                             ? "red"
                             : "black",
                       }}
                     >
-                      {order.selectedPlanDetails.dates[0].status}
+                      {order.selectedPlanDetails?.dates[0]?.status}
                     </td>
                     <td>
                       <button
                         className={`btn btn-sm ${
-                          order.selectedPlanDetails.dates[0].status ===
+                          order.selectedPlanDetails?.dates[0]?.status ===
                           "delivered"
                             ? "btn-success"
                             : "btn-primary"
@@ -237,8 +257,8 @@ const OrderListTable = () => {
                         onClick={() =>
                           handleDeliveryStatus(
                             order._id,
-                            order.selectedPlanDetails.dates[0].date,
-                            order.customer._id
+                            order.selectedPlanDetails?.dates[0]?.date,
+                            order.customer?._id
                           )
                         }
                       >
@@ -250,7 +270,7 @@ const OrderListTable = () => {
                         onClick={() =>
                           handleCancelOrder(
                             order._id,
-                            order.selectedPlanDetails.dates[0].date
+                            order.selectedPlanDetails?.dates[0]?.date
                           )
                         }
                       >
@@ -265,7 +285,6 @@ const OrderListTable = () => {
         ))}
       </OverlayScrollbarsComponent>
 
-      {/* Pagination */}
       {filteredOrders.length > dataPerPage && (
         <PaginationSection
           currentPage={currentPage}

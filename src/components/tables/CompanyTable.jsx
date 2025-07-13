@@ -9,34 +9,20 @@ import {
   deleteWarehouse,
   updateWarehouse,
 } from "../../Helper/handle-api";
-const CompanyTable = () => {
+
+
+const CompanyTable = ({ searchTerm }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataPerPage] = useState(10);
-  const [dataList, setDataList] = useState(companyData);
+  const [allwarehouse, setAllwarehouse] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  // Pagination logic
-  const indexOfLastData = currentPage * dataPerPage;
-  const indexOfFirstData = indexOfLastData - dataPerPage;
-  const currentData = dataList.slice(indexOfFirstData, indexOfLastData);
 
-  const paginate = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  // Calculate total number of pages
-  const totalPages = Math.ceil(dataList.length / dataPerPage);
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
-
-  const [allwarehouse, setAllwarehouse] = useState([]);
   useEffect(() => {
     fetchAllWarehouse().then((res) => {
       setAllwarehouse(res);
     });
-  },[]);
+  }, []);
 
   const handleEditClick = (customer) => {
     setSelectedCustomer(customer);
@@ -64,16 +50,37 @@ const CompanyTable = () => {
       console.error("Failed to update customer:", error);
     }
   };
+
+  // ✅ Filter data by search term
+  const filteredData = allwarehouse.filter((item) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      item.name?.toLowerCase().includes(term) ||
+      item.address?.toLowerCase().includes(term) ||
+      item.email?.toLowerCase().includes(term) ||
+      item.phone?.toLowerCase().includes(term)
+    );
+  });
+
+  // ✅ Pagination logic on filtered data
+  const indexOfLastData = currentPage * dataPerPage;
+  const indexOfFirstData = indexOfLastData - dataPerPage;
+  const currentData = filteredData.slice(indexOfFirstData, indexOfLastData);
+
+  const totalPages = Math.ceil(filteredData.length / dataPerPage);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <>
       <OverlayScrollbarsComponent>
-        <table
-          className="table table-dashed table-hover digi-dataTable company-table table-striped"
-          id="companyTable"
-        >
+        <table className="table table-dashed table-hover digi-dataTable company-table table-striped" id="companyTable">
           <thead>
             <tr>
-              <th> Warehouse</th>
+              <th>Warehouse</th>
               <th>Address</th>
               <th>Email</th>
               <th>Phone</th>
@@ -81,7 +88,7 @@ const CompanyTable = () => {
             </tr>
           </thead>
           <tbody>
-            {allwarehouse.map((data, index) => (
+            {currentData.map((data) => (
               <tr key={data._id}>
                 <td>{data.name}</td>
                 <td>{data.address}</td>
@@ -98,7 +105,7 @@ const CompanyTable = () => {
                         onClick={() => deleteWarehouse(data._id)}
                       ></i>
                     </button>
-                  </div>{" "}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -111,7 +118,7 @@ const CompanyTable = () => {
         paginate={paginate}
         pageNumbers={pageNumbers}
       />
-      {/* Edit Modal */}
+
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Customer</Modal.Title>
@@ -172,3 +179,10 @@ const CompanyTable = () => {
 };
 
 export default CompanyTable;
+
+
+
+
+
+
+

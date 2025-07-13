@@ -4,14 +4,16 @@ import { Modal, Button, Form, Alert } from "react-bootstrap";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const AllEmployeeTable = () => {
+const AllEmployeeTable = ({ searchTerm }) => {
   const [admins, setAdmins] = useState([]);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [editingAdmin, setEditingAdmin] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [error, setError] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
 
-  // Fetch all employees
+  // Fetch admins once
   useEffect(() => {
     const fetchAdminsData = async () => {
       const admins = await fetchAdmins();
@@ -36,7 +38,6 @@ const AllEmployeeTable = () => {
     setError(null);
   };
 
-  // Function to handle block/unblock
   const handleToggleBlock = async (admin) => {
     try {
       const response = await axios.put(`${URL}/admin/block/${admin._id}`);
@@ -60,7 +61,6 @@ const AllEmployeeTable = () => {
     }
   };
 
-  // Function to delete admin
   const handleDeleteAdmin = async (adminId) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -87,7 +87,6 @@ const AllEmployeeTable = () => {
     }
   };
 
-  // Function to edit and update admin
   const handleSaveEdit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -138,16 +137,12 @@ const AllEmployeeTable = () => {
       });
     }
   };
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
 
-  // Open Password Modal
   const handlePasswordChange = (admin) => {
     setEditingAdmin(admin);
     setShowPasswordModal(true);
   };
 
-  // Handle Password Save
   const handleSavePassword = async (e) => {
     e.preventDefault();
 
@@ -166,12 +161,13 @@ const AllEmployeeTable = () => {
           newPassword: newPassword,
         }
       );
-      const adminDetails = JSON.parse(localStorage.getItem("adminDetails"));
 
+      const adminDetails = JSON.parse(localStorage.getItem("adminDetails"));
       if (adminDetails && adminDetails._id === editingAdmin._id) {
         adminDetails.password = newPassword;
         localStorage.setItem("adminDetails", JSON.stringify(adminDetails));
       }
+
       Swal.fire({
         icon: "success",
         title: "Success",
@@ -180,7 +176,6 @@ const AllEmployeeTable = () => {
       setShowPasswordModal(false);
       setNewPassword("");
     } catch (error) {
-      console.error("Error changing password:", error);
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -189,7 +184,16 @@ const AllEmployeeTable = () => {
     }
   };
 
-  // Password Modal JSX
+  // ✅ Filter logic
+  const filteredAdmins = admins.filter((admin) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      admin.name?.toLowerCase().includes(term) ||
+      admin.role?.toLowerCase().includes(term) ||
+      admin.phone?.toLowerCase().includes(term) ||
+      admin.email?.toLowerCase().includes(term)
+    );
+  });
 
   return (
     <>
@@ -208,7 +212,7 @@ const AllEmployeeTable = () => {
           </tr>
         </thead>
         <tbody>
-          {admins.map((data) => (
+          {filteredAdmins.map((data) => (
             <tr key={data._id}>
               <td>
                 <div className="digi-dropdown dropdown d-inline-block">
@@ -274,7 +278,11 @@ const AllEmployeeTable = () => {
               </td>
               <td>
                 <div className="avatar">
-                  <img src={`${URL}/images/${data.image}`} alt="User" style={{ width: "40px", height: "40px" }} />
+                  <img
+                    src={`${URL}/images/${data.image}`}
+                    alt="User"
+                    style={{ width: "40px", height: "40px" }}
+                  />
                 </div>
               </td>
               <td>{data.name}</td>
@@ -286,6 +294,7 @@ const AllEmployeeTable = () => {
         </tbody>
       </table>
 
+      {/* Edit Modal */}
       <Modal show={showEditModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Admin</Modal.Title>
@@ -346,7 +355,10 @@ const AllEmployeeTable = () => {
                   type="text"
                   value={editingAdmin.address}
                   onChange={(e) =>
-                    setEditingAdmin({ ...editingAdmin, address: e.target.value })
+                    setEditingAdmin({
+                      ...editingAdmin,
+                      address: e.target.value,
+                    })
                   }
                 />
               </Form.Group>
@@ -356,7 +368,10 @@ const AllEmployeeTable = () => {
                   type="text"
                   value={editingAdmin.facebook}
                   onChange={(e) =>
-                    setEditingAdmin({ ...editingAdmin, facebook: e.target.value })
+                    setEditingAdmin({
+                      ...editingAdmin,
+                      facebook: e.target.value,
+                    })
                   }
                 />
               </Form.Group>
@@ -366,7 +381,10 @@ const AllEmployeeTable = () => {
                   type="text"
                   value={editingAdmin.twitter}
                   onChange={(e) =>
-                    setEditingAdmin({ ...editingAdmin, twitter: e.target.value })
+                    setEditingAdmin({
+                      ...editingAdmin,
+                      twitter: e.target.value,
+                    })
                   }
                 />
               </Form.Group>
@@ -376,7 +394,10 @@ const AllEmployeeTable = () => {
                   type="text"
                   value={editingAdmin.linkedin}
                   onChange={(e) =>
-                    setEditingAdmin({ ...editingAdmin, linkedin: e.target.value })
+                    setEditingAdmin({
+                      ...editingAdmin,
+                      linkedin: e.target.value,
+                    })
                   }
                 />
               </Form.Group>
@@ -386,7 +407,10 @@ const AllEmployeeTable = () => {
                   type="text"
                   value={editingAdmin.instagram}
                   onChange={(e) =>
-                    setEditingAdmin({ ...editingAdmin, instagram: e.target.value })
+                    setEditingAdmin({
+                      ...editingAdmin,
+                      instagram: e.target.value,
+                    })
                   }
                 />
               </Form.Group>
@@ -396,7 +420,10 @@ const AllEmployeeTable = () => {
                   type="text"
                   value={editingAdmin.youtube}
                   onChange={(e) =>
-                    setEditingAdmin({ ...editingAdmin, youtube: e.target.value })
+                    setEditingAdmin({
+                      ...editingAdmin,
+                      youtube: e.target.value,
+                    })
                   }
                 />
               </Form.Group>
@@ -406,7 +433,10 @@ const AllEmployeeTable = () => {
                   type="text"
                   value={editingAdmin.whatsapp}
                   onChange={(e) =>
-                    setEditingAdmin({ ...editingAdmin, whatsapp: e.target.value })
+                    setEditingAdmin({
+                      ...editingAdmin,
+                      whatsapp: e.target.value,
+                    })
                   }
                 />
               </Form.Group>
@@ -430,6 +460,7 @@ const AllEmployeeTable = () => {
         </Modal.Body>
       </Modal>
 
+      {/* Password Modal */}
       <Modal
         show={showPasswordModal}
         onHide={() => setShowPasswordModal(false)}
