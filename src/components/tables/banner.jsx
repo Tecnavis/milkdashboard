@@ -55,6 +55,9 @@ const Banner = () => {
     }
   };
 
+
+  
+
   return (
     <div className="col-lg-12 col-md-6">
       <div className="card">
