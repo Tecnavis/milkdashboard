@@ -11,6 +11,7 @@ import MyTasks from '../components/crm/MyTasks';
 import NoticeBoard from '../components/crm/NoticeBoard';
 import Deadlines from '../components/crm/Deadlines';
 import Tomorrowtask from '../components/crm/tomorrowtask';
+import Collection from '../components/dashboard/Collection';
 
 const CrmDashboardMainContent = () => {
   return (
@@ -20,6 +21,7 @@ const CrmDashboardMainContent = () => {
         <div className="row">
         <Deadlines/>
         <Tomorrowtask/>
+        <Collection />
             <BalanceOverview/>
             <RecentProjects/>
             <UpcomingProjects/>

@@ -12,6 +12,8 @@ const Deadlines = () => {
         setIsLoading(true);
         const response = await axios.get(`${URL}/orderdetails/today-orders/routes`); 
         const { data } = response.data;
+        console.log(data, "data");
+        
         setRouteSummary(data);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -52,6 +54,7 @@ const Deadlines = () => {
       <div className="panel">
       <div className="panel-header">
   <b>Today's Delivery Summary (Total Order Litter: {overallTotalVolume} Liters)</b>
+<p> Date:  {new Date().toLocaleDateString()}</p>
 </div>
 
         <div className="panel-body p-0">
@@ -86,7 +89,7 @@ const Deadlines = () => {
                           <td style={{fontWeight: "bold"}}>{categoryIndex === 0 ? routeNo : ""}</td>
                           <td>{category}</td>
                           <td>
-                            <div className="d-flex flex-wrap">
+                            <div>
                               {renderQuantitiesBadges(data.quantities)}
                             </div>
                           </td>

@@ -30,6 +30,11 @@ const TomorrowTask = () => {
     fetchTomorrowOrders();
   }, []);
 
+  const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+
+
+
   const renderQuantitiesBadges = (quantities) => {
     return Object.entries(quantities).map(([size, count], index) => (
       <span key={index} className="badge bg-primary-subtle px-2 rounded me-2 mb-1">
@@ -57,6 +62,8 @@ const TomorrowTask = () => {
       <div className="panel">
         <div className="panel-header">
         <b>Tomorrow's Delivery Summary (Total Order Litter: {overallTotalVolume} Liters)</b>
+        <p>Date: {tomorrow.toLocaleDateString()}</p>
+
         </div>
         <div className="panel-body p-0">
           {isLoading ? (
@@ -88,7 +95,7 @@ const TomorrowTask = () => {
                         )}
                         <td style={{ textAlign:"center"}}>{category}</td>
                         <td>
-                          <div className="d-flex flex-wrap">
+                          <div>
                             {renderQuantitiesBadges(data.quantities)}
                           </div>
                         </td>
