@@ -64,7 +64,6 @@ const DigiContextProvider = ({ children }) => {
     light: true,
     dark: false,
   });
-  
 
   const handleThemeSelection = (selectedTheme) => {
     setThemeSelection((prevThemeSelection) => ({
@@ -136,8 +135,9 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
       isRewardDropdownOpen: false,
-
     });
     setComponentState({
       advance: false,
@@ -220,7 +220,7 @@ const DigiContextProvider = ({ children }) => {
 
   useEffect(() => {
     const bodyElement = document.body;
-  
+
     if (themeSelection.light) {
       bodyElement.classList.add("light-theme");
       bodyElement.classList.remove("dark-theme");
@@ -231,7 +231,6 @@ const DigiContextProvider = ({ children }) => {
       bodyElement.classList.remove("light-theme", "dark-theme");
     }
   }, [themeSelection]);
-  
 
   // Light Theme
   const [isLightTheme, setIsLightTheme] = useState(false);
@@ -242,7 +241,6 @@ const DigiContextProvider = ({ children }) => {
     bodyElement.classList.add("light-theme");
     bodyElement.classList.remove("dark-theme");
   };
-  
 
   // Dark Theme
   const [isDarkTheme, setIsDarkTheme] = useState(false);
@@ -252,7 +250,6 @@ const DigiContextProvider = ({ children }) => {
     bodyElement.classList.add("dark-theme");
     bodyElement.classList.remove("light-theme");
   };
-  
 
   // Reset or Default Theme
   const handleResetTheme = () => {
@@ -483,6 +480,9 @@ const DigiContextProvider = ({ children }) => {
     isHrmDropdownOpen: false,
     isAccountsDropdownOpen: false,
     isEcommerceDropdownOpen: false,
+    isReportDropdownOpen: false,
+    isWarehouseDropdownOpen: false,
+
     isSubDropdownOpen: false,
     isRewardDropdownOpen: false,
   };
@@ -510,6 +510,9 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
+
       isRewardDropdownOpen: false,
       isSubDropdownOpen: !prevState.isCrmDropdownOpen,
     }));
@@ -533,6 +536,9 @@ const DigiContextProvider = ({ children }) => {
       isCrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
+
       isRewardDropdownOpen: false,
       isSubDropdownOpen: !prevState.isHrmDropdownOpen,
     }));
@@ -547,7 +553,7 @@ const DigiContextProvider = ({ children }) => {
       additional: false,
     });
   };
-// Modify toggleAccountsDropdown function
+  // Modify toggleAccountsDropdown function
   const toggleAccountsDropdown = () => {
     setState((prevState) => ({
       ...prevState,
@@ -555,6 +561,9 @@ const DigiContextProvider = ({ children }) => {
       isCrmDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
+
       isRewardDropdownOpen: false,
       isSubDropdownOpen: !prevState.isAccountsDropdownOpen,
     }));
@@ -568,20 +577,23 @@ const DigiContextProvider = ({ children }) => {
       error: false,
       additional: false,
     });
-  }
+  };
 
-    // Modify togglRewardDropdown function
-    const toggleRewardDropdown = () => {
-      setState((prevState) => ({
-        ...prevState,
-        isRewardDropdownOpen: !prevState.isRewardDropdownOpen,
-        isCrmDropdownOpen: false,
-        isHrmDropdownOpen: false,
-        isAccountsDropdownOpen: false,
-        isEcommerceDropdownOpen: false,
-        isSubDropdownOpen: !prevState.isRewardDropdownOpen,
-      }));
-    }
+  // Modify togglRewardDropdown function
+  const toggleRewardDropdown = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isRewardDropdownOpen: !prevState.isRewardDropdownOpen,
+      isCrmDropdownOpen: false,
+      isHrmDropdownOpen: false,
+      isAccountsDropdownOpen: false,
+      isEcommerceDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
+
+      isSubDropdownOpen: !prevState.isRewardDropdownOpen,
+    }));
+  };
 
   // Modify toggleEcommerceDropdown function
   const toggleEcommerceDropdown = () => {
@@ -592,7 +604,59 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isRewardDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
+
       isSubDropdownOpen: !prevState.isEcommerceDropdownOpen,
+    }));
+    setComponentState({
+      advance: false,
+      multipleLevel: false,
+    });
+    setPagesState({
+      authentication: false,
+      user: false,
+      error: false,
+      additional: false,
+    });
+  };
+
+  const toggleReportDropdown = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isCrmDropdownOpen: false,
+      isHrmDropdownOpen: false,
+      isAccountsDropdownOpen: false,
+      isRewardDropdownOpen: false,
+      isReportDropdownOpen: !prevState.isReportDropdownOpen,
+      isWarehouseDropdownOpen: false,
+
+      isEcommerceDropdownOpen: false,
+      isSubDropdownOpen: !prevState.isReportDropdownOpen,
+    }));
+    setComponentState({
+      advance: false,
+      multipleLevel: false,
+    });
+    setPagesState({
+      authentication: false,
+      user: false,
+      error: false,
+      additional: false,
+    });
+  };
+
+  const toggleWarehouseDropdown = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isCrmDropdownOpen: false,
+      isHrmDropdownOpen: false,
+      isAccountsDropdownOpen: false,
+      isRewardDropdownOpen: false,
+      isWarehouseDropdownOpen: !prevState.isWarehouseDropdownOpen,
+      isEcommerceDropdownOpen: false,
+      isSubDropdownOpen: !prevState.isReportDropdownOpen,
+      isReportDropdownOpen: false,
     }));
     setComponentState({
       advance: false,
@@ -641,6 +705,9 @@ const DigiContextProvider = ({ children }) => {
           isHrmDropdownOpen: false,
           isAccountsDropdownOpen: false,
           isEcommerceDropdownOpen: false,
+          isReportDropdownOpen: false,
+          isWarehouseDropdownOpen: false,
+
           isSubDropdownOpen: false,
           isRewardDropdownOpen: false,
         }));
@@ -668,6 +735,8 @@ const DigiContextProvider = ({ children }) => {
       state.isHrmDropdownOpen ||
       state.isAccountsDropdownOpen ||
       state.isEcommerceDropdownOpen ||
+      state.isReportDropdownOpen ||
+      state.isWarehouseDropdownOpen ||
       state.isRewardDropdownOpen ||
       dropdownOpen.apps
     ) {
@@ -682,6 +751,8 @@ const DigiContextProvider = ({ children }) => {
     state.isAccountsDropdownOpen,
     state.isHrmDropdownOpen,
     state.isEcommerceDropdownOpen,
+    state.isReportDropdownOpen,
+    state.isWarehouseDropdownOpen,
     state.isRewardDropdownOpen,
     dropdownOpen.apps,
   ]);
@@ -741,6 +812,9 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
+
       isRewardDropdownOpen: false,
       isRewardDropdownOpen: false,
     });
@@ -766,6 +840,9 @@ const DigiContextProvider = ({ children }) => {
       isAccountsDropdownOpen: false,
       isHrmDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
+
       isRewardDropdownOpen: false,
     });
     setPagesState({
@@ -813,6 +890,9 @@ const DigiContextProvider = ({ children }) => {
           isHrmDropdownOpen: false,
           isAccountsDropdownOpen: false,
           isEcommerceDropdownOpen: false,
+          isReportDropdownOpen: false,
+          isWarehouseDropdownOpen: false,
+
           isSubDropdownOpen: false,
           isRewardDropdownOpen: false,
         }));
@@ -914,6 +994,9 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
+
       isRewardDropdownOpen: false,
     });
     setComponentState({
@@ -935,8 +1018,10 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-      isRewardDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
 
+      isRewardDropdownOpen: false,
     });
     setComponentState({
       advance: false,
@@ -956,8 +1041,10 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-      isRewardDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
 
+      isRewardDropdownOpen: false,
     });
     setComponentState({
       advance: false,
@@ -977,8 +1064,10 @@ const DigiContextProvider = ({ children }) => {
       isHrmDropdownOpen: false,
       isAccountsDropdownOpen: false,
       isEcommerceDropdownOpen: false,
-      isRewardDropdownOpen: false,
+      isReportDropdownOpen: false,
+      isWarehouseDropdownOpen: false,
 
+      isRewardDropdownOpen: false,
     });
     setComponentState({
       advance: false,
@@ -1000,7 +1089,10 @@ const DigiContextProvider = ({ children }) => {
           isHrmDropdownOpen: false,
           isAccountsDropdownOpen: false,
           isEcommerceDropdownOpen: false,
+          isReportDropdownOpen: false,
           isSubDropdownOpen: false,
+          isWarehouseDropdownOpen: false,
+
           isRewardDropdownOpen: false,
         }));
         setComponentState({
@@ -1985,6 +2077,8 @@ const DigiContextProvider = ({ children }) => {
         toggleHrmDropdown,
         toggleAccountsDropdown,
         toggleEcommerceDropdown,
+        toggleWarehouseDropdown,
+        toggleReportDropdown,
         toggleRewardDropdown,
         handleNavLinkClick,
         tableFilterBtnOpen,
