@@ -110,24 +110,17 @@ const AppsPart = () => {
                 All Customer By Routes
               </NavLink>
             </li>
+
             <li className="sidebar-dropdown-item">
               <NavLink
-                to="/customerpayment"
+                to="/allorders"
                 className="sidebar-link"
                 onClick={handleSubNavLinkClick}
               >
-                All Customer Payment
+                Customer Order details
               </NavLink>
             </li>
-            <li className="sidebar-dropdown-item">
-              <NavLink
-                to="/customeramount"
-                className="sidebar-link"
-                onClick={handleSubNavLinkClick}
-              >
-                All Customer Amount
-              </NavLink>
-            </li>
+
             <li className="sidebar-dropdown-item">
               <NavLink
                 to="/customerbottlestock"
@@ -186,7 +179,7 @@ const AppsPart = () => {
 
             <li className="sidebar-dropdown-item">
               <NavLink
-                to="/allProduct"
+                to="/sales"
                 className="sidebar-link"
                 onClick={handleSubNavLinkClick}
               >
@@ -195,11 +188,20 @@ const AppsPart = () => {
             </li>
             <li className="sidebar-dropdown-item">
               <NavLink
-                to="/productassign"
+                to="/customerpayment"
                 className="sidebar-link"
                 onClick={handleSubNavLinkClick}
               >
-                Payments
+                All Customer Payment
+              </NavLink>
+            </li>
+            <li className="sidebar-dropdown-item">
+              <NavLink
+                to="/customeramount"
+                className="sidebar-link"
+                onClick={handleSubNavLinkClick}
+              >
+                All Customer Amount
               </NavLink>
             </li>
 
@@ -267,12 +269,6 @@ const AppsPart = () => {
             }`}
             id="crmDropdown"
           >
-            {/* <li className="sidebar-dropdown-item">
-              <NavLink to="/allorders" className="sidebar-link" onClick={handleSubNavLinkClick}>
-                All Order details
-              </NavLink>
-            </li> */}
-
             <li className="sidebar-dropdown-item">
               <NavLink
                 to="/allEmployee"

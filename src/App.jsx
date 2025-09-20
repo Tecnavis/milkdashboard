@@ -70,6 +70,7 @@ import RoutebasedIncome from "./pages/routebasedincome"
 import Rewarditem from "./components/reward/Rewarditem"
 import Rewardredeams from "./components/reward/Rewardredeams"
 import CostemerCalender from "./pages/CostemerCalender"
+import Sales from "./pages/Sales"
 
 
 function App() {
@@ -79,6 +80,7 @@ function App() {
       <Routes>
         <Route element={<Layout/>}>
           <Route path="/inventorydashboard" element={<Dashboard/>}/>
+                    <Route path="/sales" element={  <Sales />}/>
           <Route path="/routebasedincome" element={<RoutebasedIncome/>}/>
           <Route path="/customerpayment" element={<Customerpayment/>}/>
           <Route path="/customeramount" element={<CustomerpaymentAmount/>}/>
