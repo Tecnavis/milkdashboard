@@ -595,7 +595,7 @@ const AllCustomerTable = ({ searchTerm }) => {
                     </Badge>
                   </td>
                   <td>
-                    {c.status === "un paid" && (
+                    {c.status === "un paid" ||  c.status === "not close" && (
                       <Button
                         size="sm"
                         variant="warning"
