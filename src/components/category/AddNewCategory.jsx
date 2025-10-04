@@ -8,7 +8,7 @@ const AddNewCategory = () => {
     }
   const onDropSingle = useCallback((acceptedFiles) => {
     // Handle the single file upload
-    console.log(acceptedFiles);
+    console.error(acceptedFiles);
   }, []);
   const { getRootProps: getSingleRootProps, getInputProps: getSingleInputProps, isDragActive: isSingleDragActive } = useDropzone({ onDrop: onDropSingle });
 

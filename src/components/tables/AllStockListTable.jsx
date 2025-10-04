@@ -25,6 +25,7 @@ const AllEmployeeTable = ({ searchQuery }) => {
     const fetchAllRoutes = async () => {
       try {
         const response = await fetchRoutes();
+        
         // Make sure to handle both cases if response.routes exists or response is an array.
         setAllRoutes(
           response?.routes || (Array.isArray(response) ? response : [])

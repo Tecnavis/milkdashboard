@@ -12,7 +12,6 @@ const Deadlines = () => {
         setIsLoading(true);
         const response = await axios.get(`${URL}/orderdetails/today-orders/routes`); 
         const { data } = response.data;
-        console.log(data, "data");
         
         setRouteSummary(data);
       } catch (error) {

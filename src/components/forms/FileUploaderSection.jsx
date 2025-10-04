@@ -4,12 +4,12 @@ import { useDropzone } from 'react-dropzone';
 const FileUploaderSection = () => {
   const onDropSingle = useCallback((acceptedFiles) => {
     // Handle the single file upload
-    console.log(acceptedFiles);
+    console.error(acceptedFiles);
   }, []);
 
   const onDropMultiple = useCallback((acceptedFiles) => {
     // Handle the multiple file upload
-    console.log(acceptedFiles);
+    console.error(acceptedFiles);
   }, []);
 
   const { getRootProps: getSingleRootProps, getInputProps: getSingleInputProps, isDragActive: isSingleDragActive } = useDropzone({ onDrop: onDropSingle });

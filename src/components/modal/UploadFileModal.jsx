@@ -7,7 +7,7 @@ const UploadFileModal = () => {
     const {uploadModalOpen,handleUploadModalClose} = useContext(DigiContext)
     const onDropMultiple = useCallback((acceptedFiles) => {
         // Handle the multiple file upload
-        console.log(acceptedFiles);
+        console.error(acceptedFiles);
       }, []);
     
       const { getRootProps: getMultipleRootProps, getInputProps: getMultipleInputProps, isDragActive: isMultipleDragActive } = useDropzone({ onDrop: onDropMultiple, multiple: true });

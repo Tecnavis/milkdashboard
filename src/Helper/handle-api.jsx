@@ -2,8 +2,8 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 
-// export const  URL = `http://localhost:3001`;
-export const  URL = `https://api.palkkaran.in`;
+export const  URL = `http://localhost:3001`;
+// export const  URL = `https://api.palkkaran.in`;
 //create product
 export const createProduct = async (product) => {
     const response = await axios.post(`${URL}/product`, product);
@@ -231,7 +231,6 @@ if (result.isConfirmed) {
 
 // delete product by id
 export const deleteRouteId = async (id, productId) => {
-  console.log(id, "id");
   
   const response = await axios.delete(`${URL}/route/${id}/products/${productId}`);
     return response.data;

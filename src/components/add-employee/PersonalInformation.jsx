@@ -28,7 +28,6 @@ const PersonalInformation = () => {
       title: 'Success',
       text: 'Warehouse created successfully!',
     })
-      console.log("Warehouse Response:", response);
 
       // Clear form fields after successful creation
       handleChange({ target: { name: "name", value: "" } });

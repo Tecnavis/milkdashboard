@@ -109,7 +109,7 @@ const EditProductModal = ({ productId, show, onClose, onSave }) => {
   
     // Log the formData to ensure all fields are being appended
     for (const pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
+      console.error(`${pair[0]}: ${pair[1]}`);
     }
   
     try {
