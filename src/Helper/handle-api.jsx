@@ -2,8 +2,8 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 
-// export const  URL = `http://localhost:3001`;
-export const  URL = `https://api.palkkaran.in`;
+export const  URL = `http://localhost:3001`;
+// export const  URL = `https://api.palkkaran.in`;
 //create product
 export const createProduct = async (product) => {
     const response = await axios.post(`${URL}/product`, product);
@@ -239,7 +239,7 @@ export const deleteRouteId = async (id, productId) => {
 
 //get details by route name
 export const getDetailsByRouteName = async (routeName) => {
-    const response = await axios.get(`${URL}/route/name/${routeName}`);
+    const response = await axios.get(`${URL}/route/name/${routeName}`);    
     return response.data;
 }
 
@@ -250,12 +250,21 @@ export const getPlansByCustomerId = async (customerId) => {
 }
 
 export const createPlan = async (planData) => {
+
     const response = await fetch(`${URL}/plan`, {
       method: "POST",
       body: JSON.stringify(planData),
       headers: { "Content-Type": "application/json" },
     });
+    if(response.status == 403) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "This customer all ready plan taken please go to edit plan",
+          });
+    }
     return response.json();
+
   };
   
   export const createOrder = async (orderData) => {

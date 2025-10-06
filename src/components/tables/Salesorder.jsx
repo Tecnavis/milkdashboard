@@ -66,6 +66,7 @@ const Salesorders = ({ searchQuery }) => {
   // Create plan and proceed to order
   const handleCreatePlan = async () => {
     try {
+      
       let planData = {
         customerId: selectedCustomer._id,
         planType: selectedPlan || "none", // Ensure it is never null
@@ -107,6 +108,7 @@ const Salesorders = ({ searchQuery }) => {
         });
       }
     } catch (error) {
+      
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -401,50 +403,7 @@ const Salesorders = ({ searchQuery }) => {
         <Modal.Header closeButton>
           <Modal.Title>Select Products</Modal.Title>
         </Modal.Header>
-        {/* <Modal.Body>
-    {selectedProducts.length > 0 ? (
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Select</th>
-            <th>Image</th>
-            <th>Product ID</th>
-            <th>Product Name</th>
-            <th>Quantity</th>
-            <th>Price </th>
-          </tr>
-        </thead>
-        <tbody>
-          {selectedProducts.map((product) => (
-            <tr key={product._id}>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={selectedProducts.some((p) => p._id === product._id)}
-                  onChange={(e) =>
-                    setSelectedProducts(
-                      e.target.checked
-                        ? [...selectedProducts, product]
-                        : selectedProducts.filter((p) => p._id !== product._id)
-                    )
-                  }
-                />
-              </td>
-              <td>
-                <img src={`${URL}/images/${product.productId.coverimage}`} alt={product.productId.image} style={{ width: "50px", height: "50px" }}/>
-              </td>
-              <td>{product.productId.productId}</td>
-              <td>{product.productId.category}</td>
-              <td>{product.productId.quantity}</td>
-              <td>₹{product.routePrice}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    ) : (
-      <p>No products available</p>
-    )}
-  </Modal.Body> */}
+      
 
         <Modal.Body>
           {routeProducts.length > 0 ? (
