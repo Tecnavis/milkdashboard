@@ -15,20 +15,6 @@ const AllProductTable = ({ searchQuery }) => {
   const [showModal, setShowModal] = useState(false);
   
 
-
-  // Pagination logic
-  // const indexOfLastData = currentPage * dataPerPage;
-  // const indexOfFirstData = indexOfLastData - dataPerPage;
-  // const currentData = products.slice(indexOfFirstData, indexOfLastData);
-
-  // const paginate = (pageNumber) => {
-  //   setCurrentPage(pageNumber);
-  // };
-
-  // Calculate total number of pages
-  // const totalPages = Math.ceil(products.length / dataPerPage);
-  // const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-
   // All product list
 
   useEffect(() => {
@@ -48,10 +34,10 @@ const AllProductTable = ({ searchQuery }) => {
   // Filter products based on search query
   const filteredProducts = products.filter((product) =>
     
-    product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.productId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.price.toString().includes(searchQuery)
+    product?.category?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+    product?.title?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+    product?.productId?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+    product?.price?.toString().includes(searchQuery)
 
 );
 
