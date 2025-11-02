@@ -512,7 +512,6 @@ const DigiContextProvider = ({ children }) => {
       isEcommerceDropdownOpen: false,
       isReportDropdownOpen: false,
       isWarehouseDropdownOpen: false,
-
       isRewardDropdownOpen: false,
       isSubDropdownOpen: !prevState.isCrmDropdownOpen,
     }));
@@ -814,8 +813,6 @@ const DigiContextProvider = ({ children }) => {
       isEcommerceDropdownOpen: false,
       isReportDropdownOpen: false,
       isWarehouseDropdownOpen: false,
-
-      isRewardDropdownOpen: false,
       isRewardDropdownOpen: false,
     });
     setPagesState({

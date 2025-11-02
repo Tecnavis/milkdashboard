@@ -279,7 +279,7 @@ const AllEmployeeTable = ({ searchTerm }) => {
               <td>
                 <div className="avatar">
                   <img
-                    src={`${URL}/images/${data.image}`}
+                    src={data.image}
                     alt="User"
                     style={{ width: "40px", height: "40px" }}
                   />
