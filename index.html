@@ -9,23 +9,19 @@
     <!-- ✅ Favicon -->
     <link rel="icon" type="image/png" href="/assets/favicon.png" />
 
-    <!-- ✅ External CSS (Make sure these exist inside `public/assets/css/`) -->
-    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/assets/css/all.min.css" />
-    <link rel="stylesheet" href="/assets/css/sweetalert2.min.css" />
+    <!-- ✅ CDN CSS (Temporary fix) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    <!-- Keep your custom CSS local -->
     <link rel="stylesheet" href="/assets/css/style.css" />
     <link rel="stylesheet" id="primaryColor" href="/assets/css/blue-color.css" />
-
-    <!-- ✅ Best practice for consistent character encoding -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   </head>
   <body>
     <div id="root"></div>
-
-    <!-- ✅ React Entry Point -->
     <script type="module" src="/src/main.jsx"></script>
-
-    <!-- Optional: JS Libraries (if you actually need them in your app) -->
-    <!-- <script src="/assets/js/bootstrap.bundle.min.js"></script> -->
   </body>
 </html>
+
+
