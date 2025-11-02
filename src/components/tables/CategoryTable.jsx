@@ -137,7 +137,7 @@ const CategoryTable = ({ searchQuery  }) => {
                     <div className="part-icon">
                       <span>
                         <img
-                          src={`${URL}/images/${data.image}`}
+                          src={data.image}
                           alt="image"
                         />
                       </span>

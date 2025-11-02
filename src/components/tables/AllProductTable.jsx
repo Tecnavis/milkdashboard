@@ -131,7 +131,7 @@ const AllProductTable = ({ searchQuery }) => {
                     <div className="table-product-card">
                       <div className="part-img">
                         <img
-                          src={`${URL}/images/${product.coverimage}`}
+                          src={`${product.coverimage}`}
                           alt="Product"
                         />
                       </div>

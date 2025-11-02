@@ -2,8 +2,8 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 
-// export const  URL = `http://localhost:3001`;
-export const  URL = `https://api.palkkaran.in`;
+export const  URL = `http://localhost:3001`;
+// export const  URL = `https://api.palkkaran.in`;
 //create product
 export const createProduct = async (product) => {
     const response = await axios.post(`${URL}/product`, product);
@@ -281,10 +281,16 @@ export const createPlan = async (planData) => {
     return response.data;
   }
 
-  export const deleteBanner = async (id) => {
-    const response = await axios.delete(`${URL}/banner/${id}`);
+  export const deleteBannerAll = async (id) => {
+    const response = await axios.delete(`${URL}/banner`);
     return response.data;
   }
+
+    export const deleteBannerIndex = async (id, index) => {
+    const response = await axios.delete(`${URL}/banner/${id}/image/${index}`);
+    return response.data;
+  }
+
 
   export const updateBanner = async (id, updatedData) => {
     const response = await axios.put(`${URL}/banner/${id}`, updatedData, {

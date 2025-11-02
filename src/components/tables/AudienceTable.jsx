@@ -57,7 +57,7 @@ const AudienceTable = ({ searchQuery }) => {
 
                   <td className="align-middle text-center">
                     <img 
-                      src={`${URL}/images/${product.productId.coverimage}`} 
+                      src={product.productId.coverimage}
                       alt="Product" 
                       width="50"
                     />

@@ -40,7 +40,7 @@ const SeoData = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!values.category || !values.title || !values.price || !values.quantity || !coverImage || images.length === 0) {
+    if (!values.category || !values.title || !values.price || !values.quantity || !coverImage ) {
       Swal.fire({
         icon: 'warning',
         title: 'Missing fields',
@@ -50,8 +50,7 @@ const SeoData = () => {
     }
 
     const formData = new FormData();
-    images.forEach((image) => formData.append('images', image));
-    formData.append('coverimage', coverImage);
+    formData.append('image', coverImage);
     formData.append('title', values.title);
     formData.append('description', values.description);
     formData.append('category', values.category);
@@ -129,7 +128,7 @@ const SeoData = () => {
         </div>
         <br />
 
-        <div className="row g-3 mb-3">
+        {/* <div className="row g-3 mb-3">
           <label className="col-md-2 col-form-label col-form-label-sm">Images</label>
           <div className="col-md-10">
             <input
@@ -139,10 +138,10 @@ const SeoData = () => {
               onChange={handleImageChange}
             />
           </div>
-        </div>
+        </div> */}
 
         <div className="row g-3 mb-3">
-          <label className="col-md-2 col-form-label col-form-label-sm">Cover Image</label>
+          <label className="col-md-2 col-form-label col-form-label-sm">Image</label>
           <div className="col-md-10">
             <input
               type="file"

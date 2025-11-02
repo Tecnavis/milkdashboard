@@ -1,125 +1,125 @@
 import React, { useEffect, useState } from "react";
-import { fetchBanner, URL, deleteBanner, updateBanner } from "../../Helper/handle-api";
+import { fetchBanner,  updateBanner, deleteBannerIndex, deleteBannerAll } from "../../Helper/handle-api";
 import "./bannerstyle.scss";
 
 const BannerTable = () => {
   const [banners, setBanners] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBanner, setSelectedBanner] = useState(null);
-  const [formData, setFormData] = useState({
-    images: [],
-  });
+  const [selectedBannerId, setSelectedBannerId] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+  const [newImage, setNewImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
-  // Fetch banners on load
   useEffect(() => {
-    fetchBanner().then((res) => {
-      setBanners(res);
-    });
+    loadBanners();
   }, []);
 
-  // Open modal for editing
-  const handleEditClick = (banner) => {
-    setSelectedBanner(banner);
-    setFormData({
-      images: [],
-    });
+  const loadBanners = async () => {
+    const res = await fetchBanner();
+    setBanners(res);
+  };
+
+  const handleEditImage = (bannerId, imageIndex, currentImage) => {
+    setSelectedBannerId(bannerId);
+    setSelectedImageIndex(imageIndex);
+    setPreviewImage(currentImage);
     setIsModalOpen(true);
   };
 
-  // Handle multiple image uploads
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files); // Convert FileList to Array
-    setFormData({ ...formData, images: files });
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setNewImage(file);
+    setPreviewImage(URL.createObjectURL(file));
   };
 
-  // Handle banner update
   const handleUpdateBanner = async (e) => {
     e.preventDefault();
-    if (!selectedBanner) return;
+    if (!selectedBannerId || selectedImageIndex === null || !newImage) return;
 
-    const updatedData = new FormData();
-    formData.images.forEach((file) => updatedData.append("images", file)); // Append multiple images
+    const formData = new FormData();
+    formData.append("image", newImage);
+    formData.append("index", selectedImageIndex);
 
     try {
-      await updateBanner(selectedBanner._id, updatedData);
-      const bannersAfterUpdate = await fetchBanner();
-      setBanners(bannersAfterUpdate);
+      await updateBanner(selectedBannerId, formData);
+      await loadBanners();
       setIsModalOpen(false);
+      setNewImage(null);
+      setSelectedImageIndex(null);
     } catch (error) {
-      console.error("Failed to update banner", error);
+      console.error("Failed to update banner image", error);
     }
   };
 
   return (
-    <div className="col-xl-12 col-lg-6 container">
-      <div className="panel">
-        <div className="panel-header">
-          <h5>Banner List</h5>
-        </div>
-        <div className="panel-body p-0">
-          <div className="table-responsive">
-            <table className="table deadline-table table-hover">
-              <thead>
-                <tr>
-                  <th>No.</th>
-                  <th>Images</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {banners.map((banner, index) => (
-                  <tr key={banner._id}>
-                    <td>{index + 1}</td>
-                    <td>
-                      <div className="banner-images">
-                        {banner.images.map((image, imgIndex) => (
-                          <img key={imgIndex} src={`${URL}/images/${image}`} alt="" className="banner-img" />
-                        ))}
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        <button className="btn btn-sm btn-primary" style={{ marginRight: "5px" }} onClick={() => handleEditClick(banner)}>
-                          <i className="fa-regular fa-pen-to-square"></i>
-                        </button>
-                        <button className="btn btn-sm btn-danger" onClick={() => deleteBanner(banner._id)}>
-                          <i className="fa-regular fa-trash-can"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <div className="banner-container">
+      <h4 className="mb-4 font-semibold text-lg text-center">All Banner Images</h4>
+{
+  !banners.length == 0  &&
+      <button style={{backgroundColor: "red", border: "none", color: "white", padding: 6, borderRadius: 3}} onClick={deleteBannerAll()}>Delete All</button>
+}
+
+      {/* ✅ Card Grid Layout */}
+      <div className="banner-grid">
+        {banners.length > 0 && banners[0].images ? (
+          banners[0].images.map((image, index) => (
+            <div className="banner-card" key={index}>
+              <img src={image} alt={`Banner ${index}`} className="banner-card-img" />
+              <div className="banner-card-footer">
+                {/* <span className="text-sm text-gray-700 font-medium">Banner #{index + 1}</span> */}
+                <div className="banner-btns">
+                  <button
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={() => handleEditImage(banners[0]._id, index, image)}
+                  >
+                    <i className="fa-regular fa-pen-to-square"></i> Edit
+                  </button>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => deleteBannerIndex(banners[0]._id, index)}
+                  >
+                    <i className="fa-regular fa-trash-can"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center w-full mt-4 text-muted">No banner images found.</p>
+        )}
       </div>
 
-      {/* Modal for Editing Banner */}
-      <div className={`modal fade ${isModalOpen ? "show" : ""}`} style={{ display: isModalOpen ? "block" : "none" }}>
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
+      {/* ✅ Edit Modal */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-box">
             <div className="modal-header">
-              <h5 className="modal-title">Edit Banner</h5>
-              <button type="button" className="close" onClick={() => setIsModalOpen(false)}>
-                <span>&times;</span>
+              <h5>Edit Banner Image</h5>
+              <button className="close-btn" onClick={() => setIsModalOpen(false)}>
+                &times;
               </button>
             </div>
             <form onSubmit={handleUpdateBanner}>
               <div className="modal-body">
-                <div className="form-group">
-                  <label>Upload Images:</label>
-                  <input type="file" className="form-control" multiple accept="image/*" onChange={handleImageUpload} />
+                <div className="preview-section">
+                  {previewImage && (
+                    <img src={previewImage} alt="Preview" className="preview-img" />
+                  )}
                 </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="form-control mt-2"
+                  onChange={handleImageChange}
+                />
               </div>
               <div className="modal-footer">
-                <button type="submit" className="btn btn-primary">Update</button>
-                <button type="button" className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>Cancel</button>
+                <button type="submit" className="btn btn-primary w-100">Update</button>
               </div>
             </form>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

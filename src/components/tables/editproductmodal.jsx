@@ -35,8 +35,7 @@ const EditProductModal = ({ productId, show, onClose, onSave }) => {
           }
 
           if (productData.coverimage) {
-            const coverImageUrl = `${URL}/images/${productData.coverimage}`;
-            setCoverImagePreview(coverImageUrl.replace(/[[\]]/g, ""));
+            setCoverImagePreview(productData.coverimage);
           }
 
 
@@ -102,9 +101,8 @@ const EditProductModal = ({ productId, show, onClose, onSave }) => {
     formData.append("quantity", formValues.quantity);
     formData.append("discount", formValues.discount || ""); // Optional field
   
-    images.forEach((image) => formData.append("images", image));
     if (coverImage) {
-      formData.append("coverimage", coverImage);
+          formData.append('image', coverImage);
     }
   
     // Log the formData to ensure all fields are being appended
@@ -218,7 +216,7 @@ const EditProductModal = ({ productId, show, onClose, onSave }) => {
             />
           </div>
 
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <label>Images</label>
             <input
               type="file"
@@ -226,9 +224,9 @@ const EditProductModal = ({ productId, show, onClose, onSave }) => {
               onChange={handleImageChange}
               className="form-control"
             />
-          </div>
+          </div> */}
           <div className="mb-3">
-            <label>Cover Image</label>
+            <label>Image</label>
             <input
               type="file"
               onChange={handleCoverImageChange}
@@ -239,17 +237,25 @@ const EditProductModal = ({ productId, show, onClose, onSave }) => {
           {/* Preview Cover Image */}
           {coverImagePreview && (
             <div className="mb-3">
-              <label>Cover Image Preview</label>
+              <label> Image Preview</label>
               <img
                 src={coverImagePreview}
                 alt="Cover Preview"
-                style={{ width: "100%", height: "auto" }}
+                // style={{ width: "100%", height: "10%" }}
+                   style={{
+          width: "150px",
+          height: "150px",
+          borderRadius: "10px",
+          objectFit: "cover",
+          border: "1px solid #ddd",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        }}
               />
             </div>
           )}
 
           {/* Preview Images */}
-          {imagePreviews.length > 0 && (
+          {/* {imagePreviews.length > 0 && (
             <div className="mb-3">
               <label>Images Preview</label>
               <div className="d-flex flex-wrap">
@@ -268,9 +274,9 @@ const EditProductModal = ({ productId, show, onClose, onSave }) => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
-          <Button variant="primary" type="submit">
+          <Button style={{margin: 5}} variant="primary" type="submit">
             Save Changes
           </Button>
           <Button variant="secondary" onClick={onClose}>
