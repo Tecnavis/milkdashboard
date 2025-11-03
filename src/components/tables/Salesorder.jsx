@@ -532,7 +532,6 @@
 // };
 
 // export default Salesorders;
-
 import React, { useEffect, useState } from "react";
 import { Table, Modal, Button, Form } from "react-bootstrap";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
@@ -587,7 +586,14 @@ const Salesorders = ({ searchQuery }) => {
   const handleContinueToPlans = async () => {
     setShowProductModal(false);
     setShowPlanModal(true);
-    setPlans(["daily", "custom", "weekly", "alternative", "monthly", "introductory"]);
+    setPlans([
+      "daily",
+      "custom",
+      "weekly",
+      "alternative",
+      "monthly",
+      "introductory",
+    ]);
   };
 
   const handleCreatePlan = async () => {
@@ -683,7 +689,6 @@ const Salesorders = ({ searchQuery }) => {
               <DatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
-                minDate={new Date()}
                 className="form-control"
                 placeholderText="Select start date"
               />
@@ -699,28 +704,33 @@ const Salesorders = ({ searchQuery }) => {
               <DatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
-                minDate={new Date()}
                 className="form-control"
                 placeholderText="Select start date"
               />
             </Form.Group>
             <h6>Select Days</h6>
-            {["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map(
-              (day, index) => (
-                <Form.Check
-                  key={day}
-                  type="checkbox"
-                  label={day}
-                  checked={selectedDays.includes(index)}
-                  onChange={(e) => {
-                    if (e.target.checked)
-                      setSelectedDays([...selectedDays, index]);
-                    else
-                      setSelectedDays(selectedDays.filter((d) => d !== index));
-                  }}
-                />
-              )
-            )}
+            {[
+              "Sunday",
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+            ].map((day, index) => (
+              <Form.Check
+                key={day}
+                type="checkbox"
+                label={day}
+                checked={selectedDays.includes(index)}
+                onChange={(e) => {
+                  if (e.target.checked)
+                    setSelectedDays([...selectedDays, index]);
+                  else
+                    setSelectedDays(selectedDays.filter((d) => d !== index));
+                }}
+              />
+            ))}
           </div>
         );
 
@@ -732,7 +742,6 @@ const Salesorders = ({ searchQuery }) => {
               <DatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
-                minDate={new Date()}
                 className="form-control"
                 placeholderText="Select start date"
               />
@@ -758,7 +767,6 @@ const Salesorders = ({ searchQuery }) => {
                 <DatePicker
                   selected={selectedDate}
                   onChange={(date) => setSelectedDate(date)}
-                  minDate={new Date()}
                   className="form-control"
                   placeholderText="Select date"
                 />
@@ -871,7 +879,11 @@ const Salesorders = ({ searchQuery }) => {
       </OverlayScrollbarsComponent>
 
       {/* Product Modal */}
-      <Modal show={showProductModal} onHide={() => setShowProductModal(false)} size="lg">
+      <Modal
+        show={showProductModal}
+        onHide={() => setShowProductModal(false)}
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Select Products</Modal.Title>
         </Modal.Header>
@@ -894,12 +906,16 @@ const Salesorders = ({ searchQuery }) => {
                     <td>
                       <input
                         type="checkbox"
-                        checked={selectedProducts.some((p) => p._id === product._id)}
+                        checked={selectedProducts.some(
+                          (p) => p._id === product._id
+                        )}
                         onChange={(e) =>
                           setSelectedProducts(
                             e.target.checked
                               ? [...selectedProducts, product]
-                              : selectedProducts.filter((p) => p._id !== product._id)
+                              : selectedProducts.filter(
+                                  (p) => p._id !== product._id
+                                )
                           )
                         }
                       />
@@ -924,7 +940,10 @@ const Salesorders = ({ searchQuery }) => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowProductModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowProductModal(false)}
+          >
             Cancel
           </Button>
           <Button variant="primary" onClick={handleContinueToPlans}>
@@ -968,7 +987,11 @@ const Salesorders = ({ searchQuery }) => {
       </Modal>
 
       {/* Order Modal */}
-      <Modal show={orderConfirmed} onHide={() => setOrderConfirmed(false)} centered>
+      <Modal
+        show={orderConfirmed}
+        onHide={() => setOrderConfirmed(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Confirm Your Order</Modal.Title>
         </Modal.Header>

@@ -83,7 +83,7 @@ const UpcomingProjects = () => {
                             <span>
                               {order.productItems?.map((item) => (
                                 <div key={item._id}>
-                                  {item.product?.category} ({item.quantity})
+                                  {item?.product?.category} ({item.quantity})
                                   <br />
                                 </div>
                               ))}
@@ -96,8 +96,8 @@ const UpcomingProjects = () => {
                           {order.productItems?.map((item) => (
                             <div key={item._id} className="avatar">
                               <img
-                                src={`${URL}/images/${item.product?.coverimage}`}
-                                alt={item.product?.category}
+                                src={item?.product?.coverimage}
+                                alt={item?.product?.category}
                                 style={{height:"45px", width:"45px"}}
                               />
                             </div>
