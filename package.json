@@ -2,14 +2,15 @@
   "name": "digiboard",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "module",  
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build", 
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview --host",
     "start": "vite preview --host --port $PORT"
   },
+
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^38.0.1",
     "@ckeditor/ckeditor5-react": "^6.0.0",

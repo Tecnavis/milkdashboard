@@ -10,6 +10,14 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: parseInt(process.env.PORT) || 4173,
-    allowedHosts: ['milkdashboard.onrender.com', 'admin.palkkaran.in'],
+    allowedHosts: [
+      'milkdashboard.onrender.com', 
+      'admin.palkkaran.in',
+      '.onrender.com' // Allow all Render subdomains
+    ],
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: false // Optional: smaller build
+  }
 })
