@@ -68,6 +68,8 @@ const SeoData = () => {
         title: 'Success',
         text: 'Product created successfully!',
       });
+     window.location.href = "/allProduct";
+
     } catch (error) {
       Swal.fire({
         icon: 'error',
